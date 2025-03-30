@@ -1,0 +1,30 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+public class User
+{
+    [Key]
+    public int UserID { get; set; }
+
+    [Required]
+    [MaxLength(100)]
+    public string FullName { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(15)]
+    public string PhoneNumber { get; set; } = string.Empty;
+
+    [MaxLength(100)]
+    public string? Email { get; set; }
+
+    [Required]
+    public string PasswordHash { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(20)]
+    public string Role { get; set; } = "User";
+
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiry { get; set; }
+}
