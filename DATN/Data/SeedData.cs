@@ -33,7 +33,7 @@ namespace DATN.Data
 
             // Seed data for Bookings
             modelBuilder.Entity<Booking>().HasData(
-                new Booking { BookingID = 1, UserID = 1, PitchID = 1, BookingDate = DateTime.Today, StartTime = new TimeSpan(15, 0, 0), EndTime = new TimeSpan(16, 0, 0), TotalPrice = 200000, Status = "Confirmed" },
+                new Booking { BookingID = 1, UserID = 1, PitchID = 1, BookingDate = DateTime.Today, StartTime = new TimeSpan(15, 0, 0), EndTime = new TimeSpan(16, 0, 0), TotalPrice = 340000, Status = "Confirmed" },
                 new Booking { BookingID = 2, UserID = 2, PitchID = 3, BookingDate = DateTime.Today, StartTime = new TimeSpan(17, 0, 0), EndTime = new TimeSpan(18, 30, 0), TotalPrice = 350000, Status = "Pending" }
             );
 
