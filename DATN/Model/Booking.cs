@@ -13,6 +13,8 @@ namespace DATN.Model
 
         [Required]
         public int PitchID { get; set; }
+        [Required]
+        public int? DiscountID { get; set; }  // Thay vì int DiscountID
 
         [Required]
         public DateTime BookingDate { get; set; } // Ngày đặt sân
@@ -38,5 +40,9 @@ namespace DATN.Model
 
         [ForeignKey("PitchID")]
         public virtual Pitch? Pitch { get; set; }
+        
+        [ForeignKey("DiscountID")]
+        public virtual Discount? Discount { get; set; }
+
     }
 }

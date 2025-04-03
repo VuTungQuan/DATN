@@ -25,7 +25,7 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<AuthService>();
-
+builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 builder.Services.AddCors(options => options.AddPolicy("MyPolicy", builder =>
         builder.AllowAnyOrigin()
                 .AllowAnyMethod()

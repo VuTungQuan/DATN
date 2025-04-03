@@ -10,6 +10,8 @@ namespace DATN.Repositories
         Task UpdateBookingAsync(Booking booking);
         Task DeleteBookingAsync(int id);
         Task<bool> IsPitchAvailableAsync(int pitchId, DateTime bookingDate, TimeSpan startTime, TimeSpan endTime);
-
+        
+        Task<decimal> GetRevenueAsync(DateTime startDate, DateTime endDate);
+        Task<int> GetBookingsCountAsync(DateTime startDate, DateTime endDate);
     }
 }
