@@ -36,6 +36,10 @@ namespace DATN.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DiscountID")
+                        .IsRequired()
+                        .HasColumnType("int");
+
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
 
@@ -58,6 +62,8 @@ namespace DATN.Migrations
 
                     b.HasKey("BookingID");
 
+                    b.HasIndex("DiscountID");
+
                     b.HasIndex("UserID");
 
                     b.HasIndex("PitchID", "BookingDate", "StartTime", "EndTime")
@@ -66,41 +72,34 @@ namespace DATN.Migrations
                     b.ToTable("Bookings");
                 });
 
-            modelBuilder.Entity("DATN.Model.Payment", b =>
+            modelBuilder.Entity("DATN.Model.Discount", b =>
                 {
-                    b.Property<int>("PaymentID")
+                    b.Property<int>("DiscountID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DiscountID"), 1L, 1);
 
-                    b.Property<int>("BookingID")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("PaidAmount")
+                    b.Property<decimal>("DiscountAmount")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<DateTime?>("PaidDate")
+                    b.Property<string>("DiscountCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("PaymentStatus")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("TransactionID")
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("DiscountID");
 
-                    b.HasKey("PaymentID");
-
-                    b.HasIndex("BookingID");
-
-                    b.ToTable("Payments");
+                    b.ToTable("Discounts");
                 });
 
             modelBuilder.Entity("DATN.Model.Pitch", b =>
@@ -166,6 +165,43 @@ namespace DATN.Migrations
                     b.ToTable("PitchTypes");
                 });
 
+            modelBuilder.Entity("Payment", b =>
+                {
+                    b.Property<int>("PaymentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentID"), 1L, 1);
+
+                    b.Property<int>("BookingID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("PaidAmount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime?>("PaidDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TransactionID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PaymentID");
+
+                    b.HasIndex("BookingID");
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("User", b =>
                 {
                     b.Property<int>("UserID")
@@ -213,6 +249,12 @@ namespace DATN.Migrations
 
             modelBuilder.Entity("DATN.Model.Booking", b =>
                 {
+                    b.HasOne("DATN.Model.Discount", "Discount")
+                        .WithMany()
+                        .HasForeignKey("DiscountID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DATN.Model.Pitch", "Pitch")
                         .WithMany()
                         .HasForeignKey("PitchID")
@@ -225,20 +267,11 @@ namespace DATN.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Discount");
+
                     b.Navigation("Pitch");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DATN.Model.Payment", b =>
-                {
-                    b.HasOne("DATN.Model.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Booking");
                 });
 
             modelBuilder.Entity("DATN.Model.Pitch", b =>
@@ -256,6 +289,17 @@ namespace DATN.Migrations
                     b.Navigation("ParentPitch");
 
                     b.Navigation("PitchType");
+                });
+
+            modelBuilder.Entity("Payment", b =>
+                {
+                    b.HasOne("DATN.Model.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
                 });
 #pragma warning restore 612, 618
         }

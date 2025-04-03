@@ -54,5 +54,18 @@ namespace DATN.Repositories
                 ((b.StartTime < endTime && b.StartTime >= startTime) || (b.EndTime > startTime && b.EndTime <= endTime))
             );
         }
+        public async Task<decimal> GetRevenueAsync(DateTime startDate, DateTime endDate)
+        {
+            return await _context.Bookings
+                .Where(b => b.BookingDate >= startDate && b.BookingDate <= endDate && b.Status == "Confirmed")
+                .SumAsync(b => b.TotalPrice);
+        }
+        public async Task<int> GetBookingsCountAsync(DateTime startDate, DateTime endDate)
+        {
+            return await _context.Bookings
+                .Where(b => b.BookingDate >= startDate && b.BookingDate <= endDate)
+                .CountAsync();
+        }
+
     }
 }

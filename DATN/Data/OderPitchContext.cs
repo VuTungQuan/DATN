@@ -8,6 +8,7 @@ namespace DATN.Data
         public OderPitchDbContext(DbContextOptions<OderPitchDbContext> options) : base(options) { }
 
         public DbSet<PitchType> PitchTypes { get; set; }
+        public DbSet<Discount> Discounts { get; set; }  
         public DbSet<Pitch> Pitches { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Booking> Bookings { get; set; }

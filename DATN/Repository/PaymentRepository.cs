@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DATN.Data;
 using DATN.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DATN.Repositories
 {
@@ -43,6 +44,33 @@ namespace DATN.Repositories
                 _context.Payments.Remove(payment);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<Payment?> GetPaymentByBookingIdAsync(int bookingId)
+        {
+            return await _context.Payments
+                .Include(p => p.Booking)
+                .FirstOrDefaultAsync(p => p.BookingID == bookingId);
+        }
+
+        public async Task<IActionResult> CompletePayment(int bookingId, string transactionId)
+        {
+            var payment = await GetPaymentByBookingIdAsync(bookingId);
+            if (payment == null)
+            {
+                // Trả về mã lỗi 404 nếu không tìm thấy thanh toán
+                return new NotFoundObjectResult("Payment not found");
+            }
+
+            payment.PaymentStatus = "Paid";
+            payment.TransactionID = transactionId;
+            payment.PaidDate = DateTime.UtcNow;
+            payment.PaidAmount = payment.Booking.TotalPrice;
+
+            await UpdatePaymentAsync(payment);
+
+            // Trả về mã thành công 200 OK và đối tượng thanh toán
+            return new OkObjectResult(payment);
         }
     }
 }
