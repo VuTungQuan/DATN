@@ -18,16 +18,17 @@ namespace DATN.Controllers
             _context = context;
             _authService = authService;
         }
-
-        // Đăng ký tài khoản
+        // Đăng ký
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
+            // Kiểm tra email đã tồn tại chưa
             if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                 return BadRequest("Email đã được sử dụng!");
 
+            // Hash mật khẩu
             user.PasswordHash = _authService.HashPassword(user.PasswordHash);
-            user.Role = "User";
+            
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -42,13 +43,21 @@ namespace DATN.Controllers
             if (user == null || !_authService.VerifyPassword(loginRequest.Password, user.PasswordHash))
                 return Unauthorized("Email hoặc mật khẩu không đúng!");
 
+            // Tạo JWT Token
             var accessToken = _authService.GenerateJwtToken(user);
+
+            // Tạo Refresh Token
             var refreshToken = _authService.GenerateRefreshToken();
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
             await _context.SaveChangesAsync();
 
-            return Ok(new { accessToken, refreshToken });
+            return Ok(new
+            {
+                accessToken,
+                refreshToken,
+                role = user.Role // Trả về vai trò người dùng
+            });
         }
 
         // Refresh Token
