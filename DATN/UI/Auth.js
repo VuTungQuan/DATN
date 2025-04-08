@@ -14,20 +14,19 @@ function cancelRegister() {
 document.getElementById('register-form-content').addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const name = document.getElementById('register-name').value;
+    const fullName = document.getElementById('register-name').value;
     const email = document.getElementById('register-email').value;
-    const phone = document.getElementById('register-phone').value;
-    const password = document.getElementById('register-password').value;
-    const address = document.getElementById('register-address').value;
-    const accountTypeId = 2;
+    const phoneNumber = document.getElementById('register-phone').value;
+    const passwordHash = document.getElementById('register-password').value;
+    const role = "User";
     
     try {
-        const response = await fetch('https://localhost:7074/api/Auth/register', {
+        const response = await fetch('https://localhost:7290/api/Auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, email, phone, password, address, accountTypeId })
+            body: JSON.stringify({ fullName, phoneNumber, email, passwordHash, role })
         });
         const data = await response.json();
         
@@ -58,7 +57,7 @@ document.getElementById('login-form-content').addEventListener('submit', async (
     
     
     try {
-        const response = await fetch('https://localhost:7074/api/Auth/login', {
+        const response = await fetch('https://localhost:7290/api/Auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -113,13 +112,12 @@ function decodeTokenAndRedirect(token) {
     switch (role) {
         case 'Admin':
             //window.location.href = 'http://127.0.0.1:5500/admin/bootstrap-admin-template-free/index.html';
-            window.location.href = 'index.html';
+            window.location.href = 'http://127.0.0.1:5500/admin/index.html';
             break;
-        case 'Customer':
-            window.location.href = 'index.html';
+        case 'User':
+            window.location.href = 'http://127.0.0.1:5500/index.html';
             break;
         default:
-            window.location.href = 'index.html';
             break;
     }
 }

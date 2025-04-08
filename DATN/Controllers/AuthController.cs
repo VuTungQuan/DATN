@@ -18,21 +18,26 @@ namespace DATN.Controllers
             _context = context;
             _authService = authService;
         }
-        // Đăng ký
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] User user)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            // Kiểm tra email đã tồn tại chưa
-            if (await _context.Users.AnyAsync(u => u.Email == user.Email))
+            if (await _context.Users.AnyAsync(u => u.Email == request.Email))
                 return BadRequest("Email đã được sử dụng!");
 
-            // Hash mật khẩu
-            user.PasswordHash = _authService.HashPassword(user.PasswordHash);
-            
+            var user = new User
+            {
+                FullName = request.FullName,
+                Email = request.Email,
+                PhoneNumber = request.PhoneNumber,
+                PasswordHash = _authService.HashPassword(request.PasswordHash),
+                CreatedAt = DateTime.Now,
+                Role = request.Role
+            };
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return Ok("Đăng ký thành công!");
+            return Ok(new { message = "Đăng ký thành công!" });
         }
 
         // Đăng nhập
@@ -89,5 +94,13 @@ namespace DATN.Controllers
     public class RefreshRequest
     {
         public string RefreshToken { get; set; }
+    }
+    public class RegisterRequest
+    {
+        public string FullName { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
+        public string Role { get; set; } 
     }
 }

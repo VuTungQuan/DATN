@@ -32,6 +32,15 @@ builder.Services.AddCors(options => options.AddPolicy("MyPolicy", builder =>
                  .AllowAnyHeader()
     )
 );
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://127.0.0.1:5500")  // Cho phép yêu cầu từ địa chỉ này
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 // Cấu hình JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]);
@@ -96,7 +105,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("MyPolicy");
+app.UseCors("AllowLocalhost");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
