@@ -509,7 +509,18 @@
             $('#register-form').hide();
             $('#login-form').show();
         }
-        
+        function toggleUserMenu() {
+            const userMenu = document.getElementById('user-menu'); // Lấy phần tử menu người dùng
+
+            // Kiểm tra xem phần tử menu người dùng có tồn tại không
+            if (userMenu) {
+                // Thực hiện thao tác hiển thị hoặc ẩn menu
+                userMenu.style.display = (userMenu.style.display === 'block') ? 'none' : 'block';
+            } else {
+                console.log('User menu not found!');
+            }
+        }
+
 
         // Xử lý gửi form đăng ký
         document.getElementById('register-form-content').addEventListener('submit', async (e) => {
@@ -604,7 +615,7 @@
                     window.location.href = 'http://127.0.0.1:5500/admin/index.html'; // Trang dành cho Admin
                     break;
                 case 'User':
-                    window.location.href = 'http://127.0.0.1:5500/index.html'; // Trang dành cho User
+                    window.location.href = 'http://127.0.0.1:5500/index_next.html'; // Trang dành cho User
                     break;
                 default:
                     window.location.href = '/'; // Trang mặc định

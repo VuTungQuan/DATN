@@ -31,6 +31,15 @@ namespace DATN.Controllers
             if (user == null) return NotFound();
             return Ok(user);
         }
+        [HttpGet("email/{email}")]
+        public async Task<ActionResult<User>> GetUserByEmail(string email)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user == null) return NotFound();
+            return Ok(user);
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> PostUser(User user)
         {
