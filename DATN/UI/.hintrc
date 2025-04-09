@@ -24,6 +24,8 @@
           "user-select"
         ]
       }
-    ]
+    ],
+    "disown-opener": "off",
+    "meta-viewport": "off"
   }
 }
