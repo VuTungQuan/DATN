@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>GURU Able - Free Lite Admin Template </title>
+    <title> Admin Dashbroad </title>
     <!-- HTML5 Shim and Respond.js IE9 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -148,36 +148,37 @@
                                     </li>
                                 </ul>
                             </li>
+                            <!-- Header phần tài khoản -->
                             <li class="user-profile header-notification">
                                 <a href="#!">
                                     <img src="assets/images/avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
-                                    <span>Admin</span>
+                                    <span id="userDropdown">Admin</span>
                                     <i class="ti-angle-down"></i>
                                 </a>
-                                <ul class="show-notification profile-notification">
+                                <ul class="show-notification profile-notification" id="user-menu">
                                     <li>
                                         <a href="#!">
-                                            <i class="ti-settings"></i> Settings
+                                            <i class="ti-settings"></i> Cài đặt
                                         </a>
                                     </li>
                                     <li>
                                         <a href="#">
-                                            <i class="ti-user"></i> Profile
+                                            <i class="ti-user"></i> Thông tin cá nhân
                                         </a>
                                     </li>
                                     <li>
                                         <a href="#">
-                                            <i class="ti-email"></i> My Messages
+                                            <i class="ti-email"></i> Tin nhắn của tôi
                                         </a>
                                     </li>
                                     <li>
                                         <a href="#">
-                                            <i class="ti-lock"></i> Lock Screen
+                                            <i class="ti-lock"></i> Màn hình khóa
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="auth-normal-sign-in.html">
-                                            <i class="ti-layout-sidebar-left"></i> Logout
+                                        <a href="../index.html">
+                                            <i class="ti-layout-sidebar-left"></i> Đăng xuất
                                         </a>
                                     </li>
                                 </ul>
@@ -191,25 +192,6 @@
                     <nav class="pcoded-navbar">
                         <div class="sidebar_toggle"><a href="#"><i class="icon-close icons"></i></a></div>
                         <div class="pcoded-inner-navbar main-menu">
-                            <div class="">
-                                <div class="main-menu-header">
-                                    <img class="img-40 img-radius" src="assets/images/avatar-4.jpg" alt="User-Profile-Image">
-                                    <div class="user-details">
-                                        <span>John Doe</span>
-                                        <span id="more-details">UX Designer<i class="ti-angle-down"></i></span>
-                                    </div>
-                                </div>
-
-                                <div class="main-menu-content">
-                                    <ul>
-                                        <li class="more-details">
-                                            <a href="#"><i class="ti-user"></i>View Profile</a>
-                                            <a href="#!"><i class="ti-settings"></i>Settings</a>
-                                            <a href="auth-normal-sign-in.html"><i class="ti-layout-sidebar-left"></i>Logout</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
                             <div class="pcoded-search">
                                 <span class="searchbar-toggle">  </span>
                                 <div class="pcoded-search-box ">
@@ -266,6 +248,93 @@
                             </ul>
                         </div>
                     </nav>
+                    <div class="pcoded-content">
+                        <div class="pcoded-inner-content">
+                            <div class="main-body">
+                                <div class="page-wrapper">
+                                    <div class="page-body">
+                                        <div class="row">                                    
+                                            <!-- Statestics Start -->
+                                            <div class="container mt-5">
+                                                <h2>Quản lý Tài Khoản</h2>
+                                                <!-- Thêm tài khoản -->
+                                                <div class="mb-3">
+                                                    <button class="btn btn-success" data-toggle="modal" data-target="#addAccountModal">Thêm Tài Khoản</button>
+                                                </div>
+                                                
+                                                <!-- Danh sách tài khoản -->
+                                                <table class="table table-bordered" id="accountTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>UserID</th>
+                                                            <th>Họ và tên</th>
+                                                            <th>Số điện thoại</th>
+                                                            <th>Vai trò</th>
+                                                            <th>Chức năng</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="userTableBody">
+                                                        <!-- Dữ liệu người dùng sẽ được chèn vào đây -->
+                                                    </tbody>
+                                                </table>
+                                                
+                                                <!-- Phân trang -->
+                                                <div>
+                                                    <button id="previousPage" onclick="loadPage(currentPage - 1)">Previous</button>
+                                                    <button id="nextPage" onclick="loadPage(currentPage + 1)">Next</button>
+                                                </div>
+                                            </div>
+                                        
+                                            <!-- Modal Thêm tài khoản -->
+                                            <div class="modal fade" id="addAccountModal" tabindex="-1" role="dialog" aria-labelledby="addAccountModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="addAccountModalLabel">Thêm Tài Khoản</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form id="addAccountForm">
+                                                                <div class="form-group">
+                                                                    <label for="fullName">Họ và tên</label>
+                                                                    <input type="text" class="form-control" id="fullName" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="email">Email</label>
+                                                                    <input type="email" class="form-control" id="email" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="password">Mật khẩu</label>
+                                                                    <input type="password" class="form-control" id="password" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="role">Vai trò</label>
+                                                                    <select class="form-control" id="role">
+                                                                        <option value="User">User</option>
+                                                                        <option value="Admin">Admin</option>
+                                                                    </select>
+                                                                </div>
+                                                                <button type="submit" class="btn btn-primary">Lưu tài khoản</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="styleSelector">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -302,6 +371,214 @@ var nav = $('.fixed-button');
      }
  });
 </script>
+<script>
+    // Kiểm tra xem người dùng đã đăng nhập chưa khi vào trang admin
+    document.addEventListener('DOMContentLoaded', function () {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decodedToken = decodeToken(token);
+            const role = decodedToken.role;
+
+            if (role === 'Admin') {
+                // Lấy thông tin admin từ API và cập nhật giao diện
+                const email = decodedToken.email;
+                getUserInfoByEmail(email);
+            } else {
+                window.location.href = 'http://127.0.0.1:5500/index.html'; // Chuyển hướng nếu không phải admin
+            }
+        } else {
+            window.location.href = 'http://127.0.0.1:5500/login.html'; // Chuyển hướng đến trang đăng nhập nếu không có token
+        }
+    });
+
+    // Hàm giải mã JWT
+    function decodeToken(token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+    }
+
+    // Hàm lấy thông tin người dùng từ email sau khi đăng nhập
+    async function getUserInfoByEmail(email) {
+        const encodedEmail = encodeURIComponent(email); // Mã hóa email để dùng trong URL
+        const response = await fetch(`https://localhost:7290/api/Users/email/${encodedEmail}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm token vào header để xác thực
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const userData = await response.json();
+            updateUserUI(userData); // Cập nhật giao diện với thông tin người dùng
+        } else {
+            alert('Không thể lấy thông tin người dùng.');
+        }
+    }
+    // Cập nhật giao diện UI sau khi lấy thông tin người dùng
+    function updateUserUI(user) {
+            const userDropdown = document.getElementById('userDropdown');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+    
+            // Cập nhật tên đầy đủ của người dùng vào dropdown
+            userDropdown.innerText = user.fullName;  // Gán tên đầy đủ vào dropdown
+            
+            // Thay đổi các mục menu để hiển thị các tùy chọn cho người dùng
+            dropdownMenu.innerHTML = `
+                <button class="dropdown-item" onclick="viewProfile()">Thông tin cá nhân</button>
+                <button class="dropdown-item" onclick="viewBookings()">Lịch sử đặt sân</button>
+                <button class="dropdown-item" onclick="logout()">Đăng xuất</button>
+            `;
+            // Hiển thị menu người dùng sau khi đăng nhập
+            document.getElementById('user-menu').style.display = 'block';
+        }
+    
+</script>
+
+<script>
+    let currentPage = 1;
+let pageSize = 10;
+let accounts = []; // Dữ liệu tài khoản lấy từ API
+
+document.addEventListener('DOMContentLoaded', function () {
+    const token = localStorage.getItem('token');
+    if (token) {
+        const decodedToken = decodeToken(token);
+        const role = decodedToken.role;
+
+        if (role === 'Admin') {
+            // Lấy danh sách tài khoản từ API
+            loadPage(currentPage);
+        } else {
+            window.location.href = 'http://127.0.0.1:5500/index.html'; // Chuyển hướng nếu không phải admin
+        }
+    } else {
+        window.location.href = 'http://127.0.0.1:5500/login.html'; // Chuyển hướng đến trang đăng nhập nếu không có token
+    }
+});
+
+// Hàm giải mã JWT
+function decodeToken(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
+
+// Hàm lấy danh sách tài khoản từ API và cập nhật giao diện
+async function loadPage(page) {
+    try {
+        const response = await fetch(`https://localhost:7290/api/Users?page=${page}&pageSize=${pageSize}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            accounts = await response.json(); // Dữ liệu tài khoản trả về từ API
+
+            // Cập nhật danh sách tài khoản trong bảng
+            updateAccountTable(accounts);
+
+            // Cập nhật phân trang
+            updatePagination(page, accounts.length);
+        } else {
+            alert('Không thể lấy danh sách tài khoản.');
+        }
+    } catch (error) {
+        console.error('Lỗi khi gọi API:', error);
+        alert('Đã xảy ra lỗi khi tải danh sách tài khoản.');
+    }
+}
+
+// Cập nhật bảng với danh sách tài khoản
+function updateAccountTable(accounts) {
+    const tableBody = document.getElementById('userTableBody');
+    tableBody.innerHTML = '';  // Xóa các dòng cũ
+
+    accounts.forEach(account => {
+        const row = document.createElement('tr');
+
+        // Thêm các cột dữ liệu
+        row.innerHTML = `
+            <td>${account.userID}</td>
+            <td>${account.fullName}</td>
+            <td>${account.phoneNumber}</td>
+            <td>${account.role}</td>
+            <td>
+                <button class="btn btn-warning" onclick="editAccount(${account.userID})">Sửa</button>
+                <button class="btn btn-danger" onclick="deleteAccount(${account.userID})">Xóa</button>
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+}
+
+// Cập nhật phân trang
+function updatePagination(page, totalItems) {
+    const previousPageButton = document.getElementById('previousPage');
+    const nextPageButton = document.getElementById('nextPage');
+    const totalPages = Math.ceil(totalItems / pageSize); // Số trang
+
+    previousPageButton.disabled = page <= 1;
+    nextPageButton.disabled = page >= totalPages;
+
+    currentPage = page;
+}
+
+// Hàm phân trang - chuyển đến trang trước đó hoặc tiếp theo
+function changePage(direction) {
+    const newPage = currentPage + direction;
+
+    if (newPage >= 1) {
+        loadPage(newPage);  // Tải lại dữ liệu với trang mới
+    }
+}
+
+// Hàm sửa tài khoản (ví dụ: mở form sửa tài khoản)
+function editAccount(userID) {
+    alert('Chức năng sửa tài khoản chưa được triển khai!');
+}
+
+// Hàm xóa tài khoản
+async function deleteAccount(userID) {
+    const confirmed = confirm('Bạn có chắc muốn xóa tài khoản này?');
+    if (confirmed) {
+        try {
+            const response = await fetch(`https://localhost:7290/api/Users/${userID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert('Tài khoản đã được xóa');
+                loadPage(currentPage);  // Tải lại trang để cập nhật danh sách
+            } else {
+                alert('Không thể xóa tài khoản.');
+            }
+        } catch (error) {
+            console.error('Lỗi khi gọi API:', error);
+            alert('Đã xảy ra lỗi khi xóa tài khoản.');
+        }
+    }
+}
+
+</script>
+
 </body>
 
 </html>
