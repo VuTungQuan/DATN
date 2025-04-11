@@ -26,10 +26,14 @@ namespace DATN.Repositories
         }
         public async Task<User?> GetUserByEmailAsync(string email)
         {
-            return await _context.Users
-                                 .FirstOrDefaultAsync(u => u.Email == email); 
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
-
+        public async Task<IEnumerable<User>> GetUsersByEmailContainsAsync(string searchTerm)
+        {
+            return await _context.Users
+                                 .Where(u => u.Email.Contains(searchTerm))  
+                                 .ToListAsync();
+        }
 
         public async Task AddUserAsync(User user)
         {

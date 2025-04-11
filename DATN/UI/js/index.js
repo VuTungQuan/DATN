@@ -114,7 +114,7 @@
 
         // Hàm hiển thị thông tin cá nhân của người dùng
         function viewProfile() {
-            alert('Hiển thị thông tin cá nhân của người dùng');
+            window.location.href = '../account.html';
         }
 
         // Hàm hiển thị lịch sử đặt sân của người dùng

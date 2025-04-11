@@ -71,10 +71,13 @@
                 </form>
             </div>
             <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My Account</button>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <button class="dropdown-item" type="button" onclick="viewAccount()">Xem tài khoản</button>
-                    <button class="dropdown-item" type="button" onclick="logout()">Đăng xuất</button>
+                <button type="button" class="btn btn-sm btn-light dropdown-toggle" id="userDropdown" data-toggle="dropdown">
+                    Tài khoản
+                </button>
+                <div class="dropdown-menu" aria-labelledby="userDropdown" id="dropdownMenu">
+                    <a class="dropdown-item" href="#" onclick="viewProfile()">Thông tin cá nhân</a>
+                    <a class="dropdown-item" href="#" onclick="viewBookings()">Lịch sử đặt sân</a>
+                    <a class="dropdown-item" href="#" onclick="logout()">Đăng xuất</a>
                 </div>
             </div>
         </div>
@@ -99,6 +102,7 @@
                             <a href="contact.html" class="nav-item nav-link">Liên hệ</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
+                            
                             <a href="" class="btn px-0">
                                 <i class="fas fa-heart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
@@ -136,7 +140,7 @@
                     <h3 class="mb-3">Thông tin tài khoản</h3>
                     <div class="mb-3">
                         <label class="form-label"><strong>Tên:</strong></label>
-                        <span id="account-name"></span>
+                        <span id="account-name"></span> <!-- Tên người dùng sẽ hiển thị ở đây -->
                     </div>
                     <div class="mb-3">
                         <label class="form-label"><strong>Email:</strong></label>
@@ -146,22 +150,19 @@
                         <label class="form-label"><strong>Số điện thoại:</strong></label>
                         <span id="account-phone"></span>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label"><strong>Địa chỉ:</strong></label>
-                        <span id="account-address"></span>
-                    </div>
-                    
-                    
+
+
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-primary" onclick="showChangePasswordModal()">Đổi mật khẩu</button>
                         <button class="btn btn-warning" onclick="showEditAccountModal()">Sửa tài khoản</button>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
     </div>
     <!-- Account Information End -->
+
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
@@ -198,33 +199,31 @@
     </div>
     <!-- Change Password Modal End -->
 
-    <!-- Edit Account Modal Start -->
-    <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+
+    <!-- Modal chỉnh sửa tài khoản -->
+    <div class="modal fade" id="editAccountModal" tabindex="-1" role="dialog" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editAccountModalLabel">Sửa tài khoản</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="editAccountModalLabel">Chỉnh sửa Tài Khoản</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="edit-account-form">
+                    <form id="editAccountForm">
+                        <input type="hidden" id="editUserID">
                         <div class="form-group">
-                            <label for="edit-account-name">Tên</label>
-                            <input type="text" class="form-control" id="edit-account-name" required>
+                            <label for="editFullName">Họ và tên</label>
+                            <input type="text" class="form-control" id="editFullName" required>
                         </div>
                         <div class="form-group">
-                            <label for="edit-account-email">Email</label>
-                            <input type="email" class="form-control" id="edit-account-email" required>
+                            <label for="editEmail">Email</label>
+                            <input type="email" class="form-control" id="editEmail" required>
                         </div>
                         <div class="form-group">
-                            <label for="edit-account-phone">Số điện thoại</label>
-                            <input type="tel" class="form-control" id="edit-account-phone" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-account-address">Địa chỉ</label>
-                            <input type="text" class="form-control" id="edit-account-address" required>
+                            <label for="editPhoneNumber">Số điện thoại</label>
+                            <input type="text" class="form-control" id="editPhoneNumber" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                     </form>
@@ -232,7 +231,6 @@
             </div>
         </div>
     </div>
-    <!-- Edit Account Modal End -->
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -244,130 +242,207 @@
     <script src="js/main.js"></script>
     
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const userEmail = localStorage.getItem('userEmail');
-            
-            if (userEmail) {
-                try {
-                    const response = await fetch(`https://localhost:7074/api/Account/GetByEmail/${userEmail}`);
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        // Populate the account information fields
-                        document.getElementById('account-name').textContent = data.name;
-                        document.getElementById('account-email').textContent = data.email;
-                        document.getElementById('account-phone').textContent = data.phone;
-                        document.getElementById('account-address').textContent = data.address;
-                        
-                        // Pre-fill the edit form with the fetched data
-                        document.getElementById('edit-account-name').value = data.name;
-                        document.getElementById('edit-account-email').value = data.email;
-                        document.getElementById('edit-account-phone').value = data.phone;
-                        document.getElementById('edit-account-address').value = data.address;
-
-                        // Store the user's account data for later use (e.g., when updating)
-                        localStorage.setItem('userAccountData', JSON.stringify(data));
-                    } else {
-                        alert('Không thể tải thông tin tài khoản.');
-                    }
-                } catch (error) {
-                    alert('Đã xảy ra lỗi khi tải thông tin tài khoản.');
-                }
-            } else {
-                alert('Bạn chưa đăng nhập.');
-                window.location.href = 'login.html'; // Redirect to login if no email is found
-            }
-        });
-        // Handle password change
-        document.getElementById('change-password-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const currentPassword = document.getElementById('current-password').value;
-            const newPassword = document.getElementById('new-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-
-            const userAccountData = JSON.parse(localStorage.getItem('userAccountData'));
-
-            if (newPassword !== confirmPassword) {
-                alert('Mật khẩu mới và xác nhận mật khẩu không khớp.');
-                return;
-            }
-
-            if (currentPassword !== userAccountData.password) {
-                alert('Mật khẩu hiện tại không đúng.');
-                return;
-            }
-
-            try {
-                const response = await fetch('https://localhost:7074/api/Account/UpdateAccount', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        ...userAccountData,
-                        password: newPassword
-                    })
-                });
-
-                if (response.ok) {
-                    alert('Đổi mật khẩu thành công.');
-                    $('#changePasswordModal').modal('hide');
-                } else {
-                    alert('Đã xảy ra lỗi khi đổi mật khẩu.');
-                }
-            } catch (error) {
-                alert('Đã xảy ra lỗi khi đổi mật khẩu.');
-            }
-        });
-
-        // Handle account update
-        document.getElementById('edit-account-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const name = document.getElementById('edit-account-name').value;
-            const email = document.getElementById('edit-account-email').value;
-            const phone = document.getElementById('edit-account-phone').value;
-            const address = document.getElementById('edit-account-address').value;
-
-            const userAccountData = JSON.parse(localStorage.getItem('userAccountData'));
-
-            try {
-                const response = await fetch('https://localhost:7074/api/Account/UpdateAccount', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        ...userAccountData,
-                        name,
-                        email,
-                        phone,
-                        address
-                    })
-                });
-
-                if (response.ok) {
-                    alert('Cập nhật tài khoản thành công.');
-                    $('#editAccountModal').modal('hide');
-                    // Refresh the displayed account information
-                    location.reload();
-                } else {
-                    alert('Đã xảy ra lỗi khi cập nhật tài khoản.');
-                }
-            } catch (error) {
-                alert('Đã xảy ra lỗi khi cập nhật tài khoản.');
-            }
-        });
-        // Function to show the Change Password Modal
-        function showChangePasswordModal() {
-            $('#changePasswordModal').modal('show');
-        }
-
-        // Function to show the Edit Account Modal
         function showEditAccountModal() {
             $('#editAccountModal').modal('show');
         }
+        function showChangePasswordModal() {
+            $('#changePasswordModal').modal('show');
+        }
+        // Hàm để lấy thông tin người dùng từ localStorage và cập nhật tên trong menu
+        document.addEventListener("DOMContentLoaded", function () {
+            const user = JSON.parse(localStorage.getItem('user')); // Lấy thông tin người dùng từ localStorage
+
+            if (user) {
+                // Cập nhật tên người dùng vào dropdown
+                const userDropdown = document.getElementById('userDropdown');
+                userDropdown.innerText = user.fullName || 'Chưa có tên';  // Gán tên người dùng vào dropdown
+            } else {
+                // Nếu không có thông tin người dùng, chuyển hướng về trang đăng nhập
+                window.location.href = 'http://127.0.0.1:5500/index.html'; // Hoặc trang khác nếu người dùng chưa đăng nhập
+            }
+        });
+
+        // Xử lý khi đăng xuất
+        function logout() {
+            localStorage.removeItem('token');  
+            localStorage.removeItem('user');   
+            window.location.href = 'http://127.0.0.1:5500/index.html'; 
+        }
+
+        // Hàm hiển thị thông tin cá nhân của người dùng
+        function viewProfile() {
+            window.location.href = 'account.html'; 
+        }
+
+        // Hàm hiển thị lịch sử đặt sân của người dùng
+        function viewBookings() {
+            alert('Hiển thị lịch sử đặt sân');
+        }
+
+        async function getUserInfoByEmail(email) {
+            const encodedEmail = encodeURIComponent(email); // Mã hóa email để dùng trong URL
+            const response = await fetch(`https://localhost:7290/api/Users/email/${encodedEmail}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm token vào header để xác thực
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                // Lấy dữ liệu người dùng từ response
+                const userData = await response.json();
+                
+                // Lưu thông tin người dùng vào localStorage
+                localStorage.setItem('user', JSON.stringify(userData)); // Lưu thông tin người dùng để sử dụng sau này
+
+                // Cập nhật giao diện UI với thông tin người dùng
+                updateUserUI(userData); 
+
+            } else {
+                alert('Không thể lấy thông tin người dùng.');
+            }
+        }
+            // Hàm gọi khi trang account.html được tải
+            document.addEventListener("DOMContentLoaded", function () {
+                const user = JSON.parse(localStorage.getItem('user')); // Lấy thông tin người dùng từ localStorage
+
+                // Kiểm tra xem có thông tin người dùng không
+                if (user) {
+                    // Cập nhật thông tin người dùng vào UI
+                    document.getElementById('account-name').innerText = user.fullName || 'Chưa có tên';
+                    document.getElementById('account-email').innerText = user.email || 'Chưa có email';
+                    document.getElementById('account-phone').innerText = user.phoneNumber || 'Chưa có số điện thoại';
+                } else {
+                    // Nếu không có thông tin người dùng, chuyển hướng về trang đăng nhập
+                    window.location.href = 'http://127.0.0.1:5500/index.html'; // Hoặc trang khác nếu người dùng chưa đăng nhập
+                }
+            });
+            // Hàm chỉnh sửa tài khoản khi nhấn "Sửa"
+            async function editAccount(userID) {
+                try {
+                    // Gửi yêu cầu GET để lấy thông tin tài khoản
+                    const response = await fetch(`https://localhost:7290/api/Users/${userID}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const user = await response.json();
+
+                        // Điền dữ liệu vào modal chỉnh sửa
+                        document.getElementById('editUserID').value = user.userID;
+                        document.getElementById('editFullName').value = user.fullName;
+                        document.getElementById('editEmail').value = user.email;
+                        document.getElementById('editPhoneNumber').value = user.phoneNumber;
+                        document.getElementById('editPassword').value = user.passwordHash; // Mật khẩu không nên hiển thị
+                        document.getElementById('editRole').value = user.role;
+                        // Hiển thị modal
+                        $('#editAccountModal').modal('show');
+                    } else {
+                        alert('Không thể lấy thông tin tài khoản.');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi lấy thông tin tài khoản:', error);
+                    alert('Đã xảy ra lỗi khi lấy thông tin tài khoản.');
+                }
+            }
+
+            
+            
+            // Ví dụ khi thực hiện thao tác submit form
+            document.getElementById('editAccountForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                // Lấy giá trị từ form
+                const fullName = document.getElementById('editFullName').value;
+                const email = document.getElementById('editEmail').value;
+                const phoneNumber = document.getElementById('editPhoneNumber').value;
+                const role = document.getElementById('editRole').value;
+                const passwordHash = document.getElementById('editPassword').value;
+                const userID = document.getElementById('editUserID').value;
+
+
+
+                const updatedUser = {
+                    userID: parseInt(userID),
+                    fullName,
+                    email,
+                    passwordHash,
+                    phoneNumber,
+                    role
+                };
+
+                try {
+                    const response = await fetch(`https://localhost:7290/api/Users/${userID}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedUser)
+                    });
+
+                    if (response.ok) {
+                        alert('Cập nhật tài khoản thành công!');
+                        $('#editAccountModal').modal('hide');
+                        fetchAccounts(currentPage); // Cập nhật lại danh sách tài khoản
+                    } else {
+                        const errorText = await response.text();
+                        alert('Cập nhật tài khoản không thành công: ' + errorText);
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi cập nhật tài khoản:', error);
+                    alert('Đã xảy ra lỗi khi cập nhật tài khoản.');
+                }
+            });
+
+            // Đổi mật khẩu
+            document.getElementById('change-password-form').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                // Kiểm tra mật khẩu mới và xác nhận mật khẩu có khớp không
+                if (newPassword !== confirmPassword) {
+                    alert('Mật khẩu mới và xác nhận mật khẩu không khớp!');
+                    return;
+                }
+
+                const passwordData = {
+                    currentPassword: currentPassword,
+                    newPassword: newPassword
+                };
+
+                const userID = localStorage.getItem('userID'); // Lấy userID từ localStorage hoặc token
+
+                try {
+                    const response = await fetch(`https://localhost:7290/api/Users/change-password/${userID}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(passwordData)
+                    });
+
+                    if (response.ok) {
+                        alert('Đổi mật khẩu thành công!');
+                        $('#changePasswordModal').modal('hide'); // Đóng modal
+                    } else {
+                        const errorText = await response.text();
+                        alert('Đổi mật khẩu không thành công: ' + errorText);
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi đổi mật khẩu:', error);
+                    alert('Đã xảy ra lỗi khi đổi mật khẩu.');
+                }
+            });
 
 
 
