@@ -49,7 +49,7 @@
             if (response.ok) {
                 // Lưu token vào localStorage
                 localStorage.setItem('token', data.accessToken); // Lưu JWT token để sử dụng sau này
-
+                
                 // Sau khi đăng nhập thành công, lấy thông tin người dùng
                 getUserInfoByEmail(email); // Lấy thông tin người dùng qua email
             } else {
@@ -78,7 +78,7 @@
                 
                 // Lưu thông tin người dùng vào localStorage
                 localStorage.setItem('user', JSON.stringify(userData)); // Lưu thông tin người dùng để sử dụng sau này
-
+                localStorage.setItem('userID', userData.userID); // Lưu userID vào localStorage
                 updateUserUI(userData); 
 
                 

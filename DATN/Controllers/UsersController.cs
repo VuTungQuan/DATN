@@ -110,6 +110,24 @@ namespace DATN.Controllers
         {
             if (id != user.UserID) return BadRequest();
 
+
+            try
+            {
+                await _userRepository.UpdateUserAsync(user);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (ex) here
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut("hash/{id}")]
+        public async Task<IActionResult> UpdateUserHash(int id, [FromBody] User user)
+        {
+            if (id != user.UserID) return BadRequest();
+
             // Mã hóa mật khẩu nếu có thay đổi
             if (!string.IsNullOrEmpty(user.PasswordHash))
             {
