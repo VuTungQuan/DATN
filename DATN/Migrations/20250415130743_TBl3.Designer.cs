@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DATN.Migrations
 {
     [DbContext(typeof(OderPitchDbContext))]
-    [Migration("20250329035909_tbl")]
-    partial class tbl
+    [Migration("20250415130743_TBl3")]
+    partial class TBl3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -113,19 +113,11 @@ namespace DATN.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PitchID"), 1L, 1);
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsCombined")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -141,9 +133,11 @@ namespace DATN.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
 
-                    b.HasKey("PitchID");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("ParentPitchID");
+                    b.HasKey("PitchID");
 
                     b.HasIndex("PitchTypeID");
 
@@ -158,17 +152,20 @@ namespace DATN.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PitchTypeID"), 1L, 1);
 
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PitchTypeID");
 
                     b.ToTable("PitchTypes");
                 });
 
-            modelBuilder.Entity("DATN.Model.User", b =>
+            modelBuilder.Entity("User", b =>
                 {
                     b.Property<int>("UserID")
                         .ValueGeneratedOnAdd()
@@ -197,6 +194,12 @@ namespace DATN.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiry")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -215,7 +218,7 @@ namespace DATN.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DATN.Model.User", "User")
+                    b.HasOne("User", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -239,17 +242,11 @@ namespace DATN.Migrations
 
             modelBuilder.Entity("DATN.Model.Pitch", b =>
                 {
-                    b.HasOne("DATN.Model.Pitch", "ParentPitch")
-                        .WithMany()
-                        .HasForeignKey("ParentPitchID");
-
                     b.HasOne("DATN.Model.PitchType", "PitchType")
                         .WithMany()
                         .HasForeignKey("PitchTypeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ParentPitch");
 
                     b.Navigation("PitchType");
                 });

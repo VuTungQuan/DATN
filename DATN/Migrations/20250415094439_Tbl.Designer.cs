@@ -4,6 +4,7 @@ using DATN.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DATN.Migrations
 {
     [DbContext(typeof(OderPitchDbContext))]
-    partial class OderPitchDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250415094439_Tbl")]
+    partial class Tbl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,7 +127,7 @@ namespace DATN.Migrations
                     b.Property<int?>("ParentPitchID")
                         .HasColumnType("int");
 
-                    b.Property<int>("PitchTypeID")
+                    b.Property<int?>("PitchTypeID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -150,13 +152,14 @@ namespace DATN.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PitchTypeID"), 1L, 1);
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("IMageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("PitchTypeID");
 
@@ -242,9 +245,7 @@ namespace DATN.Migrations
                 {
                     b.HasOne("DATN.Model.PitchType", "PitchType")
                         .WithMany()
-                        .HasForeignKey("PitchTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PitchTypeID");
 
                     b.Navigation("PitchType");
                 });

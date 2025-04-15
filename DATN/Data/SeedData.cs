@@ -17,13 +17,7 @@ namespace DATN.Data
                 new PitchType { PitchTypeID = 3, Name = "Sân 11" }
             );
 
-            // Seed data for Pitches
-            modelBuilder.Entity<Pitch>().HasData(
-                new Pitch { PitchID = 1, Name = "Sân 1", PitchTypeID = 1, Location = "Khu A", Price = 200000, IsCombined = false },
-                new Pitch { PitchID = 2, Name = "Sân 2", PitchTypeID = 1, Location = "Khu A", Price = 200000, IsCombined = false },
-                new Pitch { PitchID = 3, Name = "Sân 7-1", PitchTypeID = 2, Location = "Khu B", Price = 350000, IsCombined = true, ParentPitchID = 1 },
-                new Pitch { PitchID = 4, Name = "Sân 11-1", PitchTypeID = 3, Location = "Khu C", Price = 500000, IsCombined = false }
-            );
+            
 
             // Seed data for Users
             modelBuilder.Entity<User>().HasData(

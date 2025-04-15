@@ -24,6 +24,7 @@ builder.Services.AddScoped<IPitchRepository, PitchRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPitchTypeRepository, PitchTypeRepository>();
 builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddCors(options => options.AddPolicy("MyPolicy", builder =>
@@ -110,7 +111,7 @@ app.UseCors("AllowLocalhost");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseStaticFiles();
 app.MapControllers();
 
 app.Run();

@@ -1,16 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DATN.Model
 {
     public class PitchType
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public int PitchTypeID { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string Name { get; set; } = string.Empty; // Sân 5, Sân 7, Sân 11
-
+        public string Name { get; set; }
+        public string? ImageUrl { get; set; }
     }
-  
 }

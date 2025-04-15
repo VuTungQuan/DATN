@@ -1,5 +1,6 @@
 ﻿using DATN.Model;
 
+
 namespace DATN.Repositories
 {
     public interface IPitchRepository
@@ -9,5 +10,6 @@ namespace DATN.Repositories
         Task AddPitchAsync(Pitch pitch);
         Task UpdatePitchAsync(Pitch pitch);
         Task DeletePitchAsync(int id);
+        Task<Pitch?> GetPitchByNameAsync(string name);
     }
 }

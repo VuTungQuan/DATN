@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DATN.Migrations
 {
-    public partial class tbl : Migration
+    public partial class Tbl : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,7 +15,8 @@ namespace DATN.Migrations
                 {
                     PitchTypeID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IMageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,7 +34,9 @@ namespace DATN.Migrations
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshTokenExpiry = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -47,28 +50,21 @@ namespace DATN.Migrations
                     PitchID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PitchTypeID = table.Column<int>(type: "int", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsCombined = table.Column<bool>(type: "bit", nullable: false),
                     ParentPitchID = table.Column<int>(type: "int", nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    PitchTypeID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pitches", x => x.PitchID);
                     table.ForeignKey(
-                        name: "FK_Pitches_Pitches_ParentPitchID",
-                        column: x => x.ParentPitchID,
-                        principalTable: "Pitches",
-                        principalColumn: "PitchID");
-                    table.ForeignKey(
                         name: "FK_Pitches_PitchTypes_PitchTypeID",
                         column: x => x.PitchTypeID,
                         principalTable: "PitchTypes",
-                        principalColumn: "PitchTypeID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "PitchTypeID");
                 });
 
             migrationBuilder.CreateTable(
@@ -142,11 +138,6 @@ namespace DATN.Migrations
                 name: "IX_Payments_BookingID",
                 table: "Payments",
                 column: "BookingID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Pitches_ParentPitchID",
-                table: "Pitches",
-                column: "ParentPitchID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Pitches_PitchTypeID",

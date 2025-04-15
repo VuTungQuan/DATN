@@ -154,11 +154,11 @@
                     </div>
 
 
-                    <div class="d-flex justify-content-between">
+                    
+<div class="d-flex justify-content-between">
                         <button class="btn btn-primary" onclick="showChangePasswordModal()">Đổi mật khẩu</button>
                         <button class="btn btn-warning" onclick="showEditAccountModal()">Sửa tài khoản</button>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -344,8 +344,7 @@
                 document.getElementById('account-ID').innerText = user.userID || 'Chưa có ID'; // Hiển thị ID người dùng
                 document.getElementById('account-name').innerText = user.fullName || 'Chưa có tên';
                 document.getElementById('account-email').innerText = user.email || 'Chưa có email';
-                document.getElementById('account-phone').innerText = user.phoneNumber || 'Chưa có số điện thoại';
-                
+                document.getElementById('account-phone').innerText = user.phoneNumber || 'Chưa có số điện thoại';  
             } else {
                 // Nếu không có thông tin người dùng, chuyển hướng về trang đăng nhập
                 window.location.href = 'http://127.0.0.1:5500/index.html'; // Hoặc trang khác nếu người dùng chưa đăng nhập
@@ -390,8 +389,6 @@
             }
         }
 
-
-        // Ví dụ khi thực hiện thao tác submit form
         // Thực hiện thao tác submit form để sửa tài khoản
         document.getElementById('editAccountForm').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -401,7 +398,7 @@
             const email = user.email; // Không cho phép thay đổi email
             const phoneNumber = document.getElementById('editPhoneNumber').value;
             const role = user.role; // Lấy role từ thông tin người dùng đã lưu trong localStorage
-            const passwordHash = user.passwordHash; // Mật khẩu không nên hiển thị và không cần thay đổi
+            const passwordHash = user.passwordHash; // Mật khẩu không nên hiển thị và không cần thay đổibb
             const userID = user.userID; // Lấy userID từ thông tin người dùng đã lưu trong localStorage
 
             const updatedUser = {
@@ -437,50 +434,64 @@
                 alert('Đã xảy ra lỗi khi cập nhật tài khoản.');
             }
         });
- 
-        // Đổi mật khẩu
+        // Hàm hiển thị modal đổi mật khẩu
+        function showChangePasswordModal() {
+            $('#changePasswordModal').modal('show');  
+        }
+
+       // Hàm xử lý khi người dùng đổi mật khẩu
         document.getElementById('change-password-form').addEventListener('submit', async function (e) {
-                e.preventDefault();
+            e.preventDefault();  // Ngừng gửi form mặc định
 
-                const currentPassword = document.getElementById('current-password').value;
-                const newPassword = document.getElementById('new-password').value;
-                const confirmPassword = document.getElementById('confirm-password').value;
+            // Lấy giá trị của các trường mật khẩu
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
 
-                // Kiểm tra mật khẩu mới và xác nhận mật khẩu có khớp không
-                if (newPassword !== confirmPassword) {
-                    alert('Mật khẩu mới và xác nhận mật khẩu không khớp!');
-                    return;
+            // Kiểm tra xem mật khẩu mới và xác nhận mật khẩu có giống nhau không
+            if (newPassword !== confirmPassword) {
+                alert('Mật khẩu mới và mật khẩu xác nhận không khớp!');
+                return;
+            }
+
+            // Lấy thông tin người dùng từ localStorage
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                alert('Không tìm thấy thông tin người dùng.');
+                return;
+            }
+
+            const userID = user.userID;  // Lấy userID từ thông tin người dùng đã lưu trong localStorage
+
+            // Tạo đối tượng dữ liệu gửi đi
+            const passwordData = {
+                currentPassword: currentPassword, // Mật khẩu hiện tại
+                newPassword: newPassword           // Mật khẩu mới
+            };
+
+            try {
+                // Gửi yêu cầu PUT để thay đổi mật khẩu
+                const response = await fetch(`https://localhost:7290/api/Users/${userID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,  // Thêm token vào header
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(passwordData)  // Gửi mật khẩu hiện tại và mới
+                });
+
+                if (response.ok) {
+                    alert('Đổi mật khẩu thành công!');
+                    $('#changePasswordModal').modal('hide'); // Đóng modal đổi mật khẩu
+                } else {
+                    const errorText = await response.text();
+                    alert('Đổi mật khẩu không thành công: ' + errorText);
                 }
-
-                const passwordData = {
-                    currentPassword: currentPassword,
-                    newPassword: newPassword
-                };
-
-                const userID = localStorage.getItem('userID'); // Lấy userID từ localStorage hoặc token
-
-                try {
-                    const response = await fetch(`https://localhost:7290/api/Users/change-password/${userID}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(passwordData)
-                    });
-
-                    if (response.ok) {
-                        alert('Đổi mật khẩu thành công!');
-                        $('#changePasswordModal').modal('hide'); // Đóng modal
-                    } else {
-                        const errorText = await response.text();
-                        alert('Đổi mật khẩu không thành công: ' + errorText);
-                    }
-                } catch (error) {
-                    console.error('Lỗi khi đổi mật khẩu:', error);
-                    alert('Đã xảy ra lỗi khi đổi mật khẩu.');
-                }
-        }); 
+            } catch (error) {
+                console.error('Lỗi khi đổi mật khẩu:', error);
+                alert('Đã xảy ra lỗi khi đổi mật khẩu.');
+            }
+        });
     </script>
 </body>
 </html>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DATN.Migrations
 {
     [DbContext(typeof(OderPitchDbContext))]
-    [Migration("20250330134323_RefreshTK")]
-    partial class RefreshTK
+    [Migration("20250415095136_Tb2")]
+    partial class Tb2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -113,19 +113,11 @@ namespace DATN.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PitchID"), 1L, 1);
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsCombined")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -135,15 +127,17 @@ namespace DATN.Migrations
                     b.Property<int?>("ParentPitchID")
                         .HasColumnType("int");
 
-                    b.Property<int>("PitchTypeID")
+                    b.Property<int?>("PitchTypeID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
 
-                    b.HasKey("PitchID");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("ParentPitchID");
+                    b.HasKey("PitchID");
 
                     b.HasIndex("PitchTypeID");
 
@@ -158,10 +152,13 @@ namespace DATN.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PitchTypeID"), 1L, 1);
 
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PitchTypeID");
 
@@ -245,17 +242,9 @@ namespace DATN.Migrations
 
             modelBuilder.Entity("DATN.Model.Pitch", b =>
                 {
-                    b.HasOne("DATN.Model.Pitch", "ParentPitch")
-                        .WithMany()
-                        .HasForeignKey("ParentPitchID");
-
                     b.HasOne("DATN.Model.PitchType", "PitchType")
                         .WithMany()
-                        .HasForeignKey("PitchTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ParentPitch");
+                        .HasForeignKey("PitchTypeID");
 
                     b.Navigation("PitchType");
                 });

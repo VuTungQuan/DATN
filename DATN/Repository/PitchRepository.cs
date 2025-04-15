@@ -46,5 +46,11 @@ namespace DATN.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<Pitch?> GetPitchByNameAsync(string name)
+        {
+            return await _context.Pitches.FirstOrDefaultAsync(p => p.Name == name);
+        }
+       
+
     }
 }

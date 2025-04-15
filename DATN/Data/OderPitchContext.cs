@@ -22,11 +22,8 @@ namespace DATN.Data
                 .HasIndex(b => new { b.PitchID, b.BookingDate, b.StartTime, b.EndTime })
                 .IsUnique();
 
-            // Ràng buộc 2 sân 5 có thể gộp thành sân 7
-            modelBuilder.Entity<Pitch>()
-                .HasOne(p => p.ParentPitch)
-                .WithMany()
-                .HasForeignKey(p => p.ParentPitchID);
+            
         }
+
     }
 }

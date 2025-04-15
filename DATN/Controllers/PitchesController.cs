@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using DATN.Repositories;
 using DATN.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -41,6 +41,10 @@ namespace DATN.Controllers
 
             try
             {
+                if (await _pitchRepository.GetPitchByNameAsync(pitch.Name) != null)
+                {
+                    return BadRequest("Sân bóng với tên này đã tồn tại.");
+                }
                 await _pitchRepository.AddPitchAsync(pitch);
                 return CreatedAtAction("GetPitch", new { id = pitch.PitchID }, pitch);
             }
@@ -65,5 +69,7 @@ namespace DATN.Controllers
             await _pitchRepository.DeletePitchAsync(id);
             return NoContent();
         }
+        
+
     }
 }
