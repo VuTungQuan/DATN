@@ -67,7 +67,7 @@ namespace DATN.Controllers
             if (imageUrl != null && imageUrl.Length > 0)
             {
                 // Đảm bảo thư mục images tồn tại trong wwwroot
-                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "UI", "images");
                 if (!Directory.Exists(imageFolder))
                 {
                     Directory.CreateDirectory(imageFolder);  // Tạo thư mục nếu chưa có
@@ -104,7 +104,7 @@ namespace DATN.Controllers
             if (imageUrl != null && imageUrl.Length > 0)
             {
                 // Lưu hình ảnh nếu có ảnh mới
-                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "UI", "images");
                 if (!Directory.Exists(imageFolder))
                 {
                     Directory.CreateDirectory(imageFolder);
@@ -138,6 +138,8 @@ namespace DATN.Controllers
                 }
             }
         }
+
+
 
         // DELETE: api/PitchType/5
         [HttpDelete("{id}")]

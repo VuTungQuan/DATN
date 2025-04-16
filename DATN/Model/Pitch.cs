@@ -20,9 +20,6 @@ namespace DATN.Model
         public string Status { get; set; }
 
         public bool IsCombined { get; set; }
-
-        public int? ParentPitchID { get; set; }
-
         public string? ImageUrl { get; set; }
 
         [Required]

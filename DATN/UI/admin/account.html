@@ -536,7 +536,6 @@ var nav = $('.fixed-button');
             });
             if (response.ok) {
                 const data = await response.json();
-                // Dữ liệu API trả về theo cấu trúc: { items: [...], totalCount: <number>, totalPages: <number> }
                 totalPages = data.totalPages;
                 updateAccountTable(data.items);
                 updatePagination(currentPage, totalPages);
@@ -547,7 +546,7 @@ var nav = $('.fixed-button');
         } catch (error) {
             console.error('Lỗi khi gọi API:', error);
             alert('Đã xảy ra lỗi khi tải danh sách tài khoản.');
-        }
+        } 
     }
     // Hàm tìm kiếm theo email
     function searchByEmail() {
