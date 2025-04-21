@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DATN.Migrations
 {
     [DbContext(typeof(OderPitchDbContext))]
-    [Migration("20250415095136_Tb2")]
-    partial class Tb2
+    [Migration("20250418095810_Tbl")]
+    partial class Tbl
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,7 +36,9 @@ namespace DATN.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
@@ -100,7 +102,8 @@ namespace DATN.Migrations
 
                     b.HasKey("PaymentID");
 
-                    b.HasIndex("BookingID");
+                    b.HasIndex("BookingID")
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -124,18 +127,11 @@ namespace DATN.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("ParentPitchID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PitchTypeID")
+                    b.Property<int>("PitchTypeID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PitchID");
 
@@ -153,7 +149,6 @@ namespace DATN.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PitchTypeID"), 1L, 1);
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -174,7 +169,9 @@ namespace DATN.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"), 1L, 1);
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Email")
                         .HasMaxLength(100)
@@ -213,13 +210,13 @@ namespace DATN.Migrations
             modelBuilder.Entity("DATN.Model.Booking", b =>
                 {
                     b.HasOne("DATN.Model.Pitch", "Pitch")
-                        .WithMany()
+                        .WithMany("Bookings")
                         .HasForeignKey("PitchID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("User", "User")
-                        .WithMany()
+                        .WithMany("Bookings")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -232,8 +229,8 @@ namespace DATN.Migrations
             modelBuilder.Entity("DATN.Model.Payment", b =>
                 {
                     b.HasOne("DATN.Model.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingID")
+                        .WithOne("Payment")
+                        .HasForeignKey("DATN.Model.Payment", "BookingID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -243,10 +240,33 @@ namespace DATN.Migrations
             modelBuilder.Entity("DATN.Model.Pitch", b =>
                 {
                     b.HasOne("DATN.Model.PitchType", "PitchType")
-                        .WithMany()
-                        .HasForeignKey("PitchTypeID");
+                        .WithMany("Pitches")
+                        .HasForeignKey("PitchTypeID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("PitchType");
+                });
+
+            modelBuilder.Entity("DATN.Model.Booking", b =>
+                {
+                    b.Navigation("Payment")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DATN.Model.Pitch", b =>
+                {
+                    b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("DATN.Model.PitchType", b =>
+                {
+                    b.Navigation("Pitches");
+                });
+
+            modelBuilder.Entity("User", b =>
+                {
+                    b.Navigation("Bookings");
                 });
 #pragma warning restore 612, 618
         }

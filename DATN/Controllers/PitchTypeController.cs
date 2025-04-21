@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DATN.Controllers
 {
-    [Authorize]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class PitchTypeController : ControllerBase
@@ -62,12 +62,12 @@ namespace DATN.Controllers
             {
                 return BadRequest("Dữ liệu không hợp lệ.");
             }
-
+            pitchType.PitchTypeID = 0;
             // Kiểm tra nếu có hình ảnh, thì lưu hình ảnh vào thư mục
             if (imageUrl != null && imageUrl.Length > 0)
             {
                 // Đảm bảo thư mục images tồn tại trong wwwroot
-                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "UI", "images");
+                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
                 if (!Directory.Exists(imageFolder))
                 {
                     Directory.CreateDirectory(imageFolder);  // Tạo thư mục nếu chưa có
@@ -104,7 +104,7 @@ namespace DATN.Controllers
             if (imageUrl != null && imageUrl.Length > 0)
             {
                 // Lưu hình ảnh nếu có ảnh mới
-                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "UI", "images");
+                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
                 if (!Directory.Exists(imageFolder))
                 {
                     Directory.CreateDirectory(imageFolder);

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DATN.Model;
 
 public class User
 {
@@ -26,4 +27,5 @@ public class User
 
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiry { get; set; }
+    public virtual ICollection<Booking>? Bookings { get; set; }
 }

@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sân Bóng Bình Minh</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-futbol me-2"></i>Sân Bóng Bình Minh
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-home me-1"></i>Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#booking"><i class="fas fa-calendar-check me-1"></i>Đặt sân</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="my-bookings.html"><i class="fas fa-list me-1"></i>Sân đã đặt</a>
+                    </li>
+                </ul>
+                <div class="d-flex gap-2">
+                    <div id="auth-buttons">
+                        <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập
+                        </button>
+                        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#registerModal">
+                            <i class="fas fa-user-plus me-1"></i>Đăng ký
+                        </button>
+                    </div>
+                    <div id="user-menu" style="display: none;">
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span id="user-name">Tài khoản</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="my-bookings.html"><i class="fas fa-list me-2"></i>Sân đã đặt</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="loginModalLabel">Đăng nhập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Email </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="login-email" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mật khẩu</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="login-password" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Ghi nhớ đăng nhập</label>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 mb-3">Đăng nhập</button>
+                        <div class="text-center">
+                            <a href="#" class="text-decoration-none text-success">Quên mật khẩu?</a>
+                        </div>
+                    </form>
+                    <hr class="my-4">
+                    <div class="text-center">
+                        <p class="text-muted mb-3">Hoặc đăng nhập với</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn btn-outline-primary"><i class="fab fa-facebook"></i></button>
+                            <button class="btn btn-outline-danger"><i class="fab fa-google"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <p class="mb-0">Chưa có tài khoản? 
+                        <a href="#" class="text-success text-decoration-none" data-bs-toggle="modal" data-bs-target="#registerModal">
+                            Đăng ký ngay
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="registerModalLabel">Đăng ký tài khoản</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label">Họ và tên</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="register-name" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="register-email" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="tel" class="form-control" id="register-phone" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mật khẩu</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="register-password" required>
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Xác nhận mật khẩu</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="register-confirm-password" required>
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms">
+                                Tôi đồng ý với <a href="#" class="text-success">điều khoản sử dụng</a>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Đăng ký</button>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <p class="mb-0">Đã có tài khoản? 
+                        <a href="#" class="text-success text-decoration-none" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            Đăng nhập
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero-section position-relative">
+        <!-- Background Slideshow -->
+        <div class="hero-slideshow">
+            <div class="slide" style="background-image: url('images/22.jpg');"></div>
+            <div class="slide" style="background-image: url('images/23.jpg');"></div>
+            <div class="slide" style="background-image: url('images/24.jpeg');"></div>
+        </div>
+        
+        <!-- Overlay -->
+        <div class="hero-overlay"></div>
+        
+        <!-- Content -->
+        <div class="hero-content py-5 text-center position-relative">
+            <div class="container">
+                <h1 class="display-4 fw-bold text-white">Sân Bóng Bình Minh</h1>
+                <p class="lead text-white">Chọn sân, chọn giờ, đặt ngay - Tất cả trong một nốt nhạc</p>
+                <div class="mt-4">
+                    <a href="#booking" class="btn btn-success btn-lg me-2">
+                        <i class="fas fa-calendar-plus me-2"></i>Đặt sân ngay
+                    </a>
+                    <a href="#about" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-info-circle me-2"></i>Tìm hiểu thêm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="py-5">
+        <div class="container">
+            <div class="row align-items-center mb-5">
+                <div class="col-md-6">
+                    <h2 class="mb-4">Về Sân Bóng Bình Minh</h2>
+                    <p class="lead">Hệ thống sân bóng đá chuyên nghiệp với đầy đủ tiện nghi</p>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Sân cỏ nhân tạo chất lượng cao</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Đèn chiếu sáng hiện đại</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Nhà vệ sinh sạch sẽ</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Bãi đỗ xe rộng rãi</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Quán ăn, nước uống đa dạng</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <img src="images/SB.webp" alt="Sân bóng Bình Minh" class="img-fluid rounded shadow">
+                </div>
+            </div>
+
+            <!-- Gallery Section -->
+            <div class="row">
+                <div class="col-12 text-center mb-4">
+                    <h3 class="text-success">Hình Ảnh Sân Bóng</h3>
+                    <p class="text-muted">Trải nghiệm không gian tuyệt vời tại Sân Bóng Bình Minh</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="gallery-item position-relative overflow-hidden rounded shadow-sm">
+                        <img src="images/SBBM.jpg" alt="Sân bóng Bình Minh" class="img-fluid w-100">
+                        <div class="gallery-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                            <div class="text-white text-center p-3">
+                                <h5 class="mb-2">Sân Vận Động Hiện Đại</h5>
+                                <p class="mb-0">Không gian rộng rãi, thoáng mát</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="gallery-item position-relative overflow-hidden rounded shadow-sm">
+                        <img src="images/SBBM1.jpg" alt="Sân bóng Bình Minh" class="img-fluid w-100">
+                        <div class="gallery-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                            <div class="text-white text-center p-3">
+                                <h5 class="mb-2">Sân Cỏ Chất Lượng</h5>
+                                <p class="mb-0">Mặt sân đạt chuẩn quốc tế</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="gallery-item position-relative overflow-hidden rounded shadow-sm">
+                        <img src="images/SBBM2.jpg" alt="Sân bóng Bình Minh" class="img-fluid w-100">
+                        <div class="gallery-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                            <div class="text-white text-center p-3">
+                                <h5 class="mb-2">Hệ Thống Chiếu Sáng</h5>
+                                <p class="mb-0">Thi đấu thuận lợi cả ngày và đêm</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="gallery-item position-relative overflow-hidden rounded shadow-sm">
+                        <img src="images/SBBM3.jpg" alt="Sân bóng Bình Minh" class="img-fluid w-100">
+                        <div class="gallery-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                            <div class="text-white text-center p-3">
+                                <h5 class="mb-2">Cơ Sở Vật Chất</h5>
+                                <p class="mb-0">Đầy đủ tiện nghi hiện đại</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Thêm phần loại sân sau phần header -->
+    <section class="pitch-types-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="text-center mb-4">Các Loại Sân</h2>
+                </div>
+            </div>
+            <div class="row" id="pitchTypesContainer">
+                <!-- Loading spinner -->
+                <div id="loadingSpinner" class="col-12 text-center">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Đang tải danh sách loại sân...</p>
+                </div>
+            </div>
+            <!-- Thông báo lỗi -->
+            <div id="errorMessage" class="alert alert-danger text-center" style="display: none;">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span>Không thể tải danh sách loại sân. Vui lòng thử lại sau.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Thêm CSS cho phần loại sân -->
+    <style>
+    .pitch-type-card {
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .pitch-type-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .pitch-type-image {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .pitch-type-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 10px 0;
+        color: #333;
+    }
+
+    .pitch-types-section {
+        background-color: #f8f9fa;
+    }
+
+    .pitch-type-card .btn-success {
+        transition: all 0.3s ease;
+    }
+
+    .pitch-type-card .btn-success:hover {
+        transform: scale(1.05);
+    }
+    </style>
+
+    <!-- Thêm script xử lý loại sân -->
+    <script>
+    // Hàm lấy danh sách loại sân
+    async function fetchPitchTypes() {
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const errorMessage = document.getElementById('errorMessage');
+        const container = document.getElementById('pitchTypesContainer');
+
+        try {
+            loadingSpinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            const response = await fetch('https://localhost:7290/api/PitchType', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                displayPitchTypes(data.items);
+            } else {
+                throw new Error('Không thể tải danh sách loại sân');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy danh sách loại sân:', error);
+            errorMessage.querySelector('span').textContent = 'Không thể tải danh sách loại sân. Vui lòng thử lại sau.';
+            errorMessage.style.display = 'block';
+            container.innerHTML = ''; // Xóa loading spinner
+        } finally {
+            loadingSpinner.style.display = 'none';
+        }
+    }
+
+    // Hàm hiển thị loại sân
+    function displayPitchTypes(pitchTypes) {
+        const container = document.getElementById('pitchTypesContainer');
+        
+        if (!pitchTypes || pitchTypes.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center">
+                    <p class="text-muted">Chưa có loại sân nào.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = '';
+        pitchTypes.forEach(pitchType => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4';
+            col.innerHTML = `
+                <div class="card pitch-type-card">
+                    <img src="${pitchType.imageUrl}" class="card-img-top pitch-type-image" 
+                        alt="${pitchType.name}" 
+                        onerror="this.src='images/default-pitch.jpg'">
+                    <div class="card-body text-center">
+                        <h5 class="pitch-type-title">${pitchType.name}</h5>
+                        <button class="btn btn-success" onclick="viewPitches('${pitchType.pitchTypeID}')">
+                            <i class="fas fa-eye me-2"></i>Xem Sân
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(col);
+        });
+    }
+
+    // Hàm xem danh sách sân theo loại
+    function viewPitches(pitchTypeId) {
+        window.location.href = `pitches.html?type=${pitchTypeId}`;
+    }
+
+    // Load danh sách loại sân khi trang được tải
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchPitchTypes();
+    });
+    </script>
+
+    <!-- Booking Section -->
+    <section id="booking" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Đặt Sân</h2>
+            <div class="row">
+                <!-- Filter Sidebar -->
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-filter me-2"></i>Bộ lọc</h5>
+                            <form id="booking-form">
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-futbol me-2"></i>Loại sân</label>
+                                    <select class="form-select" id="field-type">
+                                        <option value="all">Tất cả</option>
+                                        <option value="5">Sân 5</option>
+                                        <option value="7">Sân 7</option>
+                                        <option value="11">Sân 11</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-calendar me-2"></i>Ngày</label>
+                                    <input type="text" class="form-control" id="date-picker" placeholder="Chọn ngày">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-clock me-2"></i>Giờ</label>
+                                    <select class="form-select" id="time-slot">
+                                        <option value="">Chọn giờ</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Tìm sân</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Slots Grid -->
+                <div class="col-md-9">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <button class="btn btn-outline-secondary">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="fw-bold">Từ ngày 18/4 đến ngày 24/4</span>
+                            <button class="btn btn-outline-secondary">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary">Khung sáng</button>
+                            <button class="btn btn-outline-primary">Khung chiều</button>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-bordered mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th style="width: 100px"></th>
+                                            <th class="text-center">14:00 - 15:30</th>
+                                            <th class="text-center">15:30 - 17:00</th>
+                                            <th class="text-center">17:00 - 18:30</th>
+                                            <th class="text-center">18:30 - 20:00</th>
+                                            <th class="text-center">20:00 - 21:30</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="bg-light">
+                                                <div class="text-center">
+                                                    <div class="fw-bold">T6</div>
+                                                    <small>19/4</small>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bg-light">
+                                                <div class="text-center">
+                                                    <div class="fw-bold">T7</div>
+                                                    <small>20/4</small>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bg-light">
+                                                <div class="text-center">
+                                                    <div class="fw-bold">CN</div>
+                                                    <small>21/4</small>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bg-light">
+                                                <div class="text-center">
+                                                    <div class="fw-bold">T2</div>
+                                                    <small>22/4</small>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bg-light">
+                                                <div class="text-center">
+                                                    <div class="fw-bold">T3</div>
+                                                    <small>23/4</small>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bg-light">
+                                                <div class="text-center">
+                                                    <div class="fw-bold">T4</div>
+                                                    <small>24/4</small>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bg-light">
+                                                <div class="text-center">
+                                                    <div class="fw-bold">T5</div>
+                                                    <small>25/4</small>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>800K</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-4">Liên Hệ</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ</h5>
+                            <p class="card-text">123 Đường Bình Minh, Quận 1, TP.HCM</p>
+                            <h5 class="card-title mt-3"><i class="fas fa-phone me-2"></i>Điện thoại</h5>
+                            <p class="card-text">0123 456 789</p>
+                            <h5 class="card-title mt-3"><i class="fas fa-envelope me-2"></i>Email</h5>
+                            <p class="card-text">info@sanbongbinhminh.com</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-clock me-2"></i>Giờ mở cửa</h5>
+                            <p class="card-text">Thứ 2 - Thứ 6: 6:00 - 22:00</p>
+                            <p class="card-text">Thứ 7: 6:00 - 23:00</p>
+                            <p class="card-text">Chủ nhật: 7:00 - 21:00</p>
+                            <h5 class="card-title mt-3"><i class="fas fa-map me-2"></i>Bản đồ</h5>
+                            <div class="ratio ratio-16x9">
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4248375614857!2d106.69877!3d10.775618!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzMxLjYiTiAxMDbCsDQxJzU1LjYiRQ!5e0!3m2!1svi!2s!4v1620000000000!5m2!1svi!2s" allowfullscreen="" loading="lazy"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-futbol me-2"></i>Sân Bóng Bình Minh</h5>
+                    <p>Hệ thống sân bóng đá chuyên nghiệp với đầy đủ tiện nghi</p>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="fas fa-link me-2"></i>Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Trang chủ</a></li>
+                        <li><a href="#booking" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Đặt sân</a></li>
+                        <li><a href="my-bookings.html" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Sân đã đặt</a></li>
+                        <li><a href="#about" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Giới thiệu</a></li>
+                        <li><a href="#contact" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="fas fa-share-alt me-2"></i>Theo dõi chúng tôi</h5>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="text-light fs-4"><i class="fab fa-zalo"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 Sân Bóng Bình Minh. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 

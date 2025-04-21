@@ -6,6 +6,7 @@ namespace DATN.Model
     public class Booking
     {
         [Key]
+        [Required]
         public int BookingID { get; set; }
 
         [Required]
@@ -15,13 +16,13 @@ namespace DATN.Model
         public int PitchID { get; set; }
 
         [Required]
-        public DateTime BookingDate { get; set; } // Ngày đặt sân
+        public DateTime BookingDate { get; set; }
 
         [Required]
-        public TimeSpan StartTime { get; set; } // Giờ bắt đầu
+        public TimeSpan StartTime { get; set; }
 
         [Required]
-        public TimeSpan EndTime { get; set; } // Giờ kết thúc
+        public TimeSpan EndTime { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
@@ -33,10 +34,16 @@ namespace DATN.Model
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        // Mối quan hệ với User
         [ForeignKey("UserID")]
         public virtual User? User { get; set; }
 
+        // Mối quan hệ với Pitch
         [ForeignKey("PitchID")]
         public virtual Pitch? Pitch { get; set; }
+
+        // Mối quan hệ với Payment (One-to-One)
+        public virtual Payment? Payment { get; set; }
+
     }
 }

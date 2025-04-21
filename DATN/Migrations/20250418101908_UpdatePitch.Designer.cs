@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DATN.Migrations
 {
     [DbContext(typeof(OderPitchDbContext))]
-    [Migration("20250416154959_pitch")]
-    partial class pitch
+    [Migration("20250418101908_UpdatePitch")]
+    partial class UpdatePitch
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,7 +36,9 @@ namespace DATN.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
@@ -100,7 +102,8 @@ namespace DATN.Migrations
 
                     b.HasKey("PaymentID");
 
-                    b.HasIndex("BookingID");
+                    b.HasIndex("BookingID")
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -131,7 +134,6 @@ namespace DATN.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PitchID");
@@ -170,7 +172,9 @@ namespace DATN.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"), 1L, 1);
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Email")
                         .HasMaxLength(100)
@@ -209,13 +213,13 @@ namespace DATN.Migrations
             modelBuilder.Entity("DATN.Model.Booking", b =>
                 {
                     b.HasOne("DATN.Model.Pitch", "Pitch")
-                        .WithMany()
+                        .WithMany("Bookings")
                         .HasForeignKey("PitchID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("User", "User")
-                        .WithMany()
+                        .WithMany("Bookings")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -228,8 +232,8 @@ namespace DATN.Migrations
             modelBuilder.Entity("DATN.Model.Payment", b =>
                 {
                     b.HasOne("DATN.Model.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingID")
+                        .WithOne("Payment")
+                        .HasForeignKey("DATN.Model.Payment", "BookingID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -239,12 +243,32 @@ namespace DATN.Migrations
             modelBuilder.Entity("DATN.Model.Pitch", b =>
                 {
                     b.HasOne("DATN.Model.PitchType", "PitchType")
-                        .WithMany()
+                        .WithMany("Pitches")
                         .HasForeignKey("PitchTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("PitchType");
+                });
+
+            modelBuilder.Entity("DATN.Model.Booking", b =>
+                {
+                    b.Navigation("Payment");
+                });
+
+            modelBuilder.Entity("DATN.Model.Pitch", b =>
+                {
+                    b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("DATN.Model.PitchType", b =>
+                {
+                    b.Navigation("Pitches");
+                });
+
+            modelBuilder.Entity("User", b =>
+                {
+                    b.Navigation("Bookings");
                 });
 #pragma warning restore 612, 618
         }

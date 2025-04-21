@@ -103,7 +103,16 @@ namespace DATN.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
+        [HttpPost("hash")]
+        public async Task<IActionResult> Verifypassword(string oldpassword, string oldhashpassword)
+        {
+            if (string.IsNullOrEmpty(oldpassword))
+            {
+                return BadRequest("Password is required.");
+            }
+            // Mã hóa mật khẩu
+            return Ok(BCrypt.Net.BCrypt.Verify(oldpassword, oldhashpassword));
+        }
         // PUT api/Users/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)

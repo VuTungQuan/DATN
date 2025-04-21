@@ -3,7 +3,10 @@
 
 <head>
     <title> Admin Dashbroad </title>
+    
     <!-- HTML5 Shim and Respond.js IE9 support of HTML5 elements and media queries -->
+    <!-- Include bcryptjs from CDN -->   
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js" defer></script-->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -32,6 +35,7 @@
   </head>
 
   <body>
+    
     <!-- Pre-loader start -->
     <div class="theme-loader">
         <div class="ball-scale">
@@ -167,16 +171,6 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#">
-                                            <i class="ti-email"></i> Tin nhắn của tôi
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <i class="ti-lock"></i> Màn hình khóa
-                                        </a>
-                                    </li>
-                                    <li>
                                         <a href="../index.html">
                                             <i class="ti-layout-sidebar-left"></i> Đăng xuất
                                         </a>
@@ -237,16 +231,16 @@
                                             </a>
                                         </li>
                                         <li class=" ">
-                                            <a href="button.html">
+                                            <a href="booking.html">
                                                 <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                                                <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Đặt sân </span>
+                                                <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Đặt sân</span>
                                                 <span class="pcoded-mcaret"></span>
                                             </a>
                                         </li>
                                         <li class=" ">
                                             <a href="tabs.html">
                                                 <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                                                <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Giảm giá</span>
+                                                <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Thanh toán</span>
                                                 <span class="pcoded-mcaret"></span>
                                             </a>
                                         </li>
@@ -262,12 +256,119 @@
                                     <div class="page-body">
                                         <div class="row">                                    
                                             <!-- Statestics Start -->
-                                            
-                                            
+                                            <!-- Quản lý Sân Bóng Start -->
+                                            <div class="container mt-5">
+                                                <h2>Quản lý Sân Bóng</h2>
                                                 
-                                            
-                                        </div>
-                                    </div>
+                                                <!-- Thêm sân bóng -->
+                                                <div class="mb-3">
+                                                    <button class="btn btn-success" data-toggle="modal" data-target="#addPitchModal">Thêm Sân Bóng</button>
+                                                </div>
+                                                
+                                                <!-- Phần HTML hiển thị danh sách sân bóng -->
+                                                <table class="table table-bordered" id="pitchTable">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>PitchID</th>
+                                                        <th>Tên Sân</th>
+                                                        <th>Giá</th>
+                                                        <th>Trạng Thái</th>
+                                                        <th>Ảnh</th>
+                                                        <th>Chức Năng</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody id="pitchTableBody">
+                                                    <!-- Dữ liệu sân bóng sẽ được chèn vào đây -->
+                                                    </tbody>
+                                                </table>
+                                                
+                                                <!-- Phần phân trang -->
+                                                <div class="pagination">
+                                                    <button id="previousPage" onclick="goToPage(currentPage - 1)">Previous</button>
+                                                    <button id="nextPage" onclick="goToPage(currentPage + 1)">Next</button>
+                                                </div>
+                                            </div>
+                                            <!-- Quản lý Sân Bóng End -->
+
+                                            <!-- Modal Thêm Sân Bóng -->
+                                            <div class="modal fade" id="addPitchModal" tabindex="-1" role="dialog" aria-labelledby="addPitchModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="addPitchModalLabel">Thêm Sân Bóng</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <!-- Form thêm sân bóng -->
+                                                            <form id="addPitchForm" enctype="multipart/form-data">
+                                                                <div class="form-group">
+                                                                    <label for="addPitchName">Tên sân bóng</label>
+                                                                    <input type="text" class="form-control" id="addPitchName" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="addPitchType">Loại sân</label>
+                                                                    <select class="form-control" id="addPitchType" required>
+                                                                        <!-- Các loại sân sẽ được chèn vào đây -->
+                                                                    </select>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="addPitchPrice">Giá sân</label>
+                                                                    <input type="number" class="form-control" id="addPitchPrice" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="addPitchStatus">Trạng thái</label>
+                                                                    <input type="text" class="form-control" id="addPitchStatus" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="addPitchImage">Hình ảnh sân bóng</label>
+                                                                    <input type="file" class="form-control" id="addPitchImage" accept="image/*" required>
+                                                                </div>
+                                                                <button type="submit" class="btn btn-primary">Thêm sân bóng</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <!-- Modal Chỉnh sửa Sân Bóng -->
+                                            <div class="modal fade" id="editPitchModal" tabindex="-1" role="dialog" aria-labelledby="editPitchModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editPitchModalLabel">Chỉnh Sửa Sân Bóng</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form id="editPitchForm">
+                                                                <input type="hidden" id="editPitchID">
+                                                                <div class="form-group">
+                                                                    <label for="editPitchName">Tên sân bóng</label>
+                                                                    <input type="text" class="form-control" id="editPitchName" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="editPitchPrice">Giá sân</label>
+                                                                    <input type="number" class="form-control" id="editPitchPrice" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="editPitchStatus">Trạng thái</label>
+                                                                    <input type="text" class="form-control" id="editPitchStatus" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="editPitchImage">Ảnh</label>
+                                                                    <input type="file" class="form-control" id="editPitchImage" accept="image/*">
+                                                                </div>
+                                                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
 
                                     <div id="styleSelector">
 
@@ -277,15 +378,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="fixed-button">
-                    <a href="https://codedthemes.com/item/guru-able-admin-template/" target="_blank" class="btn btn-md btn-primary">
-                      <i class="fa fa-shopping-cart" aria-hidden="true"></i> Upgrade To Pro
-                    </a>
-                </div>
             </div>
         </div>
-
-<!-- Warning Section Ends -->
+<!-- Thêm thư viện jQuery và Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
 <!-- Required Jquery -->
 <script type="text/javascript" src="assets/js/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="assets/js/jquery-ui/jquery-ui.min.js"></script>
@@ -322,7 +420,7 @@ var nav = $('.fixed-button');
 <script>
     // Kiểm tra xem người dùng đã đăng nhập chưa khi vào trang admin
     document.addEventListener('DOMContentLoaded', function () {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('accessToken');
         if (token) {
             const decodedToken = decodeToken(token);
             const role = decodedToken.role;
@@ -354,7 +452,7 @@ var nav = $('.fixed-button');
         const response = await fetch(`https://localhost:7290/api/Users/email/${encodedEmail}`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm token vào header để xác thực
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`, // Thêm token vào header để xác thực
                 'Content-Type': 'application/json'
             }
         });
@@ -382,7 +480,7 @@ var nav = $('.fixed-button');
             `;
             // Hiển thị menu người dùng sau khi đăng nhập
             document.getElementById('user-menu').style.display = 'block';
-        }
+    }
     
 </script>
 

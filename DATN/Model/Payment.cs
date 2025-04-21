@@ -6,6 +6,7 @@ namespace DATN.Model
     public class Payment
     {
         [Key]
+        [Required]
         public int PaymentID { get; set; }
 
         [Required]

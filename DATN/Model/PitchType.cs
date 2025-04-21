@@ -6,10 +6,11 @@ namespace DATN.Model
     public class PitchType
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
+        [Required]
         public int PitchTypeID { get; set; }
 
         public string Name { get; set; }
         public string? ImageUrl { get; set; }
+        public virtual ICollection<Pitch>? Pitches { get; set; }
     }
 }

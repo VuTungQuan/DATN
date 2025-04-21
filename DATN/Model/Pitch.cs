@@ -6,6 +6,7 @@ namespace DATN.Model
     public class Pitch
     {
         [Key]
+        [Required]
         public int PitchID { get; set; }
 
         [Required]
@@ -13,19 +14,22 @@ namespace DATN.Model
         public string Name { get; set; }
 
         [Required]
+        public int PitchTypeID { get; set; }
+
+        [Required]
         [Column(TypeName = "decimal(10,2)")]
         public decimal Price { get; set; }
-
-        [Required]
-        public string Status { get; set; }
-
+        public string? Status { get; set; }
         public bool IsCombined { get; set; }
+
         public string? ImageUrl { get; set; }
 
-        [Required]
-        public int PitchTypeID { get; set; } 
 
+        // Mối quan hệ với PitchType
         [ForeignKey("PitchTypeID")]
         public virtual PitchType? PitchType { get; set; }
+
+        public virtual ICollection<Booking>? Bookings { get; set; }
     }
+
 }

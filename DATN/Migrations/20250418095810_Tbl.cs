@@ -15,8 +15,8 @@ namespace DATN.Migrations
                 {
                     PitchTypeID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    IMageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -34,7 +34,7 @@ namespace DATN.Migrations
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshTokenExpiry = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -50,12 +50,10 @@ namespace DATN.Migrations
                     PitchID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    PitchTypeID = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsCombined = table.Column<bool>(type: "bit", nullable: false),
-                    ParentPitchID = table.Column<int>(type: "int", nullable: true),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PitchTypeID = table.Column<int>(type: "int", nullable: true)
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -64,7 +62,8 @@ namespace DATN.Migrations
                         name: "FK_Pitches_PitchTypes_PitchTypeID",
                         column: x => x.PitchTypeID,
                         principalTable: "PitchTypes",
-                        principalColumn: "PitchTypeID");
+                        principalColumn: "PitchTypeID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -80,7 +79,7 @@ namespace DATN.Migrations
                     EndTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
@@ -90,7 +89,7 @@ namespace DATN.Migrations
                         column: x => x.PitchID,
                         principalTable: "Pitches",
                         principalColumn: "PitchID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Bookings_Users_UserID",
                         column: x => x.UserID,
@@ -137,7 +136,8 @@ namespace DATN.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_BookingID",
                 table: "Payments",
-                column: "BookingID");
+                column: "BookingID",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Pitches_PitchTypeID",

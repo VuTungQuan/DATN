@@ -197,44 +197,40 @@
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
                     <h1 class="fa fa-check text-primary m-0 mr-3"></h1>
-                    <h5 class="font-weight-semi-bold m-0">Quality Pitch</h5>
+                    <h5 class="font-weight-semi-bold m-0">Chất lượng</h5>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
                     <h1 class="fa fa-shipping-fast text-primary m-0 mr-2"></h1>
-                    <h5 class="font-weight-semi-bold m-0">Convenient</h5>
+                    <h5 class="font-weight-semi-bold m-0">Tiện lợi</h5>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
                     <h1 class="fas fa-exchange-alt text-primary m-0 mr-3"></h1>
-                    <h5 class="font-weight-semi-bold m-0">Fast</h5>
+                    <h5 class="font-weight-semi-bold m-0">Nhanh chóng</h5>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
                     <h1 class="fa fa-phone-volume text-primary m-0 mr-3"></h1>
-                    <h5 class="font-weight-semi-bold m-0">24/7 Support</h5>
+                    <h5 class="font-weight-semi-bold m-0">Nhiệt tình</h5>
                 </div>
             </div>
         </div>
     </div>
     <!-- Featured End -->
 
-    <!-- Products Start -->
-    <div class="container-fluid pt-5 pb-3">
-        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Sân Bóng</span></h2>
-        <div class="row px-xl-5" id="product-list">
-            <!-- Product items will be injected here -->
-        </div>
-        <!-- Pagination Controls -->
-        <div class="d-flex justify-content-center mt-4">
-            <button id="prev-page" class="btn btn-secondary mr-2">Previous</button>
-            <button id="next-page" class="btn btn-secondary">Next</button>
+    <div class="container">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Danh sách loại sân</span></h2>
+        <div class="row" id="pitch-list">
+            <!-- Các loại sân sẽ được hiển thị tại đây -->
         </div>
     </div>
-    <!-- Products End -->
+    
+    
+   
 
     <!-- Vendor Start -->
     <div class="container-fluid py-5">
@@ -277,7 +273,6 @@
         <div class="row px-xl-5 pt-5">
             <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
                 <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
-                <p class="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et dolor sed dolor. Rebum tempor no vero est magna amet no</p>
                 <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>Khu P. Thú Y, Đức Thượng, Hoài Đức, Hà Nội, Việt Nam</p>
                 <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>binhminhfb@gmailgmail.com</p>
                 <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+84123456789</p>
@@ -347,6 +342,16 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="js/index.js"></script>
-    
+    <script>
+        // Đợi index.js chạy xong rồi mới chạy pitchType.js
+        window.addEventListener('load', function() {
+            // Đảm bảo index.js đã chạy xong
+            setTimeout(() => {
+                const script = document.createElement('script');
+                script.src = 'js/pitchType.js';
+                document.body.appendChild(script);
+            }, 100);
+        });
+    </script>
 </body>
 </html>

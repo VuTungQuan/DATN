@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Admin Dashbroad </title>
+    
+    <!-- HTML5 Shim and Respond.js IE9 support of HTML5 elements and media queries -->
+    <!-- Include bcryptjs from CDN -->   
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js" defer></script-->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
+      <!-- Meta -->
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="description" content="CodedThemes">
+      <meta name="keywords" content=" Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
+      <meta name="author" content="CodedThemes">
+      <!-- Favicon icon -->
+      <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+      <!-- Google font-->
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+      <!-- Required Fremwork -->
+      <link rel="stylesheet" type="text/css" href="assets/css/bootstrap/css/bootstrap.min.css">
+      <!-- themify-icons line icon -->
+      <link rel="stylesheet" type="text/css" href="assets/icon/themify-icons/themify-icons.css">
+      <!-- ico font -->
+      <link rel="stylesheet" type="text/css" href="assets/icon/icofont/css/icofont.css">
+      <!-- Style.css -->
+      <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+      <link rel="stylesheet" type="text/css" href="assets/css/jquery.mCustomScrollbar.css">
+  </head>
+
+  <body>
+    
+    <!-- Pre-loader start -->
+    <div class="theme-loader">
+        <div class="ball-scale">
+            <div class='contain'>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Pre-loader end -->
+    <div id="pcoded" class="pcoded">
+        <div class="pcoded-overlay-box"></div>
+        <div class="pcoded-container navbar-wrapper">
+
+            <nav class="navbar header-navbar pcoded-header">
+                <div class="navbar-wrapper">
+
+                    <div class="navbar-logo">
+                        <a class="mobile-menu" id="mobile-collapse" href="#!">
+                            <i class="ti-menu"></i>
+                        </a>
+                        <a class="mobile-search morphsearch-search" href="#">
+                            <i class="ti-search"></i>
+                        </a>
+                        <a href="index.html">
+                            <img class="img-fluid" src="assets/images/logo.png" alt="Theme-Logo" />
+                        </a>
+                        <a class="mobile-options">
+                            <i class="ti-more"></i>
+                        </a>
+                    </div>
+
+                    <div class="navbar-container container-fluid">
+                        <ul class="nav-left">
+                            <li>
+                                <div class="sidebar_toggle"><a href="javascript:void(0)"><i class="ti-menu"></i></a></div>
+                            </li>
+
+                            <li>
+                                <a href="#!" onclick="javascript:toggleFullScreen()">
+                                    <i class="ti-fullscreen"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-right">
+                            <li class="header-notification">
+                                <a href="#!">
+                                    <i class="ti-bell"></i>
+                                    <span class="badge bg-c-pink"></span>
+                                </a>
+                                <ul class="show-notification">
+                                    <li>
+                                        <h6>Notifications</h6>
+                                        <label class="label label-danger">New</label>
+                                    </li>
+                                    <li>
+                                        <div class="media">
+                                            <img class="d-flex align-self-center img-radius" src="assets/images/avatar-4.jpg" alt="Generic placeholder image">
+                                            <div class="media-body">
+                                                <h5 class="notification-user">John Doe</h5>
+                                                <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer elit.</p>
+                                                <span class="notification-time">30 minutes ago</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="media">
+                                            <img class="d-flex align-self-center img-radius" src="assets/images/avatar-3.jpg" alt="Generic placeholder image">
+                                            <div class="media-body">
+                                                <h5 class="notification-user">Joseph William</h5>
+                                                <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer elit.</p>
+                                                <span class="notification-time">30 minutes ago</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="media">
+                                            <img class="d-flex align-self-center img-radius" src="assets/images/avatar-4.jpg" alt="Generic placeholder image">
+                                            <div class="media-body">
+                                                <h5 class="notification-user">Sara Soudein</h5>
+                                                <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer elit.</p>
+                                                <span class="notification-time">30 minutes ago</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- Header phần tài khoản -->
+                            <li class="user-profile header-notification">
+                                <a href="#!">
+                                    <img src="assets/images/avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
+                                    <span id="userDropdown">Admin</span>
+                                    <i class="ti-angle-down"></i>
+                                </a>
+                                <ul class="show-notification profile-notification" id="user-menu">
+                                    <li>
+                                        <a href="#!">
+                                            <i class="ti-settings"></i> Cài đặt
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ti-user"></i> Thông tin cá nhân
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="../index.html">
+                                            <i class="ti-layout-sidebar-left"></i> Đăng xuất
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="pcoded-main-container">
+                <div class="pcoded-wrapper">
+                    <nav class="pcoded-navbar">
+                        <div class="sidebar_toggle"><a href="#"><i class="icon-close icons"></i></a></div>
+                        <div class="pcoded-inner-navbar main-menu">
+                            <div class="pcoded-search">
+                                <span class="searchbar-toggle">  </span>
+                                <div class="pcoded-search-box ">
+                                    <input type="text" placeholder="Search">
+                                    <span class="search-icon"><i class="ti-search" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                            <div class="pcoded-navigatio-lavel" data-i18n="nav.category.navigation">Layout</div>
+                            <ul class="pcoded-item pcoded-left-item">
+                                <li class="active">
+                                    <a href="index.html">
+                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-mtext" data-i18n="nav.dash.main">Dashboard</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li class="pcoded-hasmenu">
+                                    <a href="javascript:void(0)">
+                                        <span class="pcoded-micon"><i class="ti-layout-grid2-alt"></i></span>
+                                        <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Quản lý</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                    <ul class="pcoded-submenu">
+                                        <li class=" ">
+                                            <a href="account.html">
+                                                <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                                                <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Tài khoản</span>
+                                                <span class="pcoded-mcaret"></span>
+                                            </a>
+                                        </li>
+                                        <li class=" ">
+                                            <a href="pitch.html">
+                                                <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                                                <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Sân bóng</span>
+                                                <span class="pcoded-mcaret"></span>
+                                            </a>
+                                        </li>
+                                        <li class=" ">
+                                            <a href="pitchtype.html">
+                                                <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                                                <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Loại sân</span>
+                                                <span class="pcoded-mcaret"></span>
+                                            </a>
+                                        </li>
+                                        <li class=" ">
+                                            <a href="button.html">
+                                                <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                                                <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Đặt sân </span>
+                                                <span class="pcoded-mcaret"></span>
+                                            </a>
+                                        </li>
+                                        <li class=" ">
+                                            <a href="tabs.html">
+                                                <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                                                <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Giảm giá</span>
+                                                <span class="pcoded-mcaret"></span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                    <div class="pcoded-content">
+                        <div class="pcoded-inner-content">
+                            <div class="main-body">
+                                <div class="page-wrapper">
+                                    <div class="page-body">
+                                        <div class="row">
+                                            <!-- Thẻ thống kê -->
+                                            <div class="col-xl-3 col-md-6">
+                                                <div class="card">
+                                                    <div class="card-block">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-8">
+                                                                <h4 class="text-c-green" id="totalPitchTypes">0</h4>
+                                                                <h6 class="text-muted m-b-0">Tổng số loại sân</h6>
+                                                            </div>
+                                                            <div class="col-4 text-right">
+                                                                <i class="ti-basketball f-28"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer bg-c-green">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-9">
+                                                                <p class="text-white m-b-0">Tổng quan</p>
+                                                            </div>
+                                                            <div class="col-3 text-right">
+                                                                <i class="ti-stats-up text-white f-16"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Bảng quản lý -->
+                                            <div class="col-12">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h5>Quản lý Loại Sân</h5>
+                                                        <button class="btn btn-primary" 
+                                                            data-toggle="modal" 
+                                                            data-target="#addPitchTypeModal">
+                                                            Thêm Loại Sân
+                                                        </button>
+                                                    </div>
+                                                    <div class="card-block table-border-style">
+                                                        <div class="table-responsive">
+                                                            <table class="table table-hover">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="text-center">#</th>
+                                                                        <th>Tên loại sân</th>
+                                                                        <th class="text-center">Hình ảnh</th>
+                                                                        <th class="text-center">Thao tác</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="pitchTypeTableBody">
+                                                                    <!-- Dữ liệu sẽ được thêm vào đây -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <!-- Phân trang -->
+                                                        <div class="d-flex justify-content-center mt-4">
+                                                            <div class="dataTables_paginate paging_simple_numbers">
+                                                                <ul class="pagination">
+                                                                    <li class="page-item">
+                                                                        <button id="previousPage" class="page-link" onclick="goToPage(currentPage - 1)">
+                                                                            <i class="ti-angle-left"></i>
+                                                                        </button>
+                                                                    </li>
+                                                                    <li class="page-item">
+                                                                        <span class="page-link" id="currentPageDisplay">1</span>
+                                                                    </li>
+                                                                    <li class="page-item">
+                                                                        <button id="nextPage" class="page-link" onclick="goToPage(currentPage + 1)">
+                                                                            <i class="ti-angle-right"></i>
+                                                                        </button>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm Loại Sân -->
+    <div class="modal fade" id="addPitchTypeModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm Loại Sân</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="addPitchTypeForm">
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">ID Loại sân</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="addPitchTypeID" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Tên loại sân</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="addPitchTypeName" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Hình ảnh</label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control" id="addPitchTypeImage" accept="image/*" required>
+                                <div id="imagePreviewAdd" class="mt-2 text-center" style="display: none;">
+                                    <img src="" alt="Preview" style="max-width: 200px; max-height: 200px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa Loại Sân -->
+    <div class="modal fade" id="editPitchTypeModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sửa Loại Sân</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="editPitchTypeForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="editPitchTypeID">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Tên loại sân</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="editPitchTypeName" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Hình ảnh</label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control" id="editPitchTypeImage" accept="image/*">
+                                <small class="form-text text-muted">Chỉ chọn ảnh nếu muốn thay đổi</small>
+                                <div id="imagePreviewEdit" class="mt-2 text-center" style="display: none;">
+                                    <img src="" alt="Preview" style="max-width: 200px; max-height: 200px;">
+                                </div>
+                                <div id="currentImage" class="mt-2 text-center">
+                                    <p class="mb-1">Ảnh hiện tại:</p>
+                                    <img id="currentImagePreview" src="" alt="Current" style="max-width: 200px; max-height: 200px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Required Jquery -->
+    <script type="text/javascript" src="assets/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/js/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="assets/js/popper.js/popper.min.js"></script>
+    <script type="text/javascript" src="assets/js/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery slimscroll js -->
+    <script type="text/javascript" src="assets/js/jquery-slimscroll/jquery.slimscroll.js"></script>
+    <!-- modernizr js -->
+    <script type="text/javascript" src="assets/js/modernizr/modernizr.js"></script>
+    <!-- am chart -->
+    <script src="assets/pages/widget/amchart/amcharts.min.js"></script>
+    <script src="assets/pages/widget/amchart/serial.min.js"></script>
+    <!-- Todo js -->
+    <script type="text/javascript " src="assets/pages/todo/todo.js "></script>
+    <!-- Custom js -->
+    <script type="text/javascript" src="assets/pages/dashboard/custom-dashboard.js"></script>
+    <script type="text/javascript" src="assets/js/script.js"></script>
+    <script type="text/javascript " src="assets/js/SmoothScroll.js"></script>
+    <script src="assets/js/pcoded.min.js"></script>
+    <script src="assets/js/demo-12.js"></script>
+    <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Kiểm tra xem người dùng đã đăng nhập chưa khi vào trang admin
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                const decodedToken = decodeToken(token);
+                const role = decodedToken.role;
+
+                if (role === 'Admin') {
+                    // Lấy thông tin admin từ API và cập nhật giao diện
+                    const email = decodedToken.email;
+                    getUserInfoByEmail(email);
+                } else {
+                    window.location.href = 'http://127.0.0.1:5500/index.html'; // Chuyển hướng nếu không phải admin
+                }
+            } 
+        });
+
+        // Hàm giải mã JWT
+        function decodeToken(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+
+            return JSON.parse(jsonPayload);
+        }
+
+        // Hàm lấy thông tin người dùng từ email sau khi đăng nhập
+        async function getUserInfoByEmail(email) {
+            const encodedEmail = encodeURIComponent(email); // Mã hóa email để dùng trong URL
+            const response = await fetch(`https://localhost:7290/api/Users/email/${encodedEmail}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`, // Thêm token vào header để xác thực
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                updateUserUI(userData); // Cập nhật giao diện với thông tin người dùng
+            } else {
+                alert('Không thể lấy thông tin người dùng.');
+            }
+        }
+        // Cập nhật giao diện UI sau khi lấy thông tin người dùng
+        function updateUserUI(user) {
+                const userDropdown = document.getElementById('userDropdown');
+                const dropdownMenu = document.getElementById('dropdownMenu');
+        
+                // Cập nhật tên đầy đủ của người dùng vào dropdown
+                userDropdown.innerText = user.fullName;  // Gán tên đầy đủ vào dropdown
+                
+                // Thay đổi các mục menu để hiển thị các tùy chọn cho người dùng
+                dropdownMenu.innerHTML = `
+                    <button class="dropdown-item" onclick="viewProfile()">Thông tin cá nhân</button>
+                    <button class="dropdown-item" onclick="viewBookings()">Lịch sử đặt sân</button>
+                    <button class="dropdown-item" onclick="logout()">Đăng xuất</button>
+                `;
+                // Hiển thị menu người dùng sau khi đăng nhập
+                document.getElementById('user-menu').style.display = 'block';
+        }
+        
+    </script>
+    <script>
+    // Biến phân trang
+    let currentPage = 1;
+    const pageSize = 10;
+    let totalPages = 0;
+    let totalItems = 0;
+
+    // Kiểm tra token và vai trò Admin khi trang được tải
+    document.addEventListener('DOMContentLoaded', function () {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            const decodedToken = decodeToken(token);
+            const role = decodedToken.role;
+            if (role === 'Admin') {
+                fetchPitchTypes(currentPage);
+            } else {
+                window.location.href = '../index.html';
+            }
+        } 
+    });
+
+    // Hàm giải mã token JWT
+    function decodeToken(token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+    }
+
+    // Hàm lấy danh sách PitchType từ API
+    async function fetchPitchTypes(page) {
+        try {
+            const response = await fetch(`https://localhost:7290/api/PitchType?page=${page}&pageSize=${pageSize}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                totalPages = data.totalPages;
+                totalItems = data.totalCount;
+                updatePitchTypeTable(data.items);
+                updatePagination(currentPage, totalPages);
+            } else {
+                const errorText = await response.text();
+                Swal.fire('Lỗi!', 'Không thể tải danh sách loại sân: ' + errorText, 'error');
+            }
+        } catch (error) {
+            console.error('Lỗi khi gọi API:', error);
+            Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi tải danh sách loại sân.', 'error');
+        }
+    }
+
+    // Hàm cập nhật bảng danh sách PitchType
+    function updatePitchTypeTable(pitchTypes) {
+        const tableBody = document.getElementById('pitchTypeTableBody');
+        tableBody.innerHTML = '';
+
+        pitchTypes.forEach((pitchType, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="text-center">${(currentPage - 1) * pageSize + index + 1}</td>
+                <td>${pitchType.name}</td>
+                <td class="text-center">
+                    <img src="${pitchType.imageUrl}" alt="${pitchType.name}" 
+                        style="max-width: 100px; max-height: 60px; object-fit: contain;">
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="editPitchType(${pitchType.pitchTypeID})">
+                        Sửa
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deletePitchType(${pitchType.pitchTypeID})">
+                        Xóa
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        // Chỉ cập nhật số tổng và trang hiện tại
+        document.getElementById('currentPageDisplay').textContent = currentPage;
+        document.getElementById('totalPitchTypes').textContent = totalItems;
+    }
+
+    // Hàm cập nhật nút phân trang
+    function updatePagination(current, totalPagesParam) {
+        const previousPageButton = document.getElementById('previousPage');
+        const nextPageButton = document.getElementById('nextPage');
+        previousPageButton.disabled = current <= 1;
+        nextPageButton.disabled = current >= totalPagesParam;
+        currentPage = current;
+    }
+
+    // Hàm chuyển trang
+    function goToPage(page) {
+        if (page >= 1 && page <= totalPages) {
+            currentPage = page;
+            fetchPitchTypes(currentPage);
+        }
+    }
+
+    // Xử lý form thêm loại sân
+    document.getElementById('addPitchTypeForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const pitchTypeID = document.getElementById('addPitchTypeID').value;
+        const name = document.getElementById('addPitchTypeName').value;
+        const imageInput = document.getElementById('addPitchTypeImage');
+        const imageFile = imageInput.files[0];
+
+        if (!imageFile) {
+            Swal.fire('Lỗi!', 'Vui lòng chọn hình ảnh.', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('pitchTypeID', pitchTypeID);
+        formData.append('name', name);
+        formData.append('imageUrl', imageFile);
+        formData.append('pitches', null);
+
+        try {
+            const response = await fetch('https://localhost:7290/api/PitchType', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                Swal.fire({
+                    title: 'Thành công!',
+                    text: 'Thêm loại sân thành công!',
+                    icon: 'success',
+                    timer: 1500
+                });
+                $('#addPitchTypeModal').modal('hide');
+                fetchPitchTypes(currentPage);
+                this.reset();
+                document.getElementById('imagePreviewAdd').style.display = 'none';
+            } else {
+                const errorData = await response.text();
+                Swal.fire('Lỗi!', `Không thể thêm loại sân: ${errorData}`, 'error');
+            }
+        } catch (error) {
+            console.error('Lỗi khi thêm loại sân:', error);
+            Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi thêm loại sân.', 'error');
+        }
+    });
+
+    // Hàm chỉnh sửa loại sân
+    async function editPitchType(pitchTypeID) {
+        try {
+            const response = await fetch(`https://localhost:7290/api/PitchType/${pitchTypeID}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const pitchType = await response.json();
+                document.getElementById('editPitchTypeID').value = pitchType.pitchTypeID;
+                document.getElementById('editPitchTypeName').value = pitchType.name;
+                document.getElementById('currentImagePreview').src = pitchType.imageUrl;
+                document.getElementById('currentImage').style.display = 'block';
+                document.getElementById('imagePreviewEdit').style.display = 'none';
+                $('#editPitchTypeModal').modal('show');
+            } else {
+                const errorText = await response.text();
+                Swal.fire('Lỗi!', `Không thể lấy thông tin loại sân: ${errorText}`, 'error');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy thông tin loại sân:', error);
+            Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi lấy thông tin loại sân.', 'error');
+        }
+    }
+
+    // Xử lý form chỉnh sửa loại sân
+    document.getElementById('editPitchTypeForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const pitchTypeID = document.getElementById('editPitchTypeID').value;
+        if (!pitchTypeID) {
+            Swal.fire('Lỗi!', 'ID loại sân không hợp lệ.', 'error');
+            return;
+        }
+
+        const name = document.getElementById('editPitchTypeName').value;
+        const imageInput = document.getElementById('editPitchTypeImage');
+        const imageFile = imageInput.files[0];
+
+        const formData = new FormData();
+        formData.append('pitchTypeID', pitchTypeID);
+        formData.append('name', name);
+        if (imageFile) {
+            formData.append('imageUrl', imageFile);
+        } else {
+            // Nếu không có file mới, gửi lại URL ảnh cũ
+            const currentImage = document.getElementById('currentImagePreview').src;
+            formData.append('imageUrl', currentImage);
+        }
+        formData.append('pitches', null);
+
+        try {
+            const response = await fetch(`https://localhost:7290/api/PitchType/${pitchTypeID}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                Swal.fire({
+                    title: 'Thành công!',
+                    text: 'Cập nhật loại sân thành công!',
+                    icon: 'success',
+                    timer: 1500
+                });
+                $('#editPitchTypeModal').modal('hide');
+                fetchPitchTypes(currentPage);
+                this.reset();
+            } else {
+                const errorData = await response.text();
+                console.error('Lỗi response:', errorData);
+                Swal.fire('Lỗi!', `Cập nhật loại sân không thành công: ${errorData}`, 'error');
+            }
+        } catch (error) {
+            console.error('Lỗi khi cập nhật loại sân:', error);
+            Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi cập nhật loại sân.', 'error');
+        }
+    });
+
+    // Hàm xóa loại sân
+    async function deletePitchType(pitchTypeID) {
+        const result = await Swal.fire({
+            title: 'Xác nhận xóa?',
+            text: "Bạn có chắc muốn xóa loại sân này không?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                if (!pitchTypeID) {
+                    Swal.fire('Lỗi!', 'ID loại sân không hợp lệ!', 'error');
+                    return;
+                }
+
+                const response = await fetch(`https://localhost:7290/api/PitchType/${pitchTypeID}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    Swal.fire('Thành công!', 'Loại sân đã được xóa.', 'success');
+                    fetchPitchTypes(currentPage);
+                } else {
+                    Swal.fire('Lỗi!', 'Không thể xóa loại sân.', 'error');
+                }
+            } catch (error) {
+                console.error('Lỗi khi xóa loại sân:', error);
+                Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa loại sân.', 'error');
+            }
+        }
+    }
+
+    // Thêm sự kiện để reset form khi đóng modal
+    $('#addPitchTypeModal').on('hidden.bs.modal', function () {
+        document.getElementById('addPitchTypeForm').reset();
+    });
+
+    $('#editPitchTypeModal').on('hidden.bs.modal', function () {
+        document.getElementById('editPitchTypeForm').reset();
+    });
+
+    // Xử lý preview ảnh khi chọn file
+    document.getElementById('addPitchTypeImage').addEventListener('change', function(e) {
+        const preview = document.getElementById('imagePreviewAdd');
+        const img = preview.querySelector('img');
+        const file = e.target.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+        }
+    });
+
+    document.getElementById('editPitchTypeImage').addEventListener('change', function(e) {
+        const preview = document.getElementById('imagePreviewEdit');
+        const img = preview.querySelector('img');
+        const file = e.target.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                preview.style.display = 'block';
+                document.getElementById('currentImage').style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+            document.getElementById('currentImage').style.display = 'block';
+        }
+    });
+    </script>
+</body>
+
+</html>

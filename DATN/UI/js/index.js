@@ -1,4 +1,3 @@
-
         // Open Modal for login when clicking the button
         function openLoginModal() {
             $('#authModal').modal('show');
@@ -30,32 +29,149 @@
             $('#register-form').hide();
             $('#login-form').show();
         }
-        // Xử lý khi gửi form đăng nhập
-        document.getElementById('login-form-content').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // Hàm xử lý đăng nhập
+        async function handleLogin(event) {
+            event.preventDefault();
+            
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
-            const response = await fetch('https://localhost:7290/api/Auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
+            try {
+                const response = await fetch('https://localhost:7290/api/Auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (response.ok) {
+                if (!response.ok) {
+                    throw new Error(data.message || 'Đăng nhập thất bại');
+                }
+
                 // Lưu token vào localStorage
-                localStorage.setItem('token', data.accessToken); // Lưu JWT token để sử dụng sau này
+                localStorage.setItem('token', data.token);
                 
-                // Sau khi đăng nhập thành công, lấy thông tin người dùng
-                getUserInfoByEmail(email); // Lấy thông tin người dùng qua email
-            } else {
-                alert('Đăng nhập không thành công.');
+                // Đóng modal đăng nhập
+                $('#authModal').modal('hide');
+                
+                // Hiển thị thông báo thành công
+                showNotification('Đăng nhập thành công', 'success');
+                
+                // Cập nhật UI sau khi đăng nhập
+                updateUIAfterLogin();
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification(error.message || 'Đăng nhập thất bại', 'error');
             }
-            closeModal(); // Đóng modal sau khi đăng nhập thành công
+        }
+
+        // Hàm xử lý đăng ký
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const fullName = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const phoneNumber = document.getElementById('register-phone').value;
+            const passwordHash = document.getElementById('register-password').value;
+
+            try {
+                const response = await fetch('https://localhost:7290/api/Auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fullName: fullName,
+                        email: email,
+                        phoneNumber: phoneNumber,
+                        passwordHash: passwordHash
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Đăng ký thất bại');
+                }
+
+                // Hiển thị thông báo thành công
+                showNotification('Đăng ký thành công! Vui lòng đăng nhập', 'success');
+                
+                // Chuyển về form đăng nhập
+                $('#register-form').hide();
+                $('#login-form').show();
+                
+            } catch (error) {
+                console.error('Register error:', error);
+                showNotification(error.message || 'Đăng ký thất bại', 'error');
+            }
+        }
+
+        // Hàm cập nhật UI sau khi đăng nhập
+        function updateUIAfterLogin() {
+            // Thay đổi nút dropdown
+            const userDropdown = document.getElementById('userDropdown');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            
+            userDropdown.innerHTML = 'Tài khoản của tôi';
+            dropdownMenu.innerHTML = `
+                <a class="dropdown-item" href="#" onclick="viewProfile()">Thông tin cá nhân</a>
+                <a class="dropdown-item" href="#" onclick="viewBookings()">Lịch sử đặt sân</a>
+                <a class="dropdown-item" href="#" onclick="handleLogout()">Đăng xuất</a>
+            `;
+        }
+
+        // Hàm xử lý đăng xuất
+        function handleLogout() {
+            // Xóa token
+            localStorage.removeItem('token');
+            
+            // Cập nhật UI
+            const userDropdown = document.getElementById('userDropdown');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            
+            userDropdown.innerHTML = 'Tài khoản';
+            dropdownMenu.innerHTML = `
+                <button class="dropdown-item" id="loginBtn" onclick="openLoginModal()">Đăng nhập</button>
+                <button class="dropdown-item" id="registerBtn" onclick="openRegisterModal()">Đăng ký</button>
+            `;
+            
+            // Hiển thị thông báo
+            showNotification('Đã đăng xuất thành công', 'success');
+        }
+
+        // Hàm hiển thị thông báo
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Thêm event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listener cho form đăng nhập
+            document.getElementById('login-form-content').addEventListener('submit', handleLogin);
+            
+            // Event listener cho form đăng ký
+            document.getElementById('register-form-content').addEventListener('submit', handleRegister);
+            
+            // Kiểm tra trạng thái đăng nhập khi tải trang
+            const token = localStorage.getItem('token');
+            if (token) {
+                updateUIAfterLogin();
+            }
         });
 
         // Hàm lấy thông tin người dùng từ email sau khi đăng nhập
@@ -124,26 +240,30 @@
 
         // Giải mã JWT và chuyển hướng dựa trên vai trò
         function decodeTokenAndRedirect(token) {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
 
-            const payload = JSON.parse(jsonPayload);
-            const role = payload['role']; // Nhận vai trò từ payload của token
+                const payload = JSON.parse(jsonPayload);
+                const role = payload['role']; // Nhận vai trò từ payload của token
 
-            // Chuyển hướng người dùng dựa trên vai trò
-            switch (role) {
-                case 'Admin':
-                    window.location.href = 'http://127.0.0.1:5500/admin/index.html'; // Chuyển hướng đến trang Admin
-                    break;
-                case 'User':
-                    window.location.href = 'http://127.0.0.1:5500/index.html'; // Chuyển hướng đến trang Người dùng
-                    break;
-                default:
+                console.log('Role from token:', role); // Log để debug
+
+                // Chuyển hướng người dùng dựa trên vai trò
+                if (role === 'Admin') {
+                    window.location.href = '/admin/index.html'; // Chuyển hướng đến trang Admin
+                } else if (role === 'User') {
+                    window.location.href = '/index.html'; // Chuyển hướng đến trang Người dùng
+                } else {
+                    console.log('Unknown role:', role); // Log để debug
                     window.location.href = '/'; // Chuyển hướng mặc định
-                    break;
+                }
+            } catch (error) {
+                console.error('Error decoding token:', error);
+                showNotification('Có lỗi xảy ra khi xác thực', 'error');
             }
         }
 
@@ -155,35 +275,3 @@
         }
 
 
-        // Xử lý gửi form đăng ký
-        document.getElementById('register-form-content').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const fullName = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const phoneNumber = document.getElementById('register-phone').value;
-            const passwordHash = document.getElementById('register-password').value;
-            const role = "User";
-            
-            try {
-                const response = await fetch('https://localhost:7290/api/Auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ fullName, phoneNumber, email, passwordHash, role })
-                });
-                const data = await response.json();
-                
-                if (response.ok) {
-                    alert('Đăng ký thành công! Vui lòng đăng nhập.');
-                    cancelRegister(); // Quay lại form đăng nhập
-                } else if (response.status === 400) {
-                    alert('Email đã tồn tại. Vui lòng chọn email khác.');
-                } else if (response.status === 500) {
-                    alert('Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại sau.');
-                }
-            } catch (error) {
-                document.getElementById('register-message').textContent = 'Đã xảy ra lỗi trong quá trình đăng ký.';
-            }
-        });

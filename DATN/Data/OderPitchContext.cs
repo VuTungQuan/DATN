@@ -22,6 +22,36 @@ namespace DATN.Data
                 .HasIndex(b => new { b.PitchID, b.BookingDate, b.StartTime, b.EndTime })
                 .IsUnique();
 
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.User)
+                .WithMany(u => u.Bookings)
+                .HasForeignKey(b => b.UserID)
+                .OnDelete(DeleteBehavior.Cascade); // Optional: You can choose to delete bookings if the user is deleted
+
+            // Define one-to-many relationship between PitchType and Pitch
+            modelBuilder.Entity<Pitch>()
+                .HasOne(p => p.PitchType)
+                .WithMany(pt => pt.Pitches)
+                .HasForeignKey(p => p.PitchTypeID)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            // Define one-to-one relationship between Booking and Payment
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Booking)
+                .WithOne(b => b.Payment) 
+                .HasForeignKey<Payment>(p => p.BookingID)
+                .OnDelete(DeleteBehavior.Cascade); 
+
+            // Define one-to-many relationship between Pitch and Booking
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.Pitch)
+                .WithMany(p => p.Bookings)
+                .HasForeignKey(b => b.PitchID)
+                .OnDelete(DeleteBehavior.Restrict); // Optional: Handle deleting pitches that are booked
+
+            // Ensure that all tables have a CreatedAt field for tracking creation dates
+            modelBuilder.Entity<User>().Property(u => u.CreatedAt).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<Booking>().Property(b => b.CreatedAt).HasDefaultValueSql("GETDATE()");
             
         }
 
