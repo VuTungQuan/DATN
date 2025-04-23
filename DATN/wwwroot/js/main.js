@@ -35,6 +35,13 @@ let selectedField = null;
 // Hàm tạo time slots
 function generateTimeSlots() {
     const timeSlotSelect = document.getElementById('time-slot');
+    
+    // Kiểm tra xem phần tử có tồn tại không
+    if (!timeSlotSelect) {
+        console.log('Không tìm thấy phần tử time-slot');
+        return;
+    }
+    
     timeSlotSelect.innerHTML = '<option value="">Chọn giờ</option>';
     
     // Tạo các khung giờ từ 6:00 đến 22:00

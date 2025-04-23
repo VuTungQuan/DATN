@@ -50,7 +50,11 @@ namespace DATN.Repositories
         {
             return await _context.Pitches.FirstOrDefaultAsync(p => p.Name == name);
         }
-       
+
+        public async Task<IEnumerable<Pitch>> GetPitchesByPitchTypeIDAsync(int typeId)
+        {
+            return await _context.Pitches.Where(p => p.PitchTypeID == typeId).ToListAsync();
+        }
 
     }
 }

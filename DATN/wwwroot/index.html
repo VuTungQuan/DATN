@@ -290,7 +290,12 @@
             </div>
         </div>
     </section>
-
+    <!-- Booking Section -->
+    <section id="booking" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Đề xuất sân bóng</h2>
+        </div>
+    </section>s
     <!-- Thêm phần loại sân sau phần header -->
     <section class="pitch-types-section py-5">
         <div class="container">
@@ -415,8 +420,9 @@
                         onerror="this.src='images/default-pitch.jpg'">
                     <div class="card-body text-center">
                         <h5 class="pitch-type-title">${pitchType.name}</h5>
+                        <p class="card-text mb-3">${pitchType.description || 'Sân bóng chất lượng cao'}</p>
                         <button class="btn btn-success" onclick="viewPitches('${pitchType.pitchTypeID}')">
-                            <i class="fas fa-eye me-2"></i>Xem Sân
+                            <i class="fas fa-eye me-2"></i>Xem danh sách sân
                         </button>
                     </div>
                 </div>
@@ -427,7 +433,10 @@
 
     // Hàm xem danh sách sân theo loại
     function viewPitches(pitchTypeId) {
-        window.location.href = `pitches.html?type=${pitchTypeId}`;
+        // Lưu loại sân đã chọn vào localStorage để sử dụng sau này
+        localStorage.setItem('selectedPitchTypeId', pitchTypeId);
+        // Chuyển hướng đến trang danh sách sân
+        window.location.href = `pitch-list.html?type=${pitchTypeId}`;
     }
 
     // Load danh sách loại sân khi trang được tải
@@ -436,245 +445,7 @@
     });
     </script>
 
-    <!-- Booking Section -->
-    <section id="booking" class="py-5 bg-light">
-        <div class="container">
-            <h2 class="text-center mb-5">Đặt Sân</h2>
-            <div class="row">
-                <!-- Filter Sidebar -->
-                <div class="col-md-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-filter me-2"></i>Bộ lọc</h5>
-                            <form id="booking-form">
-                                <div class="mb-3">
-                                    <label class="form-label"><i class="fas fa-futbol me-2"></i>Loại sân</label>
-                                    <select class="form-select" id="field-type">
-                                        <option value="all">Tất cả</option>
-                                        <option value="5">Sân 5</option>
-                                        <option value="7">Sân 7</option>
-                                        <option value="11">Sân 11</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label"><i class="fas fa-calendar me-2"></i>Ngày</label>
-                                    <input type="text" class="form-control" id="date-picker" placeholder="Chọn ngày">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label"><i class="fas fa-clock me-2"></i>Giờ</label>
-                                    <select class="form-select" id="time-slot">
-                                        <option value="">Chọn giờ</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-success w-100">Tìm sân</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Time Slots Grid -->
-                <div class="col-md-9">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex align-items-center gap-3">
-                            <button class="btn btn-outline-secondary">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <span class="fw-bold">Từ ngày 18/4 đến ngày 24/4</span>
-                            <button class="btn btn-outline-secondary">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-primary">Khung sáng</button>
-                            <button class="btn btn-outline-primary">Khung chiều</button>
-                        </div>
-                    </div>
-
-                    <div class="card shadow-sm">
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-bordered mb-0">
-                                    <thead class="bg-light">
-                                        <tr>
-                                            <th style="width: 100px"></th>
-                                            <th class="text-center">14:00 - 15:30</th>
-                                            <th class="text-center">15:30 - 17:00</th>
-                                            <th class="text-center">17:00 - 18:30</th>
-                                            <th class="text-center">18:30 - 20:00</th>
-                                            <th class="text-center">20:00 - 21:30</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="bg-light">
-                                                <div class="text-center">
-                                                    <div class="fw-bold">T6</div>
-                                                    <small>19/4</small>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="bg-light">
-                                                <div class="text-center">
-                                                    <div class="fw-bold">T7</div>
-                                                    <small>20/4</small>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="bg-light">
-                                                <div class="text-center">
-                                                    <div class="fw-bold">CN</div>
-                                                    <small>21/4</small>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="bg-light">
-                                                <div class="text-center">
-                                                    <div class="fw-bold">T2</div>
-                                                    <small>22/4</small>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="bg-light">
-                                                <div class="text-center">
-                                                    <div class="fw-bold">T3</div>
-                                                    <small>23/4</small>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="bg-light">
-                                                <div class="text-center">
-                                                    <div class="fw-bold">T4</div>
-                                                    <small>24/4</small>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="bg-light">
-                                                <div class="text-center">
-                                                    <div class="fw-bold">T5</div>
-                                                    <small>25/4</small>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div>800K</div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
     <!-- Contact Section -->
     <section id="contact" class="py-5 bg-light">
@@ -685,11 +456,11 @@
                     <div class="card shadow-sm mb-4">
                         <div class="card-body">
                             <h5 class="card-title"><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ</h5>
-                            <p class="card-text">123 Đường Bình Minh, Quận 1, TP.HCM</p>
+                            <p class="card-text">Khu P. Thú Y, Đức Thượng, Hoài Đức, Hà Nội, Việt Nam</p>
                             <h5 class="card-title mt-3"><i class="fas fa-phone me-2"></i>Điện thoại</h5>
                             <p class="card-text">0123 456 789</p>
                             <h5 class="card-title mt-3"><i class="fas fa-envelope me-2"></i>Email</h5>
-                            <p class="card-text">info@sanbongbinhminh.com</p>
+                            <p class="card-text">sanbongbinhminh@gmail.com</p>
                         </div>
                     </div>
                 </div>
@@ -702,7 +473,7 @@
                             <p class="card-text">Chủ nhật: 7:00 - 21:00</p>
                             <h5 class="card-title mt-3"><i class="fas fa-map me-2"></i>Bản đồ</h5>
                             <div class="ratio ratio-16x9">
-                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4248375614857!2d106.69877!3d10.775618!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzMxLjYiTiAxMDbCsDQxJzU1LjYiRQ!5e0!3m2!1svi!2s!4v1620000000000!5m2!1svi!2s" allowfullscreen="" loading="lazy"></iframe>
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d238263.29630701587!2d105.6980896!3d21.0780932!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313455c4dc896bc7%3A0xdabdc63478e26834!2zU8OibiBCw7NuZyBCw6xuaCBNaW5o!5e0!3m2!1svi!2s!4v1745318878559!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                             </div>
                         </div>
                     </div>

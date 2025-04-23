@@ -2,6 +2,7 @@
 using DATN.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DATN.Controllers
 {
@@ -50,6 +51,16 @@ namespace DATN.Controllers
             return Ok(pitch);
         }
 
+        [HttpGet("pitchtype/{id}")]
+        public async Task<ActionResult<IEnumerable<Pitch>>> GetPitchesByPitchTypeID(int id)
+        {
+            var pitches = await _pitchRepository.GetPitchesByPitchTypeIDAsync(id);
+            if (pitches == null || !pitches.Any())
+            {
+                return NotFound("Không tìm thấy sân bóng nào thuộc loại sân này.");
+            }
+            return Ok(pitches);
+        }
         [HttpPost]
         
         public async Task<ActionResult<Pitch>> PostPitch([FromForm] Pitch pitch, IFormFile imageUrl)
@@ -76,11 +87,13 @@ namespace DATN.Controllers
                     await imageUrl.CopyToAsync(stream);
                 }
 
-                pitch.ImageUrl = $"/images/{fileName}";
+                pitch.ImageUrl = $"/images/pitch/{fileName}";
             }
 
-            
-            pitch.PitchID = 0; 
+            // Reset các giá trị không cần thiết
+            pitch.PitchID = 0;
+            pitch.PitchType = null; // Không chèn thông tin PitchType mới
+            pitch.Bookings = null; // Không chèn thông tin Bookings
 
             await _pitchRepository.AddPitchAsync(pitch);
             return CreatedAtAction(nameof(GetPitch), new { id = pitch.PitchID }, pitch);
@@ -90,17 +103,20 @@ namespace DATN.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPitch(int id, [FromBody] Pitch pitch, IFormFile imageUrl)
+        public async Task<IActionResult> PutPitch(int id, [FromForm] Pitch pitch, IFormFile imageUrl)
         {
-            if (id != pitch.PitchID)
+            if (pitch == null)
             {
-                return BadRequest("ID không hợp lệ.");
+                return BadRequest("Dữ liệu không hợp lệ.");
             }
 
-            // Kiểm tra nếu có ảnh mới
+            // Đảm bảo ID từ route được sử dụng
+            pitch.PitchID = id;
+
+            // Kiểm tra nếu có hình ảnh, thì lưu hình ảnh vào thư mục
             if (imageUrl != null && imageUrl.Length > 0)
             {
-                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images","pitch");
+                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "pitch");
                 if (!Directory.Exists(imageFolder))
                 {
                     Directory.CreateDirectory(imageFolder);
@@ -114,19 +130,45 @@ namespace DATN.Controllers
                     await imageUrl.CopyToAsync(stream);
                 }
 
-                pitch.ImageUrl = $"/images/{fileName}";  // Lưu lại đường dẫn hình ảnh
+                pitch.ImageUrl = $"/images/pitch/{fileName}";
             }
 
-            await _pitchRepository.UpdatePitchAsync(pitch);
-            return NoContent();
-        }
+            // Reset các giá trị không cần thiết
+            pitch.PitchType = null;
+            pitch.Bookings = null;
 
+            try
+            {
+                await _pitchRepository.UpdatePitchAsync(pitch);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PitchExists(id))
+                {
+                    return NotFound("Không tìm thấy sân bóng.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+        
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePitch(int id)
         {
             await _pitchRepository.DeletePitchAsync(id);
             return NoContent();
+        }
+        private bool PitchExists(int id)
+        {
+            return _pitchRepository.GetPitchByIdAsync(id) != null;
         }
     }
 }

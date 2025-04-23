@@ -11,5 +11,6 @@ namespace DATN.Repositories
         Task UpdatePitchAsync(Pitch pitch);
         Task DeletePitchAsync(int id);
         Task<Pitch?> GetPitchByNameAsync(string name);
+        Task<IEnumerable<Pitch>> GetPitchesByPitchTypeIDAsync(int typeId);
     }
 }

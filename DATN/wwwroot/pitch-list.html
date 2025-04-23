@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sân bóng - Sân Bóng Bình Minh</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .pitch-card {
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+
+        .pitch-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .pitch-image {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .pitch-status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border-radius: 50px;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .pitch-card-body {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .pitch-card-footer {
+            margin-top: auto;
+        }
+
+        .breadcrumb-section {
+            background-color: #f8f9fa;
+            padding: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-futbol me-2"></i>Sân Bóng Bình Minh
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-calendar-check me-1"></i>Đặt sân</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="my-bookings.html"><i class="fas fa-list me-1"></i>Sân đã đặt</a>
+                    </li>
+                </ul>
+                <div class="d-flex gap-2">
+                    <div id="auth-buttons">
+                        <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập
+                        </button>
+                        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#registerModal">
+                            <i class="fas fa-user-plus me-1"></i>Đăng ký
+                        </button>
+                    </div>
+                    <div id="user-menu" style="display: none;">
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span id="user-name">Tài khoản</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="my-bookings.html"><i class="fas fa-list me-2"></i>Sân đã đặt</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-section">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Danh sách sân bóng</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Pitch List Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col">
+                    <h2 id="pitch-type-title" class="mb-3">Danh sách sân bóng</h2>
+                    <p id="pitch-type-description" class="text-muted">Đang tải thông tin loại sân...</p>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-filter me-2"></i>Bộ lọc</h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Trạng thái</label>
+                                    <select class="form-select" id="status-filter">
+                                        <option value="all">Tất cả</option>
+                                        <option value="active">Đang hoạt động</option>
+                                        <option value="maintenance">Bảo trì</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Sắp xếp theo</label>
+                                    <select class="form-select" id="sort-by">
+                                        <option value="name">Tên sân</option>
+                                        <option value="price-asc">Giá (thấp đến cao)</option>
+                                        <option value="price-desc">Giá (cao đến thấp)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button id="apply-filter" class="btn btn-success w-100">
+                                        <i class="fas fa-search me-2"></i>Áp dụng
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pitch List -->
+            <div class="row" id="pitch-list-container">
+                <!-- Loading spinner -->
+                <div id="loading-spinner" class="col-12 text-center py-5">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Đang tải danh sách sân...</p>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-message" class="alert alert-danger text-center" style="display: none;">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span>Không thể tải danh sách sân. Vui lòng thử lại sau.</span>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="no-results" class="text-center py-5" style="display: none;">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5>Không tìm thấy sân nào</h5>
+                <p class="text-muted">Vui lòng thử lại với bộ lọc khác.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-futbol me-2"></i>Sân Bóng Bình Minh</h5>
+                    <p>Hệ thống sân bóng đá chuyên nghiệp với đầy đủ tiện nghi</p>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="fas fa-link me-2"></i>Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Trang chủ</a></li>
+                        <li><a href="#" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Đặt sân</a></li>
+                        <li><a href="my-bookings.html" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Sân đã đặt</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="fas fa-share-alt me-2"></i>Theo dõi chúng tôi</h5>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="text-light fs-4"><i class="fab fa-zalo"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 Sân Bóng Bình Minh. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lấy loại sân từ URL hoặc sử dụng mặc định là 6
+            const urlParams = new URLSearchParams(window.location.search);
+            const pitchTypeId = urlParams.get('type') || 6;
+            
+            // Lưu ID loại sân đã chọn
+            localStorage.setItem('selectedPitchTypeId', pitchTypeId);
+            
+            // Tải thông tin loại sân
+            fetchPitchTypeInfo(pitchTypeId);
+            
+            // Tải danh sách sân
+            fetchPitches(pitchTypeId);
+            
+            // Xử lý sự kiện lọc
+            document.getElementById('apply-filter').addEventListener('click', function() {
+                fetchPitches(pitchTypeId);
+            });
+            
+            // Kiểm tra trạng thái đăng nhập
+            checkLoginStatus();
+        });
+        
+        // Kiểm tra trạng thái đăng nhập
+        function checkLoginStatus() {
+            const token = localStorage.getItem('accessToken');
+            // Lấy thông tin người dùng từ localStorage
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            console.log("Token:", token);
+            console.log("User:", user);
+            
+            if (token && user) {
+                document.getElementById('auth-buttons').style.display = 'none';
+                document.getElementById('user-menu').style.display = 'block';
+                document.getElementById('user-name').textContent = user.fullName || 'Tài khoản';
+                console.log("Đã đăng nhập - Hiển thị menu người dùng");
+            } else {
+                document.getElementById('auth-buttons').style.display = 'block';
+                document.getElementById('user-menu').style.display = 'none';
+                console.log("Chưa đăng nhập - Hiển thị nút đăng nhập");
+            }
+        }
+        // Hàm cập nhật UI sau khi đăng nhập
+        function updateUIAfterLogin(userData) {
+            // Ẩn nút đăng nhập/đăng ký
+            const authButtons = document.getElementById('auth-buttons');
+            if (authButtons) {
+                authButtons.style.display = 'none';
+            }
+
+            // Hiển thị menu người dùng
+            const userMenu = document.getElementById('user-menu');
+            if (userMenu) {
+                userMenu.style.display = 'block';
+            }
+
+            // Cập nhật tên người dùng trong dropdown
+            const userDropdown = document.getElementById('userDropdown');
+            if (userDropdown && userData.fullName) {
+                userDropdown.textContent = userData.fullName;
+            }
+
+            // Cập nhật menu dropdown
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            if (dropdownMenu) {
+                dropdownMenu.innerHTML = `
+                    <a class="dropdown-item" href="profile.html">
+                        <i class="fas fa-user me-2"></i>Thông tin cá nhân
+                    </a>
+                    <a class="dropdown-item" href="#" onclick="viewBookings()">
+                        <i class="fas fa-history me-2"></i>Lịch sử đặt sân
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item text-danger" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                    </a>
+                `;
+            }
+             
+            // Giải mã token để kiểm tra role và chuyển hướng nếu cần
+            const accessToken = localStorage.getItem('accessToken');
+            if (accessToken) {
+                try {
+                    const base64Url = accessToken.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+
+                    const payload = JSON.parse(jsonPayload);
+                    const role = payload['role'];
+
+                    console.log('Role from token:', role);
+
+                    // Chuyển hướng dựa trên role
+                    if (role === 'Admin') {
+                        window.location.href = '/admin/index.html';
+                    }
+                    // Nếu là User thì ở lại trang hiện tại
+                } catch (error) {
+                    console.error('Error decoding token:', error);
+                }
+            }
+        }
+        // Hàm lấy thông tin loại sân
+        async function fetchPitchTypeInfo(pitchTypeId) {
+            try {
+                const response = await fetch(`https://localhost:7290/api/PitchType/${pitchTypeId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Không thể tải thông tin loại sân');
+                }
+                
+                const data = await response.json();
+                console.log('Dữ liệu loại sân:', data);
+                
+                if (data) {
+                    // Cập nhật tiêu đề và mô tả
+                    document.getElementById('pitch-type-title').textContent = `Danh sách ${data.name || 'sân bóng'}`;
+                    document.getElementById('pitch-type-description').textContent = data.description || 'Các sân bóng chất lượng cao';
+                    
+                    // Cập nhật tiêu đề trang
+                    document.title = `${data.name || 'Danh sách sân bóng'} - Sân Bóng Bình Minh`;
+                } else {
+                    console.error('Dữ liệu loại sân không hợp lệ:', data);
+                }
+            } catch (error) {
+                console.error('Lỗi khi tải thông tin loại sân:', error);
+                document.getElementById('pitch-type-description').textContent = 'Không thể tải thông tin loại sân';
+            }
+        }
+        
+        // Hàm lấy danh sách sân
+        async function fetchPitches(pitchTypeId) {
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const errorMessage = document.getElementById('error-message');
+            const noResults = document.getElementById('no-results');
+            const container = document.getElementById('pitch-list-container');
+            
+            // Lấy thông tin bộ lọc
+            const statusFilter = document.getElementById('status-filter').value;
+            const sortBy = document.getElementById('sort-by').value;
+            
+            try {
+                // Hiển thị loading
+                loadingSpinner.style.display = 'block';
+                errorMessage.style.display = 'none';
+                noResults.style.display = 'none';
+                container.innerHTML = '';
+                
+                // Tạo URL với các tham số
+                let url = `https://localhost:7290/api/Pitch/pitchtype/${pitchTypeId}`;
+                
+                // Thêm tham số lọc nếu cần
+                if (statusFilter !== 'all') {
+                    const isActive = statusFilter === 'active';
+                    url += `?isActive=${isActive}`;
+                }
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Không thể tải danh sách sân');
+                }
+                
+                const data = await response.json();
+                console.log('Dữ liệu sân:', data);
+                let pitches = [];
+                
+                // Xử lý dữ liệu tùy thuộc vào cấu trúc phản hồi API
+                if (data.success && Array.isArray(data.items)) {
+                    pitches = data.items;
+                } else if (Array.isArray(data)) {
+                    pitches = data;
+                } else if (data.items && Array.isArray(data.items)) {
+                    pitches = data.items;
+                }
+                
+                // Sắp xếp danh sách
+                sortPitches(pitches, sortBy);
+                
+                // Hiển thị danh sách
+                displayPitches(pitches);
+                
+                // Kiểm tra nếu không có kết quả
+                if (pitches.length === 0) {
+                    noResults.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Lỗi khi tải danh sách sân:', error);
+                errorMessage.querySelector('span').textContent = 'Không thể tải danh sách sân. Vui lòng thử lại sau.';
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+        
+        // Hàm sắp xếp danh sách sân
+        function sortPitches(pitches, sortBy) {
+            switch(sortBy) {
+                case 'name':
+                    return pitches.sort((a, b) => a.name.localeCompare(b.name));
+                case 'price-asc':
+                    return pitches.sort((a, b) => a.price - b.price);
+                case 'price-desc':
+                    return pitches.sort((a, b) => b.price - a.price);
+                default:
+                    return pitches;
+            }
+        }
+        
+        // Hàm hiển thị danh sách sân
+        function displayPitches(pitches) {
+            const container = document.getElementById('pitch-list-container');
+            container.innerHTML = '';
+            
+            pitches.forEach(pitch => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-4';
+                
+                const statusBadgeClass = pitch.status === 'Hoạt động' || pitch.isActive 
+                    ? 'bg-success' 
+                    : 'bg-danger';
+                const statusText = pitch.status === 'Hoạt động' || pitch.isActive 
+                    ? 'Đang hoạt động' 
+                    : 'Bảo trì';
+                
+                col.innerHTML = `
+                    <div class="card pitch-card h-100">
+                        <div class="position-relative">
+                            <img src="${pitch.imageUrl || 'images/default-pitch.jpg'}" class="card-img-top pitch-image" 
+                                alt="${pitch.name}" 
+                                onerror="this.src='images/default-pitch.jpg'">
+                            <span class="badge ${statusBadgeClass} pitch-status-badge">${statusText}</span>
+                        </div>
+                        <div class="card-body pitch-card-body">
+                            <h5 class="card-title">${pitch.name}</h5>
+                            <p class="card-text mb-2">${pitch.description || 'Sân bóng chất lượng cao'}</p>
+                            <p class="card-text mb-2"><strong>Giá : </strong>${formatCurrency(pitch.price)}</p>
+                            <p class="card-text mb-2"><strong>Thời gian : 1 giờ 30 phút </strong></p>
+                            <div class="pitch-card-footer mt-auto">
+                                <button class="btn btn-success w-100" 
+                                    onclick="bookPitch('${pitch.pitchID}', '${pitch.name}')"
+                                    ${(pitch.status !== 'Hoạt động' && !pitch.isActive) ? 'disabled' : ''}>
+                                    <i class="fas fa-calendar-plus me-2"></i>Đặt sân
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(col);
+            });
+        }
+        
+        // Hàm định dạng tiền tệ
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+        
+        // Hàm xử lý khi người dùng chọn đặt sân
+        function bookPitch(pitchId, pitchName) {
+            // Kiểm tra đã đăng nhập chưa
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                Swal.fire({
+                    title: 'Thông báo',
+                    text: 'Bạn cần đăng nhập để đặt sân',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Đăng nhập',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Lưu thông tin để quay lại sau khi đăng nhập
+                        localStorage.setItem('redirectAfterLogin', window.location.href);
+                        // Mở modal đăng nhập
+                        window.location.href = 'index.html';
+                    }
+                });
+                return;
+            }
+            
+            // Lưu thông tin sân đã chọn
+            localStorage.setItem('selectedPitchId', pitchId);
+            localStorage.setItem('selectedPitchName', pitchName);
+            
+            // Chuyển hướng đến trang đặt sân
+            window.location.href = `booking-details.html?pitch=${pitchId}`;
+        }
+        
+        // Hàm hiển thị lỗi
+        function showError(message) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.querySelector('span').textContent = message;
+            errorMessage.style.display = 'block';
+            document.getElementById('loading-spinner').style.display = 'none';
+        }
+        
+        // Hàm đăng xuất
+        function logout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('userName');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html> 

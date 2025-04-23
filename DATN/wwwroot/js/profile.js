@@ -176,8 +176,9 @@ document.getElementById('changePasswordForm').addEventListener('submit', async f
             return;
         }
 
-        // Nếu mật khẩu cũ đúng, tiến hành đổi mật khẩu
-        const response = await fetch(`https://localhost:7290/api/Users/${userID}`, {
+        //  tiến hành đổi mật khẩu
+        
+        const response = await fetch(`https://localhost:7290/api/Users/hash/${userID}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

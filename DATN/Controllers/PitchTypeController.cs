@@ -53,7 +53,18 @@ namespace DATN.Controllers
 
             return Ok(pitchType);
         }
+        
+        [HttpGet("name/{name}")]
+        public async Task<ActionResult<PitchType>> GetPitchTypebyName(string name)
+        {
+            var pitchType = await _pitchTypeRepository.GetPitchTypeByNameAsync(name);
+            if (pitchType == null)
+            {
+                return NotFound();
+            }
 
+            return Ok(pitchType);
+        }
         // POST: api/PitchType
         [HttpPost]
         public async Task<ActionResult<PitchType>> PostPitchType([FromForm] PitchType pitchType, IFormFile imageUrl)

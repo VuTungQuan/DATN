@@ -6,7 +6,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using DATN.Services;
-
+using DATN.Helpers;
+using AutoMapper;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,11 +22,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<OderPitchDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
 builder.Services.AddScoped<IPitchRepository, PitchRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPitchTypeRepository, PitchTypeRepository>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddCors(options => options.AddPolicy("MyPolicy", builder =>
@@ -46,7 +51,12 @@ builder.Services.AddCors(options =>
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
     .AddJwtBearer(options =>
     {
         options.RequireHttpsMetadata = false;
@@ -60,7 +70,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidAudience = jwtSettings["Audience"],
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.Zero,
+            NameClaimType = ClaimTypes.NameIdentifier,
+            RoleClaimType = ClaimTypes.Role
         };
     });
 

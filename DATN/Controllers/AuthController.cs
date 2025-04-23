@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using DATN.Data;
 using DATN.Model;
 using DATN.Services;
+using System.Security.Claims;
 
 namespace DATN.Controllers
 {
@@ -80,6 +81,37 @@ namespace DATN.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { accessToken, refreshToken = newRefreshToken });
+        }
+
+        // Endpoint để kiểm tra token JWT
+        [HttpGet("test-token")]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public IActionResult TestToken()
+        {
+            var identity = User.Identity;
+            var nameIdentifierClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var subClaim = User.FindFirst("sub")?.Value;
+            var uidClaim = User.FindFirst("uid")?.Value;
+            var jwtSubClaim = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
+            var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+            var jwtEmailClaim = User.FindFirst("email")?.Value;
+            var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+            var roleClaimStr = User.FindFirst("role")?.Value;
+            
+            return Ok(new
+            {
+                isAuthenticated = identity?.IsAuthenticated,
+                authenticationType = identity?.AuthenticationType,
+                nameIdentifierClaim,
+                subClaim,
+                uidClaim,
+                jwtSubClaim,
+                emailClaim,
+                jwtEmailClaim,
+                roleClaim,
+                roleClaimStr,
+                allClaims = User.Claims.Select(c => new { c.Type, c.Value }).ToList()
+            });
         }
     }
 

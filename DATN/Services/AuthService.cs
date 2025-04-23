@@ -38,8 +38,12 @@ namespace DATN.Services
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserID.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+                new Claim("uid", user.UserID.ToString()),
+                new Claim("sub", user.UserID.ToString()),
+                new Claim(ClaimTypes.Email, user.Email ?? ""),
+                new Claim("email", user.Email ?? ""),
+                new Claim(ClaimTypes.Role, user.Role),
                 new Claim("role", user.Role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };

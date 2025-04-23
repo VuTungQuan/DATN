@@ -27,7 +27,7 @@ namespace DATN.Model
 
         // Mối quan hệ với PitchType
         [ForeignKey("PitchTypeID")]
-        public virtual PitchType? PitchType { get; set; }
+        public virtual PitchType PitchType { get; set; }
 
         public virtual ICollection<Booking>? Bookings { get; set; }
     }
