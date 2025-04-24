@@ -28,5 +28,8 @@ namespace DATN.Services
         // Thống kê
         Task<ResponseDTO<Dictionary<string, int>>> GetBookingStatsByStatusAsync();
         Task<ResponseDTO<Dictionary<DateTime, int>>> GetBookingStatsByDateRangeAsync(DateTime fromDate, DateTime toDate);
+        
+        // Lấy danh sách khung giờ đã đặt
+        Task<List<BookedTimeSlotDTO>> GetBookedTimeSlotsAsync(int pitchId, DateTime date);
     }
 } 

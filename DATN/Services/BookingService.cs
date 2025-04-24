@@ -482,18 +482,40 @@ namespace DATN.Services
         {
             try
             {
-                var stats = await _context.Bookings
-                    .Where(b => b.BookingDate.Date >= fromDate.Date && b.BookingDate.Date <= toDate.Date)
+                var bookingCounts = await _context.Bookings
+                    .Where(b => b.BookingDate >= fromDate.Date && b.BookingDate <= toDate.Date)
                     .GroupBy(b => b.BookingDate.Date)
                     .Select(g => new { Date = g.Key, Count = g.Count() })
-                    .ToDictionaryAsync(g => g.Date, g => g.Count);
+                    .ToListAsync();
 
-                return ResponseDTO<Dictionary<DateTime, int>>.SuccessResult(stats);
+                var result = bookingCounts.ToDictionary(item => item.Date, item => item.Count);
+                return ResponseDTO<Dictionary<DateTime, int>>.SuccessResult(result);
             }
             catch (Exception ex)
             {
                 return ResponseDTO<Dictionary<DateTime, int>>.ExceptionResult(ex);
             }
+        }
+
+        // Lấy danh sách khung giờ đã đặt
+        public async Task<List<BookedTimeSlotDTO>> GetBookedTimeSlotsAsync(int pitchId, DateTime date)
+        {
+            try
+            {
+                var bookings = await _context.Bookings
+                    .Where(b => b.PitchID == pitchId && 
+                           b.BookingDate.Date == date.Date && 
+                           b.Status != "Cancelled") // Chỉ lấy các đặt sân chưa bị hủy
+                    .ToListAsync();
+
+                return _mapper.Map<List<BookedTimeSlotDTO>>(bookings);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi lấy khung giờ đã đặt: {ex.Message}");
+                return new List<BookedTimeSlotDTO>();
+            }
+
         }
     }
 } 

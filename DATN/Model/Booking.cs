@@ -34,6 +34,7 @@ namespace DATN.Model
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+
         // Mối quan hệ với User
         [ForeignKey("UserID")]
         public virtual User? User { get; set; }

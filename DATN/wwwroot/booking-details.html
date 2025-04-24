@@ -67,6 +67,51 @@
             cursor: not-allowed;
             text-decoration: line-through;
         }
+        
+        /* Màu sắc cho các buổi trong ngày */
+        .bg-light-yellow {
+            background-color: #FFF9C4 !important;
+            color: #F57F17;
+        }
+        
+        .bg-light-blue {
+            background-color: #E3F2FD !important;
+            color: #1565C0;
+        }
+        
+        .bg-light-purple {
+            background-color: #F3E5F5 !important;
+            color: #6A1B9A;
+        }
+        
+        /* Màu nền nhẹ cho các ô thời gian theo buổi */
+        .morning-slot {
+            background-color: rgba(255, 249, 196, 0.2);
+        }
+        
+        .afternoon-slot {
+            background-color: rgba(227, 242, 253, 0.2);
+        }
+        
+        .evening-slot {
+            background-color: rgba(243, 229, 245, 0.2);
+        }
+        
+        /* Giữ màu nền khi selected */
+        .morning-slot.selected {
+            background-color: rgba(245, 127, 23, 0.2);
+            border-color: #F57F17;
+        }
+        
+        .afternoon-slot.selected {
+            background-color: rgba(21, 101, 192, 0.2);
+            border-color: #1565C0;
+        }
+        
+        .evening-slot.selected {
+            background-color: rgba(106, 27, 154, 0.2);
+            border-color: #6A1B9A;
+        }
     </style>
 </head>
 <body>
@@ -154,45 +199,30 @@
                                     <table class="table table-bordered">
                                         <thead class="table-light">
                                             <tr>
-                                                <th class="text-center bg-light-yellow" colspan="3">Buổi sáng</th>
-                                                <th class="text-center bg-light-blue" colspan="3">Buổi chiều</th>
-                                                <th class="text-center bg-light-purple" colspan="2">Buổi tối</th>
+                                                <th class="text-center bg-light-yellow" colspan="8">Khung giờ đặt sân</th>
                                             </tr>
                                         </thead>
                                         <tbody id="time-slots-table">
                                             <tr>
-                                                <td class="text-center py-3 time-slot morning-slot" data-start="06:00:00" data-end="07:30:00" data-price="150000">
-                                                    <div>6:00 - 7:30</div>
-                                                    <div class="text-success fw-bold mt-1">150.000₫</div>
-                                                </td>
-                                                <td class="text-center py-3 time-slot morning-slot" data-start="07:30:00" data-end="09:00:00" data-price="150000">
-                                                    <div>7:30 - 9:00</div>
-                                                    <div class="text-success fw-bold mt-1">150.000₫</div>
-                                                </td>
-                                                <td class="text-center py-3 time-slot morning-slot" data-start="09:00:00" data-end="10:30:00" data-price="150000">
-                                                    <div>9:00 - 10:30</div>
-                                                    <div class="text-success fw-bold mt-1">150.000₫</div>
-                                                </td>
-                                                <td class="text-center py-3 time-slot afternoon-slot" data-start="13:00:00" data-end="14:30:00" data-price="150000">
-                                                    <div>13:00 - 14:30</div>
-                                                    <div class="text-success fw-bold mt-1">150.000₫</div>
-                                                </td>
-                                                <td class="text-center py-3 time-slot afternoon-slot" data-start="14:30:00" data-end="16:00:00" data-price="150000">
-                                                    <div>14:30 - 16:00</div>
-                                                    <div class="text-success fw-bold mt-1">150.000₫</div>
-                                                </td>
-                                                <td class="text-center py-3 time-slot afternoon-slot" data-start="16:00:00" data-end="17:30:00" data-price="200000">
-                                                    <div>16:00 - 17:30</div>
-                                                    <div class="text-success fw-bold mt-1">200.000₫</div>
-                                                </td>
-                                                <td class="text-center py-3 time-slot evening-slot" data-start="18:00:00" data-end="19:30:00" data-price="250000">
-                                                    <div>18:00 - 19:30</div>
-                                                    <div class="text-success fw-bold mt-1">250.000₫</div>
-                                                </td>
-                                                <td class="text-center py-3 time-slot evening-slot" data-start="19:30:00" data-end="21:00:00" data-price="250000">
-                                                    <div>19:30 - 21:00</div>
-                                                    <div class="text-success fw-bold mt-1">250.000₫</div>
-                                                </td>
+                                                <td class="text-center bg-light-yellow fw-bold" colspan="8">Buổi sáng</td>
+                                            </tr>
+                                            <tr id="morning-slots">
+                                                <!-- Khung giờ buổi sáng sẽ được tạo động bằng JavaScript -->
+                                                <td colspan="8" class="text-center py-3">Đang tải khung giờ...</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center bg-light-blue fw-bold" colspan="8">Buổi chiều</td>
+                                            </tr>
+                                            <tr id="afternoon-slots">
+                                                <!-- Khung giờ buổi chiều sẽ được tạo động bằng JavaScript -->
+                                                <td colspan="8" class="text-center py-3">Đang tải khung giờ...</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center bg-light-purple fw-bold" colspan="8">Buổi tối</td>
+                                            </tr>
+                                            <tr id="evening-slots">
+                                                <!-- Khung giờ buổi tối sẽ được tạo động bằng JavaScript -->
+                                                <td colspan="8" class="text-center py-3">Đang tải khung giờ...</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -330,7 +360,7 @@
             console.log("Token:", token);
             console.log("User data:", user);
             
-            if (!token || !user) {
+            if (!token) {
                 Swal.fire({
                     title: 'Yêu cầu đăng nhập',
                     text: 'Bạn cần đăng nhập để đặt sân',
@@ -343,8 +373,48 @@
                 return;
             }
             
-            // Đã đăng nhập, cập nhật thông tin người dùng
-            document.getElementById('user-name').textContent = user.fullName || 'Tài khoản';
+            // Lấy thông tin người dùng từ localStorage
+            if (user) {
+                // Đã đăng nhập, cập nhật thông tin người dùng
+                document.getElementById('user-name').textContent = user.fullName || 'Tài khoản';
+            } else {
+                // Có token nhưng không có thông tin user, thử lấy lại thông tin
+                fetch('https://localhost:7290/api/User/current', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Phiên đăng nhập hết hạn');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success && data.data) {
+                        // Lưu thông tin người dùng vào localStorage
+                        localStorage.setItem('user', JSON.stringify(data.data));
+                        document.getElementById('user-name').textContent = data.data.fullName || 'Tài khoản';
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi xác thực:', error);
+                    // Xóa token không hợp lệ
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('user');
+                    
+                    Swal.fire({
+                        title: 'Phiên đăng nhập hết hạn',
+                        text: 'Vui lòng đăng nhập lại',
+                        icon: 'warning',
+                        confirmButtonText: 'Đăng nhập ngay',
+                    }).then(() => {
+                        localStorage.setItem('redirectAfterLogin', window.location.href);
+                        window.location.href = 'index.html';
+                    });
+                });
+            }
         }
 
         // Hàm khởi tạo datepicker
@@ -372,11 +442,14 @@
         // Hàm lấy thông tin sân
         async function fetchPitchInfo(pitchId) {
             try {
+                // Lấy token xác thực
+                const token = localStorage.getItem('accessToken');
+                
                 const response = await fetch(`https://localhost:7290/api/Pitch/${pitchId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        'Authorization': token ? `Bearer ${token}` : ''
                     }
                 });
                 
@@ -395,8 +468,48 @@
                     throw new Error('Dữ liệu sân không hợp lệ');
                 }
                 
+                console.log('Thông tin sân đã tải:', pitchData);
+                
+                // Kiểm tra và bổ sung thông tin bị thiếu
+                if (!pitchData.pitchTypeName && pitchData.pitchType && pitchData.pitchType.name) {
+                    pitchData.pitchTypeName = pitchData.pitchType.name;
+                    console.log('Đã bổ sung pitchTypeName từ pitchType.name:', pitchData.pitchTypeName);
+                }
+                
+                // Nếu vẫn chưa có pitchTypeName, tải thông tin loại sân từ API khác
+                if (!pitchData.pitchTypeName && pitchData.pitchTypeID) {
+                    try {
+                        const ptResponse = await fetch(`https://localhost:7290/api/PitchType/${pitchData.pitchTypeID}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': token ? `Bearer ${token}` : ''
+                            }
+                        });
+                        
+                        if (ptResponse.ok) {
+                            const ptData = await ptResponse.json();
+                            if (ptData && ptData.name) {
+                                pitchData.pitchTypeName = ptData.name;
+                                console.log('Đã tải pitchTypeName từ API PitchType:', pitchData.pitchTypeName);
+                            }
+                        }
+                    } catch (err) {
+                        console.warn('Không thể tải thông tin loại sân:', err);
+                    }
+                }
+                
+                // Nếu vẫn không có tên loại sân, gán giá trị mặc định
+                if (!pitchData.pitchTypeName) {
+                    pitchData.pitchTypeName = 'Sân tiêu chuẩn';
+                    console.log('Sử dụng pitchTypeName mặc định:', pitchData.pitchTypeName);
+                }
+                
                 // Cập nhật thông tin sân
                 updatePitchInfo();
+                
+                // Sau khi tải thông tin sân, tiếp tục tải cấu hình khung giờ và giá
+                fetchTimeSlotConfig(pitchId);
                 
             } catch (error) {
                 console.error('Lỗi khi tải thông tin sân:', error);
@@ -415,12 +528,155 @@
         function updatePitchInfo() {
             if (!pitchData) return;
             
+            // Cập nhật tiêu đề và mô tả
             document.getElementById('pitch-name').textContent = `Đặt sân ${pitchData.name}`;
-            document.getElementById('pitch-description').textContent = pitchData.description || 'Sân bóng chất lượng cao';
+            
+            // Tạo mô tả chi tiết bao gồm loại sân và thông tin liên hệ
+            let descriptionText = pitchData.description || 'Sân bóng chất lượng cao';
+            
+            // Thêm thông tin loại sân
+            if (pitchData.pitchTypeName) {
+                descriptionText += ` | Loại sân: ${pitchData.pitchTypeName}`;
+            }
+            
+            // Thêm thông tin liên hệ (nếu có)
+            if (pitchData.phoneNumber) {
+                descriptionText += ` | Liên hệ: ${pitchData.phoneNumber}`;
+            }
+            
+            document.getElementById('pitch-description').textContent = descriptionText;
             document.getElementById('summary-pitch-name').textContent = pitchData.name;
             
             // Cập nhật tiêu đề trang
             document.title = `Đặt sân ${pitchData.name} - Sân Bóng Bình Minh`;
+        }
+
+        // Hàm lấy cấu hình khung giờ và giá từ API
+        async function fetchTimeSlotConfig(pitchId) {
+            try {
+                // Lấy token xác thực
+                const token = localStorage.getItem('accessToken');
+                
+                const response = await fetch(`https://localhost:7290/api/Pitch/${pitchId}/time-slots`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Không thể tải thông tin khung giờ');
+                }
+                
+                let timeSlotConfig = [];
+                const data = await response.json();
+                
+                if (data.success && Array.isArray(data.data)) {
+                    timeSlotConfig = data.data;
+                    console.log('Khung giờ từ API:', timeSlotConfig);
+                } else if (Array.isArray(data)) {
+                    timeSlotConfig = data;
+                    console.log('Khung giờ từ API (định dạng mảng):', timeSlotConfig);
+                } else {
+                    console.log('Định dạng dữ liệu API không đúng, sử dụng cấu hình mặc định');
+                    // Sử dụng cấu hình mặc định với giá từ sân đã chọn
+                    timeSlotConfig = getDefaultTimeSlots();
+                }
+                
+                // Cập nhật giao diện với thông tin khung giờ
+                renderTimeSlots(timeSlotConfig);
+                
+            } catch (error) {
+                console.error('Lỗi khi tải cấu hình khung giờ:', error);
+                // Sử dụng cấu hình mặc định với giá từ sân đã chọn
+                console.log('Sử dụng cấu hình khung giờ mặc định');
+                renderTimeSlots(getDefaultTimeSlots());
+            }
+        }
+
+        // Hàm tạo ra cấu hình khung giờ mặc định nếu API không có sẵn
+        function getDefaultTimeSlots() {
+            // Sử dụng giá tiền từ thông tin sân bóng đã chọn
+            const basePrice = pitchData && pitchData.price ? pitchData.price : 150000;
+            
+            // Tính giá cho các khung giờ khác nhau
+            const morningPrice = basePrice;
+            const afternoonPrice = basePrice;
+            const eveningPrice = Math.round(basePrice * 1.2); // Giá buổi tối cao hơn 20%
+            
+            console.log(`Giá cơ bản của sân: ${basePrice}đ, Giá buổi tối: ${eveningPrice}đ`);
+            
+            return [
+                // Buổi sáng
+                { startTime: '06:00:00', endTime: '07:30:00', price: morningPrice, period: 'Sáng' },
+                { startTime: '07:30:00', endTime: '09:00:00', price: morningPrice, period: 'Sáng' },
+                { startTime: '09:00:00', endTime: '10:30:00', price: morningPrice, period: 'Sáng' },
+                
+                // Buổi chiều
+                { startTime: '13:00:00', endTime: '14:30:00', price: afternoonPrice, period: 'Chiều' },
+                { startTime: '14:30:00', endTime: '16:00:00', price: afternoonPrice, period: 'Chiều' },
+                { startTime: '16:00:00', endTime: '17:30:00', price: afternoonPrice, period: 'Chiều' },
+                
+                // Buổi tối
+                { startTime: '18:00:00', endTime: '19:30:00', price: eveningPrice, period: 'Tối' },
+                { startTime: '19:30:00', endTime: '21:00:00', price: eveningPrice, period: 'Tối' },
+                { startTime: '21:00:00', endTime: '22:30:00', price: eveningPrice, period: 'Tối' }
+                
+            ];
+        }
+
+        // Hàm hiển thị các khung giờ lên giao diện
+        function renderTimeSlots(timeSlotConfig) {
+            // Phân loại khung giờ theo buổi
+            const morningSlots = timeSlotConfig.filter(slot => slot.period === 'Sáng');
+            const afternoonSlots = timeSlotConfig.filter(slot => slot.period === 'Chiều');
+            const eveningSlots = timeSlotConfig.filter(slot => slot.period === 'Tối');
+            
+            // Tạo HTML cho từng khung giờ
+            renderSlotsByPeriod('morning-slots', morningSlots, 'morning-slot');
+            renderSlotsByPeriod('afternoon-slots', afternoonSlots, 'afternoon-slot');
+            renderSlotsByPeriod('evening-slots', eveningSlots, 'evening-slot');
+            
+            // Nếu có ngày đã chọn, cập nhật trạng thái các khung giờ
+            if (selectedDate) {
+                fetchTimeSlots(pitchData.pitchID, selectedDate);
+            }
+        }
+
+        // Hàm hiển thị khung giờ theo buổi
+        function renderSlotsByPeriod(containerId, slots, periodClass) {
+            const container = document.getElementById(containerId);
+            
+            if (!container) return;
+            
+            if (slots.length === 0) {
+                container.innerHTML = `<td colspan="8" class="text-center py-3">Không có khung giờ cho buổi này</td>`;
+                return;
+            }
+            
+            // Tạo HTML cho các ô khung giờ
+            let html = '';
+            
+            slots.forEach(slot => {
+                html += `
+                    <td class="text-center py-3 time-slot ${periodClass}" 
+                        data-start="${slot.startTime}" 
+                        data-end="${slot.endTime}" 
+                        data-price="${slot.price}">
+                        <div>${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}</div>
+                        <div class="text-success fw-bold mt-1">${formatCurrency(slot.price)}</div>
+                    </td>
+                `;
+            });
+            
+            // Thêm ô trống nếu cần
+            const remainingCols = 8 - slots.length;
+            if (remainingCols > 0) {
+                html += `<td colspan="${remainingCols}"></td>`;
+            }
+            
+            container.innerHTML = html;
         }
 
         // Hàm lấy danh sách khung giờ có sẵn
@@ -432,12 +688,15 @@
                 // Format ngày theo định dạng API
                 const formattedDate = formatDateForAPI(date);
                 
+                // Lấy token từ localStorage
+                const token = localStorage.getItem('accessToken');
+                
                 // Gọi API lấy khung giờ đã được đặt
                 const response = await fetch(`https://localhost:7290/api/Booking/booked-slots?pitchId=${pitchId}&date=${formattedDate}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        'Authorization': token ? `Bearer ${token}` : ''
                     }
                 });
                 
@@ -450,15 +709,15 @@
                 // Xử lý dữ liệu trả về từ API - danh sách khung giờ đã được đặt
                 let bookedSlots = [];
                 if (data.success && Array.isArray(data.data)) {
-                    bookedSlots = data.data.map(slot => ({
-                        startTime: slot.startTime,
-                        endTime: slot.endTime
-                    }));
+                    bookedSlots = data.data;
                 } else if (Array.isArray(data)) {
                     bookedSlots = data.map(slot => ({
                         startTime: slot.startTime,
                         endTime: slot.endTime
                     }));
+                } else {
+                    console.error('Định dạng dữ liệu API không đúng:', data);
+                    bookedSlots = [];
                 }
                 
                 console.log('Khung giờ đã đặt:', bookedSlots);
@@ -484,6 +743,7 @@
             
             // Reset trạng thái của tất cả các ô
             timeSlots.forEach(slot => {
+                // Xóa class selected và booked nhưng giữ lại các class buổi (morning-slot, afternoon-slot, evening-slot)
                 slot.classList.remove('selected', 'booked', 'unavailable');
             });
             
@@ -501,16 +761,80 @@
                     if (isBooked) {
                         slot.classList.add('booked');
                         slot.setAttribute('title', 'Đã có người đặt');
+                        // Loại bỏ sự kiện click cho khung giờ đã đặt
+                        slot.style.pointerEvents = 'none';
+                    } else {
+                        // Thêm sự kiện click cho khung giờ trống
+                        slot.style.pointerEvents = 'auto';
+                        slot.setAttribute('title', 'Nhấp để chọn khung giờ này');
+                        
+                        // Xóa listener cũ nếu có
+                        const newSlot = slot.cloneNode(true);
+                        slot.parentNode.replaceChild(newSlot, slot);
+                        
+                        // Nếu đây là slot hiện tại đã chọn, đánh dấu là selected
+                        if (selectedTimeSlot && 
+                            selectedTimeSlot.startTime === startTime && 
+                            selectedTimeSlot.endTime === endTime) {
+                            newSlot.classList.add('selected');
+                        }
+                        
+                        newSlot.addEventListener('click', function() {
+                            // Nếu slot này đã được chọn, bỏ chọn nó
+                            if (this.classList.contains('selected')) {
+                                this.classList.remove('selected');
+                                selectedTimeSlot = null;
+                                updateSummary();
+                                return;
+                            }
+                            
+                            // Bỏ chọn tất cả các slot trước khi chọn slot mới
+                            document.querySelectorAll('.time-slot').forEach(s => {
+                                s.classList.remove('selected');
+                            });
+                            
+                            // Chọn slot này
+                            this.classList.add('selected');
+                            
+                            // Lưu thông tin đã chọn
+                            selectedTimeSlot = {
+                                startTime: this.getAttribute('data-start'),
+                                endTime: this.getAttribute('data-end'),
+                                price: parseFloat(this.getAttribute('data-price'))
+                            };
+                            
+                            // Cập nhật thông tin
+                            updateSummary();
+                        });
                     }
                 });
-            }
-            
-            // Thêm sự kiện click
-            timeSlots.forEach(slot => {
-                if (!slot.classList.contains('booked')) {
-                    slot.addEventListener('click', function() {
-                        // Bỏ chọn tất cả
-                        timeSlots.forEach(s => s.classList.remove('selected'));
+            } else {
+                // Nếu không có dữ liệu khung giờ đã đặt, cho phép chọn tất cả
+                timeSlots.forEach(slot => {
+                    // Xóa listener cũ nếu có
+                    const newSlot = slot.cloneNode(true);
+                    slot.parentNode.replaceChild(newSlot, slot);
+                    
+                    // Nếu đây là slot hiện tại đã chọn, đánh dấu là selected
+                    if (selectedTimeSlot && 
+                        selectedTimeSlot.startTime === newSlot.getAttribute('data-start') && 
+                        selectedTimeSlot.endTime === newSlot.getAttribute('data-end')) {
+                        newSlot.classList.add('selected');
+                    }
+                    
+                    newSlot.addEventListener('click', function() {
+                        // Nếu slot này đã được chọn, bỏ chọn nó
+                        if (this.classList.contains('selected')) {
+                            this.classList.remove('selected');
+                            selectedTimeSlot = null;
+                            updateSummary();
+                            return;
+                        }
+                        
+                        // Bỏ chọn tất cả các slot trước khi chọn slot mới
+                        document.querySelectorAll('.time-slot').forEach(s => {
+                            s.classList.remove('selected');
+                        });
                         
                         // Chọn slot này
                         this.classList.add('selected');
@@ -525,8 +849,10 @@
                         // Cập nhật thông tin
                         updateSummary();
                     });
-                }
-            });
+                });
+            }
+            
+            console.log('Đã cập nhật trạng thái khung giờ, khung giờ đã chọn:', selectedTimeSlot);
         }
 
         // Cập nhật thông tin tóm tắt đặt sân
@@ -553,6 +879,35 @@
             }
         }
 
+        // Cập nhật UI sau khi đặt sân thành công
+        function updateBookingSuccess(bookingData) {
+            // Cập nhật thông tin đặt sân
+            localStorage.setItem('lastBooking', JSON.stringify({
+                id: bookingData.bookingID,
+                pitchName: pitchData.name,
+                date: formatDate(selectedDate),
+                time: `${formatTime(selectedTimeSlot.startTime)} - ${formatTime(selectedTimeSlot.endTime)}`,
+                price: selectedTimeSlot.price
+            }));
+            
+            // Hiển thị thông báo thành công
+            Swal.fire({
+                title: 'Đặt sân thành công!',
+                text: 'Bạn có muốn xem thông tin đặt sân?',
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonText: 'Xem đặt sân',
+                cancelButtonText: 'Đặt sân khác'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'my-bookings.html';
+                } else {
+                    // Làm mới trang
+                    window.location.reload();
+                }
+            });
+        }
+
         // Gửi yêu cầu đặt sân
         async function submitBooking() {
             if (!selectedDate || !selectedTimeSlot || !pitchData) {
@@ -576,14 +931,52 @@
                     }
                 });
                 
-                // Chuẩn bị dữ liệu
+                // Định dạng thời gian cho API
+                const bookingDate = new Date(selectedDate);
+                
+                // Lấy token từ localStorage
+                const token = localStorage.getItem('accessToken');
+                
+                if (!token) {
+                    throw new Error('Bạn cần đăng nhập để đặt sân');
+                }
+                
+                // Kiểm tra khả dụng của sân trước khi đặt
+                const checkAvailabilityUrl = `https://localhost:7290/api/Booking/check-availability?pitchId=${pitchData.pitchID}&date=${formatDateForAPI(bookingDate)}&startTime=${selectedTimeSlot.startTime}&endTime=${selectedTimeSlot.endTime}`;
+                
+                const availabilityResponse = await fetch(checkAvailabilityUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const availabilityResult = await availabilityResponse.json();
+                if (!availabilityResponse.ok) {
+                    if (availabilityResponse.status === 401) {
+                        // Token hết hạn
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('user');
+                        throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+                    }
+                    throw new Error(availabilityResult.message || 'Không thể kiểm tra khả dụng của sân');
+                }
+                
+                if (!availabilityResult.data) {
+                    throw new Error('Sân đã được đặt trong khung giờ này. Vui lòng chọn khung giờ khác.');
+                }
+                
+                // Chuẩn bị dữ liệu theo cấu trúc của API
                 const bookingData = {
-                    pitchID: pitchData.pitchID,
-                    bookingDate: formatDateForAPI(selectedDate),
-                    startTime: selectedTimeSlot.startTime,
-                    endTime: selectedTimeSlot.endTime,
-                    totalPrice: selectedTimeSlot.price,
-                    note: document.getElementById('booking-note').value || ''
+                    booking: {
+                        pitchID: pitchData.pitchID,
+                        bookingDate: bookingDate.toISOString(),
+                        startTime: selectedTimeSlot.startTime,
+                        endTime: selectedTimeSlot.endTime,
+                        totalPrice: selectedTimeSlot.price,
+                        note: document.getElementById('booking-note').value || ''
+                    },
+                    payment: null
                 };
                 
                 console.log('Dữ liệu gửi đi:', bookingData);
@@ -593,16 +986,35 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(bookingData)
                 });
                 
                 const result = await response.json();
                 
-                if (!response.ok || !result.success) {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token hết hạn
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('user');
+                        throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+                    }
                     throw new Error(result.message || 'Đặt sân không thành công');
                 }
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'Đặt sân không thành công');
+                }
+                
+                // Cập nhật thông tin đặt sân
+                localStorage.setItem('lastBooking', JSON.stringify({
+                    id: result.data.bookingID,
+                    pitchName: pitchData.name,
+                    date: formatDate(selectedDate),
+                    time: `${formatTime(selectedTimeSlot.startTime)} - ${formatTime(selectedTimeSlot.endTime)}`,
+                    price: selectedTimeSlot.price
+                }));
                 
                 // Hiển thị thông báo thành công
                 Swal.fire({
@@ -623,12 +1035,25 @@
                 
             } catch (error) {
                 console.error('Lỗi khi đặt sân:', error);
-                Swal.fire({
-                    title: 'Lỗi',
-                    text: 'Không thể đặt sân: ' + error.message,
-                    icon: 'error',
-                    confirmButtonText: 'Đồng ý'
-                });
+                
+                if (error.message.includes('đăng nhập')) {
+                    Swal.fire({
+                        title: 'Yêu cầu đăng nhập',
+                        text: error.message,
+                        icon: 'warning',
+                        confirmButtonText: 'Đăng nhập ngay',
+                    }).then(() => {
+                        localStorage.setItem('redirectAfterLogin', window.location.href);
+                        window.location.href = 'index.html';
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Lỗi',
+                        text: 'Không thể đặt sân: ' + error.message,
+                        icon: 'error',
+                        confirmButtonText: 'Đồng ý'
+                    });
+                }
             }
         }
 

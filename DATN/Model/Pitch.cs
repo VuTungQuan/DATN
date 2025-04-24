@@ -12,7 +12,7 @@ namespace DATN.Model
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }
-
+  
         [Required]
         public int PitchTypeID { get; set; }
 

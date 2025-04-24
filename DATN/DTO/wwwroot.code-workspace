@@ -1,0 +1,50 @@
+{
+	"folders": [
+		{
+			"name": "wwwroot",
+			"path": "../wwwroot"
+		},
+		{
+			"name": "bin",
+			"path": "../bin"
+		},
+		{
+			"name": "Controllers",
+			"path": "../Controllers"
+		},
+		{
+			"name": "Data",
+			"path": "../Data"
+		},
+		{
+			"name": "Migrations",
+			"path": "../Migrations"
+		},
+		{
+			"name": "Model",
+			"path": "../Model"
+		},
+		{
+			"name": "obj",
+			"path": "../obj"
+		},
+		{
+			"name": "Properties",
+			"path": "../Properties"
+		},
+		{
+			"name": "Repository",
+			"path": "../Repository"
+		},
+		{
+			"name": "Services",
+			"path": "../Services"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../Helpers"
+		}
+	]
+}

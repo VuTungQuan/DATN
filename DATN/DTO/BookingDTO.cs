@@ -70,5 +70,13 @@ namespace DATN.DTO
         public BookingCreateDTO Booking { get; set; } = new BookingCreateDTO();
         
         public PaymentCreateDTO? Payment { get; set; }
+    
+    }
+    public class BookedTimeSlotDTO
+    {
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public int BookingID { get; set; }
+        public string Status { get; set; }
     }
 } 

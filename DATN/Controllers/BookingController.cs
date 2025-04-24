@@ -49,7 +49,7 @@ namespace DATN.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { success = false, message = ex.Message });
             }
         }
 
@@ -67,8 +67,34 @@ namespace DATN.Controllers
 
         // GET: api/Bookings/user/5
         [HttpGet("user/{userId}")]
+        [Authorize]
         public async Task<ActionResult<ResponseDTO<List<BookingDTO>>>> GetBookingsByUser(int userId)
         {
+            // Kiểm tra người dùng hiện tại có quyền xem không
+            if (!User.IsInRole("Admin"))
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId) || currentUserId != userId)
+                {
+                    return Forbid();
+                }
+            }
+            
+            var result = await _bookingService.GetBookingsByUserIdAsync(userId);
+            return Ok(result);
+        }
+
+        // GET: api/Bookings/current-user
+        [HttpGet("current-user")]
+        [Authorize]
+        public async Task<ActionResult<ResponseDTO<List<BookingDTO>>>> GetCurrentUserBookings()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return BadRequest(new { success = false, message = "Không thể xác định người dùng" });
+            }
+            
             var result = await _bookingService.GetBookingsByUserIdAsync(userId);
             return Ok(result);
         }
@@ -85,7 +111,7 @@ namespace DATN.Controllers
             {
                 if (!TimeSpan.TryParse(startTime, out var start) || !TimeSpan.TryParse(endTime, out var end))
                 {
-                    return BadRequest(new { message = "Thời gian không hợp lệ" });
+                    return BadRequest(new { success = false, message = "Thời gian không hợp lệ" });
                 }
 
                 var result = await _bookingService.GetAvailablePitchesAsync(date, start, end, pitchTypeId);
@@ -93,7 +119,7 @@ namespace DATN.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { success = false, message = ex.Message });
             }
         }
 
@@ -114,13 +140,10 @@ namespace DATN.Controllers
                 
                 if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out userId))
                 {
-                    // Đã mở chế độ debug để ghi log
                     var allClaims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
                     Console.WriteLine("Tất cả claims: " + JsonConvert.SerializeObject(allClaims));
                     
-                    // Không sử dụng ID cố định nữa vì đã có token hoạt động
-                    // userId = 1;
-                    return BadRequest(new { message = "Không thể xác định người dùng", claims = allClaims });
+                    return BadRequest(new { success = false, message = "Không thể xác định người dùng", claims = allClaims });
                 }
 
                 var result = await _bookingService.CreateBookingAsync(userId, request.Booking);
@@ -129,11 +152,11 @@ namespace DATN.Controllers
                     return BadRequest(result);
                 }
 
-                return CreatedAtAction(nameof(GetBooking), new { id = result.Data.BookingID }, result);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { success = false, message = ex.Message });
             }
         }
 
@@ -207,6 +230,47 @@ namespace DATN.Controllers
         {
             var result = await _bookingService.GetBookingStatsByDateRangeAsync(fromDate, toDate);
             return Ok(result);
+        }
+
+        // GET: api/Booking/booked-slots
+        [HttpGet("booked-slots")]
+        public async Task<ActionResult<ResponseDTO<List<BookedTimeSlotDTO>>>>  GetBookedTimeSlots(
+            [FromQuery] int pitchId,
+            [FromQuery] DateTime date)
+        {
+            try
+            {
+                var result = await _bookingService.GetBookedTimeSlotsAsync(pitchId, date);
+                return Ok(new { success = true, data = result });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        // GET: api/Booking/check-availability
+        [HttpGet("check-availability")]
+        public async Task<ActionResult<ResponseDTO<bool>>> CheckPitchAvailability(
+            [FromQuery] int pitchId,
+            [FromQuery] DateTime date,
+            [FromQuery] string startTime,
+            [FromQuery] string endTime)
+        {
+            try
+            {
+                if (!TimeSpan.TryParse(startTime, out var start) || !TimeSpan.TryParse(endTime, out var end))
+                {
+                    return BadRequest(new { success = false, message = "Thời gian không hợp lệ" });
+                }
+
+                var result = await _bookingService.CheckPitchAvailabilityAsync(pitchId, date, start, end);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
         }
     }
 } 
