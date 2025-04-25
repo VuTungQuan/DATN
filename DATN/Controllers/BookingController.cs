@@ -234,7 +234,7 @@ namespace DATN.Controllers
 
         // GET: api/Booking/booked-slots
         [HttpGet("booked-slots")]
-        public async Task<ActionResult<ResponseDTO<List<BookedTimeSlotDTO>>>>  GetBookedTimeSlots(
+        public async Task<ActionResult<ResponseDTO<List<BookedTimeSlotDTO>>>> GetBookedTimeSlots(
             [FromQuery] int pitchId,
             [FromQuery] DateTime date)
         {

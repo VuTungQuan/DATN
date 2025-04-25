@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using DATN.Repositories;
+using DATN.Repository;    
 using DATN.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;

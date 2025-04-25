@@ -3,7 +3,7 @@ using DATN.Data;
 
 using DATN.Model;
 
-namespace DATN.Repositories
+namespace DATN.Repository
 {
     public class BookingRepository : IBookingRepository
     {

@@ -264,33 +264,67 @@
                                             <div class="container mt-5">
                                                 <div class="card">
                                                     <div class="card-header">
-                                                        <h5 class="card-header-text" style="color: #2ed8b6;">Quản Lý Sân Bóng</h5>
-                                                        <button id="addPitchBtn" class="btn btn-success" data-toggle="modal" data-target="#addPitchModal">
-                                                            Thêm Sân Bóng
+                                                        <h5 class="card-header-text" style="color: #2ed8b6;">Quản Lý Thanh Toán</h5>
+                                                        <button id="refreshData" class="btn btn-primary float-right">
+                                                            <i class="ti-reload"></i> Làm mới
                                                         </button>
-                                                </div>
+                                                    </div>
                                                     <div class="card-block">
+                                                        <div class="row mb-3">
+                                                            <div class="col-md-2">
+                                                                <label>Từ ngày:</label>
+                                                                <input type="date" id="fromDate" class="form-control">
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Đến ngày:</label>
+                                                                <input type="date" id="toDate" class="form-control">
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Trạng thái:</label>
+                                                                <select id="statusFilter" class="form-control">
+                                                                    <option value="">Tất cả</option>
+                                                                    <option value="Pending">Chờ thanh toán</option>
+                                                                    <option value="Paid">Đã thanh toán</option>
+                                                                    <option value="Failed">Thanh toán thất bại</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Phương thức:</label>
+                                                                <select id="methodFilter" class="form-control">
+                                                                    <option value="">Tất cả</option>
+                                                                    <option value="Cash">Tiền mặt</option>
+                                                                    <option value="VnPay">VnPay</option>
+                                                                    <option value="Bank Transfer">Chuyển khoản</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>&nbsp;</label>
+                                                                <button id="searchButton" class="btn btn-primary form-control">Tìm kiếm</button>
+                                                            </div>
+                                                        </div>
+                                                        
                                                         <div class="table-responsive">
                                                             <table class="table table-hover">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>ID</th>
-                                                        <th>Tên Sân</th>
-                                                        <th>Loại Sân</th>
-                                                        <th>Giá</th>
-                                                        <th>Trạng Thái</th>
-                                                        <th>Hình Ảnh</th>
-                                                        <th>Thao Tác</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody id="pitchTableBody">
-                                                                    <!-- Dữ liệu sân bóng sẽ được thêm vào đây -->
-                                                    </tbody>
-                                                </table>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>ID</th>
+                                                                        <th>Mã đặt sân</th>
+                                                                        <th>Phương thức</th>
+                                                                        <th>Số tiền</th>
+                                                                        <th>Trạng thái</th>
+                                                                        <th>Mã giao dịch</th>
+                                                                        <th>Ngày thanh toán</th>
+                                                                        <th>Thao tác</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="paymentTableBody">
+                                                                    <!-- Dữ liệu thanh toán sẽ được thêm vào đây -->
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <div class="pagination-info"></div>
-                                                            <ul class="pagination" id="pagination">
+                                                            <ul class="pagination" id="paymentPagination">
                                                                 <!-- Phân trang sẽ được thêm vào đây -->
                                                             </ul>
                                                         </div>
@@ -299,120 +333,7 @@
                                             </div>
                                             <!-- Quản lý Sân Bóng End -->
 
-                                            <!-- Modal Thêm Sân Bóng -->
-                                            <div class="modal fade" id="addPitchModal" tabindex="-1" role="dialog">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Thêm Sân Bóng Mới</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form id="addPitchForm">
-                                                                <div class="form-group">
-                                                                    <label for="pitchID">ID Sân</label>
-                                                                    <input type="text" class="form-control" id="pitchID" required>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="pitchName">Tên Sân</label>
-                                                                    <input type="text" class="form-control" id="pitchName" required>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="pitchTypeID">Loại Sân</label>
-                                                                    <select class="form-control" id="pitchTypeID" required>
-                                                                        <!-- Options sẽ được thêm bằng JavaScript -->
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="status">Sân Gộp</label>
-                                                                    <select class="form-control" id="isCombined" required>
-                                                                        <option value="true">Có</option>
-                                                                        <option value="false">Không</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="price">Giá</label>
-                                                                    <input type="number" class="form-control" id="price" required>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="status">Trạng Thái</label>
-                                                                    <select class="form-control" id="status" required>
-                                                                        <option >Hoạt động</option>
-                                                                        <option >Bảo trì</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="imageFile">Hình Ảnh</label>
-                                                                    <input type="file" class="form-control" id="imageFile" accept="image/pitch/*" required>
-                                                                    <img id="imagePreview" src="" alt="" style="max-width: 200px; margin-top: 10px; display: none;">
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                                            <button type="button" class="btn btn-success" id="submitAddPitch">Thêm</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Modal Sửa Sân Bóng -->
-                                            <div class="modal fade" id="editPitchModal" tabindex="-1" role="dialog">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Sửa Thông Tin Sân Bóng</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form id="editPitchForm">
-                                                                <input type="hidden" id="editPitchID">
-                                                                <div class="form-group">
-                                                                    <label for="editPitchName">Tên Sân</label>
-                                                                    <input type="text" class="form-control" id="editPitchName" required>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="editPitchTypeID">Loại Sân</label>
-                                                                    <select class="form-control" id="editPitchTypeID" required>
-                                                                        <!-- Options sẽ được thêm bằng JavaScript -->
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="editIsCombined">Sân Gộp</label>
-                                                                    <select class="form-control" id="editIsCombined" required>
-                                                                        <option value="true">Có</option>
-                                                                        <option value="false">Không</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="editPrice">Giá</label>
-                                                                    <input type="number" class="form-control" id="editPrice" required>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="editStatus">Trạng Thái</label>
-                                                                    <select class="form-control" id="editStatus" required>
-                                                                        <option value="true">Hoạt động</option>
-                                                                        <option value="false">Không hoạt động</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="editImageFile">Hình Ảnh</label>
-                                                                    <input type="file" class="form-control" id="editImageFile" accept="image/pitch/*">
-                                                                    <img id="editImagePreview" src="" alt="" style="max-width: 200px; margin-top: 10px;">
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                                            <button type="button" class="btn btn-success" id="submitEditPitch">Lưu</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
 
                                     <div id="styleSelector">
 
@@ -464,9 +385,9 @@ var nav = $('.fixed-button');
 <script>
     // Khai báo các biến toàn cục
     let currentPage = 1;
-    const itemsPerPage = 5;
+    let itemsPerPage = 10;
     let totalItems = 0;
-    let pitchTypes = [];
+    let currentPaymentId = 0;
 
     // Hàm format tiền tệ VND
     const formatCurrency = (amount) => {
@@ -476,51 +397,167 @@ var nav = $('.fixed-button');
         }).format(amount);
     };
 
-    // Kiểm tra xem người dùng đã đăng nhập chưa khi vào trang admin
+    // Format ngày tháng
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        return new Date(dateString).toLocaleDateString('vi-VN', options);
+    };
+
+    // Hàm lấy class cho badge trạng thái
+    const getStatusBadgeClass = (status) => {
+        switch (status) {
+            case 'Pending': return 'badge-warning';
+            case 'Paid': return 'badge-success';
+            case 'Failed': return 'badge-danger';
+            default: return 'badge-secondary';
+        }
+    };
+
+    // Hàm lấy text hiển thị cho trạng thái
+    const getStatusText = (status) => {
+        switch (status) {
+            case 'Pending': return 'Chờ thanh toán';
+            case 'Paid': return 'Đã thanh toán';
+            case 'Failed': return 'Thanh toán thất bại';
+            default: return status;
+        }
+    };
+
+    // Hàm lấy text hiển thị cho phương thức thanh toán
+    const getPaymentMethodText = (method) => {
+        switch (method) {
+            case 'Cash': return 'Tiền mặt';
+            case 'VnPay': return 'VnPay';
+            case 'Bank Transfer': return 'Chuyển khoản';
+            default: return method;
+        }
+    };
+
+    // Kiểm tra xem DOM đã sẵn sàng
     document.addEventListener('DOMContentLoaded', function () {
+        console.log("DOM đã sẵn sàng, đang khởi tạo trang quản lý thanh toán");
+        
+        // Thêm sự kiện cho nút làm mới dữ liệu
+        document.getElementById('refreshData').addEventListener('click', function() {
+            loadPayments();
+        });
+        
         const token = localStorage.getItem('accessToken');
-        if (token) {
+        console.log("Token hiện tại:", token ? "Có token" : "Không có token");
+        
+        if (!token) {
+            console.error("Chưa có access token");
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi xác thực',
+                text: 'Bạn cần đăng nhập để sử dụng tính năng này',
+                confirmButtonText: 'Đăng nhập'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '../index.html';
+                }
+            });
+            return;
+        }
+        
+        try {
             const decodedToken = decodeToken(token);
+            console.log("Token đã giải mã:", decodedToken);
+            
+            // Kiểm tra token hết hạn
+            const currentTime = Math.floor(Date.now() / 1000);
+            if (decodedToken.exp && decodedToken.exp < currentTime) {
+                console.error("Token đã hết hạn");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Phiên làm việc hết hạn',
+                    text: 'Vui lòng đăng nhập lại',
+                    confirmButtonText: 'Đăng nhập'
+                }).then(() => {
+                    localStorage.removeItem('accessToken');
+                    window.location.href = '../index.html';
+                });
+                return;
+            }
+            
             const role = decodedToken.role;
+            console.log("Vai trò người dùng:", role);
 
             if (role === 'Admin') {
                 // Lấy thông tin admin từ API và cập nhật giao diện
                 const email = decodedToken.email;
                 getUserInfoByEmail(email);
-                // Khởi tạo dữ liệu
-                loadPitchTypes();
-                loadPitches();
+                
+                // Khởi tạo ngày mặc định (30 ngày qua)
+                const today = new Date();
+                const monthAgo = new Date();
+                monthAgo.setDate(today.getDate() - 30);
+                
+                document.getElementById('fromDate').valueAsDate = monthAgo;
+                document.getElementById('toDate').valueAsDate = today;
+                
+                // Tải danh sách thanh toán
+                loadPayments();
+                
+                // Thêm sự kiện cho nút tìm kiếm
+                document.getElementById('searchButton').addEventListener('click', loadPayments);
             } else {
-                window.location.href = 'http://127.0.0.1:5500/index.html'; // Chuyển hướng nếu không phải admin
+                console.error("Người dùng không phải là Admin:", role);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi quyền truy cập',
+                    text: 'Bạn cần đăng nhập với tài khoản Admin để sử dụng tính năng này',
+                    confirmButtonText: 'Đăng nhập lại'
+                }).then(() => {
+                    localStorage.removeItem('accessToken');
+                    window.location.href = '../index.html';
+                });
             }
+        } catch (error) {
+            console.error("Lỗi xử lý token:", error);
+            Swal.fire({
+                icon: 'error', 
+                title: 'Lỗi xác thực',
+                text: 'Token không hợp lệ: ' + error.message,
+                confirmButtonText: 'Đăng nhập lại'
+            }).then(() => {
+                localStorage.removeItem('accessToken');
+                window.location.href = '../index.html';
+            });
         } 
     });
 
     // Hàm giải mã JWT
     function decodeToken(token) {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
 
-        return JSON.parse(jsonPayload);
+            return JSON.parse(jsonPayload);
+        } catch (error) {
+            console.error("Lỗi giải mã token:", error);
+            throw new Error("Token không hợp lệ hoặc sai định dạng");
+        }
     }
 
     // Hàm lấy thông tin người dùng từ email sau khi đăng nhập
     async function getUserInfoByEmail(email) {
         try {
             const encodedEmail = encodeURIComponent(email);
-        const response = await fetch(`https://localhost:7290/api/Users/email/${encodedEmail}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                'Content-Type': 'application/json'
-            }
-        });
+            const response = await fetch(`https://localhost:7290/api/Users/email/${encodedEmail}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        if (response.ok) {
-            const userData = await response.json();
+            if (response.ok) {
+                const userData = await response.json();
                 const userDropdown = document.getElementById('userDropdown');
                 if (userDropdown) {
                     userDropdown.innerText = userData.fullName || 'Admin';
@@ -530,7 +567,7 @@ var nav = $('.fixed-button');
                 if (userMenu) {
                     userMenu.style.display = 'block';
                 }
-        } else {
+            } else {
                 console.error('Không thể lấy thông tin người dùng');
             }
         } catch (error) {
@@ -538,132 +575,159 @@ var nav = $('.fixed-button');
         }
     }
 
-    // Hàm tải danh sách loại sân
-    const loadPitchTypes = async () => {
+    // Hàm tải danh sách thanh toán
+    const loadPayments = async () => {
         try {
-            const response = await fetch('https://localhost:7290/api/PitchType', {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-                }
-            });
-            if (!response.ok) throw new Error('Không thể tải danh sách loại sân');
-            const data = await response.json();
+            // Lấy thông tin filter
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const status = document.getElementById('statusFilter').value;
+            const method = document.getElementById('methodFilter').value;
             
-            // Đảm bảo data là một mảng
-            pitchTypes = Array.isArray(data) ? data : (data.items || []);
+            // Lấy tham chiếu tới bảng
+            const tbody = document.getElementById('paymentTableBody');
             
-            // Cập nhật select boxes
-            const addSelect = document.getElementById('pitchTypeID');
-            const editSelect = document.getElementById('editPitchTypeID');
-            
-            if (addSelect && editSelect) {
-                const options = pitchTypes.map(type => 
-                    `<option value="${type.pitchTypeID}">${type.name}</option>`
-                ).join('');
-                
-                addSelect.innerHTML = options;
-                editSelect.innerHTML = options;
-            }
-        } catch (error) {
-            console.error('Lỗi:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
-                text: 'Không thể tải danh sách loại sân'
-            });
-        }
-    };
-
-    // Hàm lấy thông tin chi tiết loại sân
-    const getPitchTypeName = async (pitchTypeID) => {
-        try {
-            const response = await fetch(`https://localhost:7290/api/PitchType/${pitchTypeID}`, {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-                }
-            });
-            if (!response.ok) throw new Error('Không thể lấy thông tin loại sân');
-            const pitchType = await response.json();
-            return pitchType.name;
-        } catch (error) {
-            console.error('Lỗi:', error);
-            return '';
-        }
-    };
-
-    // Hàm tải danh sách sân bóng
-    const loadPitches = async () => {
-        try {
-            const response = await fetch('https://localhost:7290/api/Pitch', {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-                }
-            });
-            if (!response.ok) throw new Error('Không thể tải danh sách sân bóng');
-            const data = await response.json();
-            
-            // Đảm bảo data là một mảng
-            const pitches = Array.isArray(data) ? data : (data.items || []);
-            totalItems = pitches.length;
-            
-            // Tính toán phân trang
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const paginatedPitches = pitches.slice(startIndex, endIndex);
-            
-            // Lấy thông tin chi tiết loại sân cho mỗi sân
-            const pitchesWithTypes = await Promise.all(
-                paginatedPitches.map(async (pitch) => {
-                    const pitchTypeName = await getPitchTypeName(pitch.pitchTypeID);
-                    return {
-                        ...pitch,
-                        pitchTypeName
-                    };
-                })
-            );
-            
-            // Hiển thị dữ liệu
-            const tbody = document.getElementById('pitchTableBody');
+            // Hiển thị loading
             if (tbody) {
-                tbody.innerHTML = pitchesWithTypes.map(pitch => `
+                tbody.innerHTML = `
                     <tr>
-                        <td>${pitch.pitchID}</td>
-                        <td>${pitch.name}</td>
-                        <td>${pitch.pitchTypeName}</td>
-                        <td>${formatCurrency(pitch.price)}</td>
-                        <td>${pitch.status}</td>
-                        <td><img src="${pitch.imageUrl}" alt="Hình sân" style="width: 50px; height: 50px;"></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="editPitch(${pitch.pitchID})">Sửa</button>
-                            <button class="btn btn-danger btn-sm" onclick="deletePitch(${pitch.pitchID})">Xóa</button>
+                        <td colspan="8" class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Đang tải...</span>
+                            </div>
+                            <div>Đang tải dữ liệu...</div>
                         </td>
                     </tr>
-                `).join('');
+                `;
+            }
+            
+            // Tạo URL với các tham số filter
+            let url = `https://localhost:7290/api/Payments?pageNumber=${currentPage}&pageSize=${itemsPerPage}`;
+            
+            // Chỉ thêm tham số khi có giá trị
+            if (fromDate) {
+                const formattedFromDate = new Date(fromDate).toISOString().split('T')[0];
+                url += `&fromDate=${formattedFromDate}`;
+            }
+            
+            if (toDate) {
+                const formattedToDate = new Date(toDate).toISOString().split('T')[0];
+                url += `&toDate=${formattedToDate}`;
+            }
+            
+            if (status) url += `&status=${encodeURIComponent(status)}`;
+            if (method) url += `&paymentMethod=${encodeURIComponent(method)}`;
+            
+            console.log("Đang gọi API:", url);
+            
+            // Gọi API
+            let response;
+            try {
+                response = await fetch(url, {
+                    method: 'GET', 
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+            } catch (networkError) {
+                console.error("Lỗi mạng:", networkError);
+                throw new Error("Không thể kết nối tới server. Vui lòng kiểm tra kết nối mạng của bạn.");
+            }
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Lỗi API:", response.status, errorText);
+                throw new Error(`Không thể tải danh sách thanh toán: ${response.status} ${errorText}`);
+            }
+            
+            const data = await response.json();
+            console.log("Dữ liệu API trả về:", data);
+            
+            // Xử lý đúng cấu trúc phản hồi API
+            if (!data.success) {
+                throw new Error(data.message || 'Không thể tải danh sách thanh toán');
+            }
+            
+            // Lấy dữ liệu từ cấu trúc phản hồi
+            const payments = data.items || [];
+            totalItems = data.totalItems || 0;
+            const pageNumber = data.pageNumber || 1;
+            const totalPages = data.totalPages || 1;
+            
+            console.log("Số lượng thanh toán:", payments.length);
+            
+            // Hiển thị dữ liệu
+            if (tbody) {
+                tbody.innerHTML = '';
+                
+                if (payments.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center">Không có dữ liệu thanh toán</td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = payments.map(payment => `
+                        <tr>
+                            <td>${payment.paymentID}</td>
+                            <td><a href="#" onclick="viewBookingDetail(${payment.bookingID})">${payment.bookingID}</a></td>
+                            <td>${getPaymentMethodText(payment.paymentMethod)}</td>
+                            <td>${formatCurrency(payment.amount)}</td>
+                            <td>
+                                <span class="badge ${getStatusBadgeClass(payment.status)}">${getStatusText(payment.status)}</span>
+                            </td>
+                            <td>${payment.transactionID || 'N/A'}</td>
+                            <td>${formatDate(payment.paymentDate)}</td>
+                            <td>
+                                <button class="btn btn-info btn-sm" onclick="viewPaymentDetail(${payment.paymentID})">
+                                    <i class="ti-eye"></i> Chi tiết
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+                
+                // Hiển thị thông tin kết quả
+                const paginationInfo = document.querySelector('.pagination-info');
+                if (paginationInfo) {
+                    paginationInfo.innerHTML = `Hiển thị ${payments.length} trên ${totalItems} thanh toán`;
+                }
+            } else {
+                console.error("Không tìm thấy element #paymentTableBody");
             }
             
             // Cập nhật phân trang
-            updatePagination();
+            updatePagination(pageNumber, totalPages);
+            
         } catch (error) {
-            console.error('Lỗi:', error);
+            console.error('Lỗi tải danh sách thanh toán:', error);
+            const tbodyError = document.getElementById('paymentTableBody');
+            if (tbodyError) {
+                tbodyError.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center text-danger">Lỗi: ${error.message}</td>
+                    </tr>
+                `;
+            }
+            
             Swal.fire({
                 icon: 'error',
                 title: 'Lỗi!',
-                text: 'Không thể tải danh sách sân bóng'
+                text: 'Không thể tải danh sách thanh toán: ' + error.message
             });
         }
     };
 
     // Hàm cập nhật phân trang
-    const updatePagination = () => {
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-        const pagination = document.getElementById('pagination');
+    const updatePagination = (currentPage, totalPages) => {
+        const pagination = document.getElementById('paymentPagination');
         
         let paginationHTML = '';
         
         // Nút Previous
         paginationHTML += `
             <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>
+                <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">Previous</a>
             </li>
         `;
         
@@ -671,7 +735,7 @@ var nav = $('.fixed-button');
         for (let i = 1; i <= totalPages; i++) {
             paginationHTML += `
                 <li class="page-item ${currentPage === i ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                    <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
                 </li>
             `;
         }
@@ -679,7 +743,7 @@ var nav = $('.fixed-button');
         // Nút Next
         paginationHTML += `
             <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
+                <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Next</a>
             </li>
         `;
         
@@ -687,294 +751,98 @@ var nav = $('.fixed-button');
     };
 
     // Hàm chuyển trang
-    const changePage = (page) => {
-        if (page < 1 || page > Math.ceil(totalItems / itemsPerPage)) return;
+    function changePage(page) {
+        console.log("Chuyển đến trang:", page);
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        if (page < 1 || page > totalPages) return;
         currentPage = page;
-        loadPitches();
-    };
+        loadPayments();
+    }
 
-    // Xử lý preview ảnh
-    document.getElementById('imageFile').addEventListener('change', function(e) {
-        const preview = document.getElementById('imagePreview');
-        const file = e.target.files[0];
-        if (file) {
-            preview.style.display = 'block';
-            preview.src = URL.createObjectURL(file);
-        }
-    });
-
-    document.getElementById('editImageFile').addEventListener('change', function(e) {
-        const preview = document.getElementById('editImagePreview');
-        const file = e.target.files[0];
-        if (file) {
-            preview.src = URL.createObjectURL(file);
-        }
-    });
-
-    // Hàm lấy pitchTypeID từ tên loại sân
-    const getPitchTypeIDByName = async (name) => {
+    // Hàm xem chi tiết thanh toán
+    const viewPaymentDetail = async (paymentId) => {
         try {
-            const encodedName = encodeURIComponent(name);
-            const response = await fetch(`https://localhost:7290/api/PitchType/name/${encodedName}`, {
+            // Gọi API lấy chi tiết thanh toán
+            const response = await fetch(`https://localhost:7290/api/Payments/${paymentId}`, {
                 headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-                }
-            });
-            if (!response.ok) throw new Error('Không thể lấy thông tin loại sân');
-            const pitchType = await response.json();
-            return pitchType.pitchTypeID;
-        } catch (error) {
-            console.error('Lỗi:', error);
-            throw new Error('Không thể lấy ID loại sân');
-        }
-    };
-
-    // Xử lý thêm sân bóng mới
-    document.getElementById('submitAddPitch').addEventListener('click', async () => {
-        try {
-            // Lấy tên loại sân từ select box
-            const pitchTypeSelect = document.getElementById('pitchTypeID');
-            const selectedPitchTypeName = pitchTypeSelect.options[pitchTypeSelect.selectedIndex].text;
-            
-            // Lấy pitchTypeID từ API dựa trên tên
-            const pitchTypeID = await getPitchTypeIDByName(selectedPitchTypeName);
-            const pitchID = document.getElementById('pitchID').value;
-            const name = document.getElementById('pitchName').value;
-            const imageInput = document.getElementById('imageFile');
-            const imageFile = imageInput.files[0];
-            const price = parseFloat(document.getElementById('price').value);
-            const status = document.getElementById('status').value;
-            const isCombined = document.getElementById('isCombined').value;
-            
-            if (!imageFile) {
-                Swal.fire('Lỗi!', 'Vui lòng chọn hình ảnh.', 'error');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('pitchID', pitchID);
-            formData.append('name', name);
-            formData.append('pitchTypeID', pitchTypeID);
-            formData.append('price', price);
-            formData.append('status', status);
-            formData.append('isCombined', isCombined);
-            formData.append('imageUrl', imageFile);
-            formData.append('bookings', null);
-            formData.append('PitchType.PitchTypeID',pitchTypeID);
-            formData.append('PitchType.Name',selectedPitchTypeName);
-            
-
-            // Gửi dữ liệu sân bóng
-            const response = await fetch('https://localhost:7290/api/Pitch', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-                },
-                body: formData
-            });
-
-            if (!response.ok) {
-                const errorData = await response.text();
-                throw new Error(errorData || 'Không thể thêm sân bóng');
-            }
-
-            await Swal.fire({
-                icon: 'success',
-                title: 'Thành công!',
-                text: 'Đã thêm sân bóng mới'
-            });
-
-            $('#addPitchModal').modal('hide');
-            document.getElementById('addPitchForm').reset();
-            document.getElementById('imagePreview').style.display = 'none';
-            loadPitches();
-        } catch (error) {
-            console.error('Lỗi:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
-                text: error.message
-            });
-        }
-    });
-
-    // Hàm lấy thông tin sân bóng để sửa
-    const editPitch = async (pitchID) => {
-        try {
-            const response = await fetch(`https://localhost:7290/api/Pitch/${pitchID}`, {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 }
             });
             
-            if (!response.ok) throw new Error('Không thể lấy thông tin sân bóng');
+            if (!response.ok) throw new Error('Không thể lấy thông tin thanh toán');
             
-            const pitch = await response.json();
-            console.log('Thông tin sân bóng để sửa:', pitch);
+            const result = await response.json();
+            console.log("Chi tiết thanh toán:", result);
             
-            document.getElementById('editPitchID').value = pitch.pitchID;
-            document.getElementById('editPitchName').value = pitch.name;
-            document.getElementById('editPitchTypeID').value = pitch.pitchTypeID;
-            document.getElementById('editIsCombined').value = pitch.isCombined ? 'true' : 'false';
-            document.getElementById('editPrice').value = pitch.price;
-            
-            // Xử lý trạng thái sân
-            let status = 'false';
-            if (typeof pitch.status === 'string') {
-                status = pitch.status === 'Hoạt động' ? 'true' : 'false';
-            } else if (typeof pitch.status === 'boolean') {
-                status = pitch.status ? 'true' : 'false';
-            }
-            document.getElementById('editStatus').value = status;
-            
-            // Hiển thị hình ảnh
-            if (pitch.imageUrl) {
-                document.getElementById('editImagePreview').src = pitch.imageUrl;
-                document.getElementById('editImagePreview').style.display = 'block';
-            } else {
-                document.getElementById('editImagePreview').style.display = 'none';
+            // Kiểm tra cấu trúc phản hồi
+            if (!result.success) {
+                throw new Error(result.message || 'Không thể lấy thông tin thanh toán');
             }
             
-            $('#editPitchModal').modal('show');
-        } catch (error) {
-            console.error('Lỗi:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
-                text: 'Không thể lấy thông tin sân bóng'
-            });
-        }
-    };
-
-    // Xử lý cập nhật sân bóng
-    document.getElementById('submitEditPitch').addEventListener('click', async () => {
-        try {
-            const pitchTypeSelect = document.getElementById('editPitchTypeID');
-            const selectedPitchTypeName = pitchTypeSelect.options[pitchTypeSelect.selectedIndex].text;
+            const payment = result.data;
+            currentPaymentId = paymentId;
             
-            // Lấy pitchTypeID từ select trực tiếp
-            const pitchTypeID = await getPitchTypeIDByName(selectedPitchTypeName);
-            const pitchID = parseInt(document.getElementById('editPitchID').value);
+            // Cập nhật thông tin thanh toán vào modal
+            document.getElementById('detail-paymentId').textContent = payment.paymentID;
+            document.getElementById('detail-bookingId').textContent = payment.bookingID;
+            document.getElementById('detail-method').textContent = getPaymentMethodText(payment.paymentMethod);
+            document.getElementById('detail-amount').textContent = formatCurrency(payment.amount);
+            document.getElementById('detail-status').textContent = getStatusText(payment.status);
+            document.getElementById('detail-transactionId').textContent = payment.transactionID || 'Không có';
+            document.getElementById('detail-paymentDate').textContent = formatDate(payment.paymentDate);
             
-            if (isNaN(pitchID) || pitchID <= 0) {
-                throw new Error('ID sân không hợp lệ');
-            }
-            
-            const formData = new FormData();
-            const price = parseFloat(document.getElementById('editPrice').value);
-            
-            if (isNaN(price)) {
-                throw new Error('Giá không hợp lệ');
-            }
-            
-            const name = document.getElementById('editPitchName').value;
-            if (!name || name.trim() === '') {
-                throw new Error('Tên sân không được để trống');
-            }
-            
-            formData.append('pitchID', pitchID);
-            formData.append('name', name);
-            formData.append('pitchTypeID', pitchTypeID);
-            formData.append('price', price);
-            
-            const status = document.getElementById('editStatus').value === 'true' ? 'Hoạt động' : 'Bảo trì';
-            formData.append('status', status);
-            
-            const isCombined = document.getElementById('editIsCombined').value === 'true';
-            formData.append('isCombined', isCombined);
-            
-            // Chỉ thêm file hình ảnh nếu người dùng đã chọn file mới
-            const imageFile = document.getElementById('editImageFile').files[0];
-            if (imageFile) {
-                formData.append('imageUrl', imageFile);
-            }
-            formData.append('bookings', null);
-            formData.append('PitchType.PitchTypeID',pitchTypeID);
-            formData.append('PitchType.Name',selectedPitchTypeName);
-
-            // Log dữ liệu để kiểm tra
-            console.log('Dữ liệu cập nhật:', {
-                pitchID,
-                name,
-                pitchTypeID,
-                price,
-                status,
-                isCombined
-            });
-
-            const response = await fetch(`https://localhost:7290/api/Pitch/${pitchID}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-                },
-                body: formData
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Response error:', errorText);
-                throw new Error(`Không thể cập nhật sân bóng: ${errorText}`);
-            }
-
-            await Swal.fire({
-                icon: 'success',
-                title: 'Thành công!',
-                text: 'Đã cập nhật thông tin sân bóng'
-            });
-
-            $('#editPitchModal').modal('hide');
-            loadPitches();
-        } catch (error) {
-            console.error('Lỗi:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
-                text: error.message
-            });
-        }
-    });
-
-    // Xử lý xóa sân bóng
-    const deletePitch = async (pitchID) => {
-        try {
-            const result = await Swal.fire({
-                title: 'Xác nhận xóa?',
-                text: 'Bạn có chắc chắn muốn xóa sân bóng này?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Xóa',
-                cancelButtonText: 'Hủy'
-            });
-
-            if (result.isConfirmed) {
-                const response = await fetch(`https://localhost:7290/api/Pitch/${pitchID}`, {
-                    method: 'DELETE',
+            // Lấy thông tin đặt sân
+            try {
+                const bookingResponse = await fetch(`https://localhost:7290/api/Booking/${payment.bookingID}`, {
                     headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                     }
                 });
-
-                if (!response.ok) {
-                    const errorData = await response.text();
-                    throw new Error(errorData || 'Không thể xóa sân bóng');
+                
+                if (bookingResponse.ok) {
+                    const bookingResult = await bookingResponse.json();
+                    if (bookingResult.success) {
+                        const booking = bookingResult.data;
+                        document.getElementById('detail-pitch').textContent = booking.pitchName || 'N/A';
+                        document.getElementById('detail-bookingDate').textContent = formatDate(booking.bookingDate);
+                        document.getElementById('detail-time').textContent = 
+                            `${booking.startTime.substring(0, 5)} - ${booking.endTime.substring(0, 5)}`;
+                        document.getElementById('detail-userName').textContent = booking.userName || 'N/A';
+                        document.getElementById('booking-info').style.display = 'block';
+                    } else {
+                        document.getElementById('booking-info').style.display = 'none';
+                    }
+                } else {
+                    document.getElementById('booking-info').style.display = 'none';
                 }
-
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công!',
-                    text: 'Đã xóa sân bóng'
-                });
-
-                loadPitches();
+            } catch (error) {
+                console.error("Lỗi lấy thông tin đặt sân:", error);
+                document.getElementById('booking-info').style.display = 'none';
             }
+            
+            // Hiển thị modal
+            $('#paymentDetailModal').modal('show');
+            
         } catch (error) {
-            console.error('Lỗi:', error);
+            console.error('Lỗi xem chi tiết thanh toán:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Lỗi!',
-                text: error.message
+                text: error.message || 'Không thể lấy thông tin chi tiết thanh toán'
+            });
+        }
+    };
+
+    // Hàm xem chi tiết đặt sân
+    const viewBookingDetail = async (bookingId) => {
+        try {
+            window.location.href = `booking.html?id=${bookingId}`;
+        } catch (error) {
+            console.error('Lỗi chuyển hướng:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Không thể xem chi tiết đặt sân'
             });
         }
     };

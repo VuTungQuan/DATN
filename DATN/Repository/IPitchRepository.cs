@@ -1,7 +1,7 @@
 ﻿using DATN.Model;
 
 
-namespace DATN.Repositories
+namespace DATN.Repository
 {
     public interface IPitchRepository
     {

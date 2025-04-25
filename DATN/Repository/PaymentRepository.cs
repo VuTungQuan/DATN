@@ -2,46 +2,49 @@
 using DATN.Data;
 using DATN.Model;
 
-namespace DATN.Repositories
+namespace DATN.Repository
 {
     public class PaymentRepository : IPaymentRepository
     {
-        private readonly OderPitchDbContext _context;
+        private readonly OderPitchDbContext _dbContext; // Renamed to avoid ambiguity
 
-        public PaymentRepository(OderPitchDbContext context)
+        public PaymentRepository(OderPitchDbContext dbContext) // Updated parameter name
         {
-            _context = context;
+            _dbContext = dbContext; // Updated assignment to match the renamed field
         }
 
         public async Task<IEnumerable<Payment>> GetAllPaymentsAsync()
         {
-            return await _context.Payments.Include(p => p.Booking).ToListAsync();
+            return await _dbContext.Payments.Include(p => p.Booking).ToListAsync();
         }
 
         public async Task<Payment?> GetPaymentByIdAsync(int id)
         {
-            return await _context.Payments.Include(p => p.Booking).FirstOrDefaultAsync(p => p.PaymentID == id);
+            return await _dbContext.Payments.Include(p => p.Booking).FirstOrDefaultAsync(p => p.PaymentID == id);
         }
-
+        public async Task<Payment?> GetPaymentByBookingIdAsync(int bookingId)
+        {
+            return await _dbContext.Payments.Include(p => p.Booking).FirstOrDefaultAsync(p => p.BookingID == bookingId);
+        }
         public async Task AddPaymentAsync(Payment payment)
         {
-            _context.Payments.Add(payment);
-            await _context.SaveChangesAsync();
+            _dbContext.Payments.Add(payment);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task UpdatePaymentAsync(Payment payment)
         {
-            _context.Payments.Update(payment);
-            await _context.SaveChangesAsync();
+            _dbContext.Payments.Update(payment);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeletePaymentAsync(int id)
         {
-            var payment = await _context.Payments.FindAsync(id);
+            var payment = await _dbContext.Payments.FindAsync(id);
             if (payment != null)
             {
-                _context.Payments.Remove(payment);
-                await _context.SaveChangesAsync();
+                _dbContext.Payments.Remove(payment);
+                await _dbContext.SaveChangesAsync();
             }
         }
     }

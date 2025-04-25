@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả thanh toán - Sân Bóng Bình Minh</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .result-card {
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .result-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .result-success .result-icon {
+            color: #198754;
+        }
+        
+        .result-failed .result-icon {
+            color: #dc3545;
+        }
+        
+        .result-error .result-icon {
+            color: #ffc107;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .countdown {
+            font-size: 1.2rem;
+            margin-top: 15px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-futbol me-2"></i>Sân Bóng Bình Minh
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pitch-list.html"><i class="fas fa-calendar-check me-1"></i>Đặt sân</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="my-bookings.html"><i class="fas fa-list me-1"></i>Sân đã đặt</a>
+                    </li>
+                </ul>
+                <div class="d-flex gap-2">
+                    <div id="user-menu">
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span id="user-name">Tài khoản</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="my-bookings.html"><i class="fas fa-list me-2"></i>Sân đã đặt</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Payment Result Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div id="result-container" class="result-card p-5 text-center">
+                        <!-- Content will be loaded dynamically -->
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Đang tải...</span>
+                        </div>
+                        <p class="mt-3">Đang xử lý kết quả thanh toán...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-futbol me-2"></i>Sân Bóng Bình Minh</h5>
+                    <p>Hệ thống sân bóng đá chuyên nghiệp với đầy đủ tiện nghi</p>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="fas fa-link me-2"></i>Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Trang chủ</a></li>
+                        <li><a href="pitch-list.html" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Đặt sân</a></li>
+                        <li><a href="my-bookings.html" class="text-light text-decoration-none"><i class="fas fa-angle-right me-2"></i>Sân đã đặt</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="fas fa-share-alt me-2"></i>Theo dõi chúng tôi</h5>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="text-light fs-4"><i class="fab fa-zalo"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 Sân Bóng Bình Minh. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Kiểm tra đăng nhập
+            checkLoginStatus();
+            
+            // Xử lý kết quả thanh toán
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+            const bookingId = urlParams.get('bookingId');
+            const message = urlParams.get('message');
+            
+            displayResult(status, bookingId, message);
+        });
+
+        // Kiểm tra trạng thái đăng nhập
+        function checkLoginStatus() {
+            const token = localStorage.getItem('accessToken');
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            // Lấy thông tin người dùng từ localStorage
+            if (user) {
+                // Đã đăng nhập, cập nhật thông tin người dùng
+                document.getElementById('user-name').textContent = user.fullName || 'Tài khoản';
+            } else if (token) {
+                // Có token nhưng không có thông tin user, thử lấy lại thông tin
+                fetch('https://localhost:7290/api/User/current', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Phiên đăng nhập hết hạn');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success && data.data) {
+                        // Lưu thông tin người dùng vào localStorage
+                        localStorage.setItem('user', JSON.stringify(data.data));
+                        document.getElementById('user-name').textContent = data.data.fullName || 'Tài khoản';
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi xác thực:', error);
+                });
+            }
+        }
+
+        // Hiển thị kết quả thanh toán
+        function displayResult(status, bookingId, message) {
+            const resultContainer = document.getElementById('result-container');
+            let resultHTML = '';
+            let countdownSeconds = 10;
+            
+            switch(status) {
+                case 'success':
+                    resultHTML = `
+                        <div class="result-success">
+                            <div class="result-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h2 class="mb-4">Thanh toán thành công!</h2>
+                            <p class="mb-4">Cảm ơn bạn đã thanh toán. Đặt sân của bạn đã được xác nhận.</p>
+                            <div class="alert alert-success">
+                                <p class="mb-0"><strong>Mã đặt sân:</strong> #${bookingId}</p>
+                            </div>
+                            <div class="action-buttons mt-4">
+                                <a href="booking-details.html?id=${bookingId}" class="btn btn-primary">
+                                    <i class="fas fa-info-circle me-2"></i>Xem chi tiết
+                                </a>
+                                <a href="my-bookings.html" class="btn btn-success">
+                                    <i class="fas fa-list me-2"></i>Xem sân đã đặt
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'failed':
+                    resultHTML = `
+                        <div class="result-failed">
+                            <div class="result-icon">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <h2 class="mb-4">Thanh toán không thành công</h2>
+                            <p class="mb-4">Rất tiếc, giao dịch của bạn không được hoàn tất.</p>
+                            <div class="alert alert-danger">
+                                <p class="mb-0"><strong>Lý do:</strong> ${message || 'Giao dịch bị từ chối.'}</p>
+                            </div>
+                            <div class="action-buttons mt-4">
+                                <a href="my-bookings.html" class="btn btn-primary">
+                                    <i class="fas fa-list me-2"></i>Xem sân đã đặt
+                                </a>
+                                <a href="pitch-list.html" class="btn btn-success">
+                                    <i class="fas fa-calendar-check me-2"></i>Đặt sân khác
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'error':
+                default:
+                    resultHTML = `
+                        <div class="result-error">
+                            <div class="result-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <h2 class="mb-4">Có lỗi xảy ra</h2>
+                            <p class="mb-4">Chúng tôi không thể xác nhận trạng thái thanh toán của bạn.</p>
+                            <div class="alert alert-warning">
+                                <p class="mb-0"><strong>Thông báo:</strong> ${message || 'Lỗi hệ thống, vui lòng thử lại sau.'}</p>
+                            </div>
+                            <div class="action-buttons mt-4">
+                                <a href="my-bookings.html" class="btn btn-primary">
+                                    <i class="fas fa-list me-2"></i>Kiểm tra sân đã đặt
+                                </a>
+                                <a href="index.html" class="btn btn-outline-secondary">
+                                    <i class="fas fa-home me-2"></i>Về trang chủ
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            // Thêm đồng hồ đếm ngược
+            resultHTML += `
+                <div class="countdown mt-4">
+                    Tự động chuyển hướng sau <span id="countdown">${countdownSeconds}</span> giây
+                </div>
+            `;
+            
+            resultContainer.innerHTML = resultHTML;
+            
+            // Thiết lập đồng hồ đếm ngược
+            const countdown = setInterval(function() {
+                countdownSeconds--;
+                document.getElementById('countdown').textContent = countdownSeconds;
+                
+                if (countdownSeconds <= 0) {
+                    clearInterval(countdown);
+                    // Chuyển hướng tùy thuộc vào trạng thái
+                    if (status === 'success') {
+                        window.location.href = `my-bookings.html`;
+                    } else if (status === 'failed') {
+                        window.location.href = `my-bookings.html`;
+                    } else {
+                        window.location.href = `index.html`;
+                    }
+                }
+            }, 1000);
+        }
+
+        // Hàm đăng xuất
+        function logout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userID');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html> 

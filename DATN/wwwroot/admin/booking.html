@@ -384,121 +384,8 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Modal Thêm Sân Bóng -->
-                                            <div class="modal fade" id="addPitchModal" tabindex="-1" role="dialog">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Thêm Sân Bóng Mới</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form id="addPitchForm">
-                                                                <div class="form-group">
-                                                                    <label for="pitchID">ID Sân</label>
-                                                                    <input type="text" class="form-control" id="pitchID" required>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="pitchName">Tên Sân</label>
-                                                                    <input type="text" class="form-control" id="pitchName" required>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="pitchTypeID">Loại Sân</label>
-                                                                    <select class="form-control" id="pitchTypeID" required>
-                                                                        <!-- Options sẽ được thêm bằng JavaScript -->
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="status">Sân Gộp</label>
-                                                                    <select class="form-control" id="isCombined" required>
-                                                                        <option value="true">Có</option>
-                                                                        <option value="false">Không</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="price">Giá</label>
-                                                                    <input type="number" class="form-control" id="price" required>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="status">Trạng Thái</label>
-                                                                    <select class="form-control" id="status" required>
-                                                                        <option >Hoạt động</option>
-                                                                        <option >Bảo trì</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="imageFile">Hình Ảnh</label>
-                                                                    <input type="file" class="form-control" id="imageFile" accept="image/pitch/*" required>
-                                                                    <img id="imagePreview" src="" alt="" style="max-width: 200px; margin-top: 10px; display: none;">
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                                            <button type="button" class="btn btn-success" id="submitAddPitch">Thêm</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Modal Sửa Sân Bóng -->
-                                            <div class="modal fade" id="editPitchModal" tabindex="-1" role="dialog">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Sửa Thông Tin Sân Bóng</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form id="editPitchForm">
-                                                                <input type="hidden" id="editPitchID">
-                                                                <div class="form-group">
-                                                                    <label for="editPitchName">Tên Sân</label>
-                                                                    <input type="text" class="form-control" id="editPitchName" required>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="editPitchTypeID">Loại Sân</label>
-                                                                    <select class="form-control" id="editPitchTypeID" required>
-                                                                        <!-- Options sẽ được thêm bằng JavaScript -->
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="editIsCombined">Sân Gộp</label>
-                                                                    <select class="form-control" id="editIsCombined" required>
-                                                                        <option value="true">Có</option>
-                                                                        <option value="false">Không</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="editPrice">Giá</label>
-                                                                    <input type="number" class="form-control" id="editPrice" required>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="editStatus">Trạng Thái</label>
-                                                                    <select class="form-control" id="editStatus" required>
-                                                                        <option value="true">Hoạt động</option>
-                                                                        <option value="false">Không hoạt động</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="editImageFile">Hình Ảnh</label>
-                                                                    <input type="file" class="form-control" id="editImageFile" accept="image/pitch/*">
-                                                                    <img id="editImagePreview" src="" alt="" style="max-width: 200px; margin-top: 10px;">
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                                            <button type="button" class="btn btn-success" id="submitEditPitch">Lưu</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
+                                        
+                                            
                                     <div id="styleSelector">
 
                                     </div>
@@ -1035,13 +922,16 @@ const viewBookingDetail = async (bookingId) => {
                 confirmButton.style.display = 'inline-block';
                 completeButton.style.display = 'none';
                 cancelButton.style.display = 'inline-block';
-                break;
+                
+                break;s
             case 'Confirmed':
                 confirmButton.style.display = 'none';
                 completeButton.style.display = 'inline-block';
                 cancelButton.style.display = 'inline-block';
+                
                 break;
             case 'Completed':
+                
             case 'Cancelled':
                 confirmButton.style.display = 'none';
                 completeButton.style.display = 'none';
@@ -1114,19 +1004,22 @@ document.getElementById('confirmButton').addEventListener('click', async () => {
             throw new Error(result.message || 'Không thể xác nhận đặt sân');
         }
         
+        // Đóng modal trước khi hiện thông báo
+        $('#bookingDetailModal').modal('hide');
+        
+        // Sau đó hiển thị thông báo thành công
         Swal.fire({
             icon: 'success',
             title: 'Thành công!',
             text: 'Đã xác nhận đặt sân'
         }).then(() => {
-            $('#bookingDetailModal').modal('hide');
             loadBookings();
         });
-        } catch (error) {
+    } catch (error) {
         console.error('Lỗi xác nhận đặt sân:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
             text: error.message || 'Không thể xác nhận đặt sân'
         });
     }
@@ -1153,8 +1046,8 @@ document.getElementById('completeButton').addEventListener('click', async () => 
         console.log("Gọi API hoàn thành đặt sân:", currentBookingId);
         
         const response = await fetch(`https://localhost:7290/api/Booking/${currentBookingId}/complete`, {
-                method: 'PUT',
-                headers: {
+            method: 'PUT',
+            headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
@@ -1166,10 +1059,11 @@ document.getElementById('completeButton').addEventListener('click', async () => 
             throw new Error('Bạn không có quyền thực hiện thao tác này. Vui lòng đăng nhập với tài khoản quản trị.');
         }
 
-            if (!response.ok) {
-                const errorText = await response.text();
+        if (!response.ok) {
+            const errorText = await response.text();
             console.error("Lỗi API:", response.status, errorText);
             throw new Error(`Lỗi: ${response.status} - ${errorText}`);
+            $('#bookingDetailModal').modal('hide');
         }
         
         const result = await response.json();
@@ -1179,23 +1073,26 @@ document.getElementById('completeButton').addEventListener('click', async () => 
             throw new Error(result.message || 'Không thể hoàn thành đặt sân');
         }
         
+        // Đóng modal trước khi hiện thông báo
+        $('#bookingDetailModal').modal('hide');
+        
+        // Sau đó hiển thị thông báo thành công
         Swal.fire({
-                icon: 'success',
-                title: 'Thành công!',
+            icon: 'success',
+            title: 'Thành công!',
             text: 'Đã đánh dấu hoàn thành đặt sân'
         }).then(() => {
-            $('#bookingDetailModal').modal('hide');
             loadBookings();
-            });
-        } catch (error) {
+        });
+    } catch (error) {
         console.error('Lỗi hoàn thành đặt sân:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
             text: error.message || 'Không thể hoàn thành đặt sân'
-            });
-        }
-    });
+        });
+    }
+});
 
 // Hủy đặt sân
 document.getElementById('cancelButton').addEventListener('click', async () => {
@@ -1258,22 +1155,25 @@ document.getElementById('cancelButton').addEventListener('click', async () => {
             throw new Error(responseData.message || 'Không thể hủy đặt sân');
         }
         
+        // Đóng modal trước khi hiện thông báo
+        $('#bookingDetailModal').modal('hide');
+        
+        // Sau đó hiển thị thông báo thành công
         Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công!',
+            icon: 'success',
+            title: 'Thành công!',
             text: 'Đã hủy đặt sân'
         }).then(() => {
-            $('#bookingDetailModal').modal('hide');
             loadBookings();
-                });
-        } catch (error) {
+        });
+    } catch (error) {
         console.error('Lỗi hủy đặt sân:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
             text: error.message || 'Không thể hủy đặt sân'
-            });
-        }
+        });
+    }
 });
 </script>
 

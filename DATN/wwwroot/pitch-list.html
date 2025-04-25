@@ -341,17 +341,36 @@
                 }
                 
                 const data = await response.json();
-                console.log('Dữ liệu loại sân:', data);
+                console.log('Dữ liệu API loại sân gốc:', data);
                 
-                if (data) {
+                // Xử lý dữ liệu tùy thuộc vào cấu trúc phản hồi API
+                let pitchTypeInfo = null;
+                
+                if (data.success && data.data) {
+                    console.log('Sử dụng data.data:', data.data);
+                    pitchTypeInfo = data.data;
+                } else if (data.items && data.items.length > 0) {
+                    console.log('Sử dụng data.items[0]:', data.items[0]);
+                    pitchTypeInfo = data.items[0];
+                } else {
+                    console.log('Sử dụng data trực tiếp:', data);
+                    pitchTypeInfo = data;
+                }
+                
+                if (pitchTypeInfo) {
+                    // Xác định tên và mô tả
+                    const name = pitchTypeInfo.name || pitchTypeInfo.Name || 'sân bóng';
+                    const description = pitchTypeInfo.description || pitchTypeInfo.Description || 'Các sân bóng chất lượng cao';
+                    
                     // Cập nhật tiêu đề và mô tả
-                    document.getElementById('pitch-type-title').textContent = `Danh sách ${data.name || 'sân bóng'}`;
-                    document.getElementById('pitch-type-description').textContent = data.description || 'Các sân bóng chất lượng cao';
+                    document.getElementById('pitch-type-title').textContent = `Danh sách ${name}`;
+                    document.getElementById('pitch-type-description').textContent = description;
                     
                     // Cập nhật tiêu đề trang
-                    document.title = `${data.name || 'Danh sách sân bóng'} - Sân Bóng Bình Minh`;
+                    document.title = `${name} - Sân Bóng Bình Minh`;
                 } else {
                     console.error('Dữ liệu loại sân không hợp lệ:', data);
+                    document.getElementById('pitch-type-description').textContent = 'Các sân bóng chất lượng cao của Sân Bóng Bình Minh';
                 }
             } catch (error) {
                 console.error('Lỗi khi tải thông tin loại sân:', error);
@@ -398,16 +417,28 @@
                 }
                 
                 const data = await response.json();
-                console.log('Dữ liệu sân:', data);
+                console.log('Dữ liệu API gốc:', data);
                 let pitches = [];
                 
                 // Xử lý dữ liệu tùy thuộc vào cấu trúc phản hồi API
-                if (data.success && Array.isArray(data.items)) {
+                if (data.success && Array.isArray(data.data)) {
+                    console.log('Sử dụng data.data:', data.data);
+                    pitches = data.data;
+                } else if (data.items && Array.isArray(data.items)) {
+                    console.log('Sử dụng data.items:', data.items);
                     pitches = data.items;
                 } else if (Array.isArray(data)) {
+                    console.log('Sử dụng data trực tiếp:', data);
                     pitches = data;
-                } else if (data.items && Array.isArray(data.items)) {
-                    pitches = data.items;
+                } else {
+                    console.error('Không tìm thấy mảng dữ liệu trong phản hồi API:', data);
+                    pitches = [];
+                }
+                
+                // In mẫu dữ liệu đầu tiên
+                if (pitches.length > 0) {
+                    console.log('Mẫu dữ liệu đầu tiên:', pitches[0]);
+                    console.log('Tất cả các thuộc tính:', Object.keys(pitches[0]));
                 }
                 
                 // Sắp xếp danh sách
@@ -431,13 +462,29 @@
         
         // Hàm sắp xếp danh sách sân
         function sortPitches(pitches, sortBy) {
+            if (!pitches || !Array.isArray(pitches) || pitches.length === 0) {
+                return pitches;
+            }
+            
             switch(sortBy) {
                 case 'name':
-                    return pitches.sort((a, b) => a.name.localeCompare(b.name));
+                    return pitches.sort((a, b) => {
+                        const nameA = (a.name || a.Name || '').toString();
+                        const nameB = (b.name || b.Name || '').toString();
+                        return nameA.localeCompare(nameB);
+                    });
                 case 'price-asc':
-                    return pitches.sort((a, b) => a.price - b.price);
+                    return pitches.sort((a, b) => {
+                        const priceA = Number(a.price || a.Price || 0);
+                        const priceB = Number(b.price || b.Price || 0);
+                        return priceA - priceB;
+                    });
                 case 'price-desc':
-                    return pitches.sort((a, b) => b.price - a.price);
+                    return pitches.sort((a, b) => {
+                        const priceA = Number(a.price || a.Price || 0);
+                        const priceB = Number(b.price || b.Price || 0);
+                        return priceB - priceA;
+                    });
                 default:
                     return pitches;
             }
@@ -449,33 +496,40 @@
             container.innerHTML = '';
             
             pitches.forEach(pitch => {
+                // Xác định các thuộc tính cần thiết, kiểm tra cả chữ hoa/thường
+                const pitchId = pitch.pitchID || pitch.PitchID || pitch.pitchId || pitch.id || '';
+                const name = pitch.name || pitch.Name || 'Không có tên';
+                const description = pitch.description || pitch.Description || 'Sân bóng chất lượng cao';
+                const price = pitch.price || pitch.Price || 0;
+                const imageUrl = pitch.imageUrl || pitch.ImageUrl || pitch.image || '';
+                
+                // Trạng thái sân
+                const isActive = pitch.isActive !== undefined ? pitch.isActive : 
+                               (pitch.status === 'Hoạt động' || pitch.Status === 'Hoạt động');
+                
+                const statusBadgeClass = isActive ? 'bg-success' : 'bg-danger';
+                const statusText = isActive ? 'Đang hoạt động' : 'Bảo trì';
+                
                 const col = document.createElement('div');
                 col.className = 'col-md-4 mb-4';
-                
-                const statusBadgeClass = pitch.status === 'Hoạt động' || pitch.isActive 
-                    ? 'bg-success' 
-                    : 'bg-danger';
-                const statusText = pitch.status === 'Hoạt động' || pitch.isActive 
-                    ? 'Đang hoạt động' 
-                    : 'Bảo trì';
                 
                 col.innerHTML = `
                     <div class="card pitch-card h-100">
                         <div class="position-relative">
-                            <img src="${pitch.imageUrl || 'images/default-pitch.jpg'}" class="card-img-top pitch-image" 
-                                alt="${pitch.name}" 
+                            <img src="${imageUrl || 'images/default-pitch.jpg'}" class="card-img-top pitch-image" 
+                                alt="${name}" 
                                 onerror="this.src='images/default-pitch.jpg'">
                             <span class="badge ${statusBadgeClass} pitch-status-badge">${statusText}</span>
                         </div>
                         <div class="card-body pitch-card-body">
-                            <h5 class="card-title">${pitch.name}</h5>
-                            <p class="card-text mb-2">${pitch.description || 'Sân bóng chất lượng cao'}</p>
-                            <p class="card-text mb-2"><strong>Giá : </strong>${formatCurrency(pitch.price)}</p>
+                            <h5 class="card-title">${name}</h5>
+                            <p class="card-text mb-2">${description}</p>
+                            <p class="card-text mb-2"><strong>Giá : </strong>${formatCurrency(price)}</p>
                             <p class="card-text mb-2"><strong>Thời gian : 1 giờ 30 phút </strong></p>
                             <div class="pitch-card-footer mt-auto">
                                 <button class="btn btn-success w-100" 
-                                    onclick="bookPitch('${pitch.pitchID}', '${pitch.name}')"
-                                    ${(pitch.status !== 'Hoạt động' && !pitch.isActive) ? 'disabled' : ''}>
+                                    onclick="bookPitch('${pitchId}', '${name}')"
+                                    ${!isActive ? 'disabled' : ''}>
                                     <i class="fas fa-calendar-plus me-2"></i>Đặt sân
                                 </button>
                             </div>

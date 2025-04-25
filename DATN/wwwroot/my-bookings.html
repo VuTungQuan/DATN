@@ -211,7 +211,7 @@
                         <div class="card-body">
                             <h5 class="card-title"><i class="fas fa-filter me-2"></i>Bộ lọc</h5>
                             <div class="row g-3">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label class="form-label">Trạng thái</label>
                                     <select class="form-select" id="status-filter">
                                         <option value="all">Tất cả trạng thái</option>
@@ -221,18 +221,34 @@
                                         <option value="Cancelled">Đã hủy</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label class="form-label">Thời gian</label>
                                     <select class="form-select" id="time-filter">
                                         <option value="all">Tất cả thời gian</option>
                                         <option value="upcoming">Sắp tới</option>
                                         <option value="past">Đã qua</option>
+                                        <option value="today">Hôm nay</option>
+                                        <option value="thisWeek">Tuần này</option>
+                                        <option value="thisMonth">Tháng này</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4 d-flex align-items-end">
-                                    <button id="apply-filter" class="btn btn-success w-100">
-                                        <i class="fas fa-search me-2"></i>Lọc đặt sân
-                                    </button>
+                                <div class="col-md-3">
+                                    <label class="form-label">Từ ngày</label>
+                                    <input type="date" class="form-control" id="from-date-filter">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Đến ngày</label>
+                                    <input type="date" class="form-control" id="to-date-filter">
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button id="reset-filter" class="btn btn-outline-secondary">
+                                            <i class="fas fa-redo-alt me-1"></i>Đặt lại
+                                        </button>
+                                        <button id="apply-filter" class="btn btn-success">
+                                            <i class="fas fa-search me-1"></i>Áp dụng bộ lọc
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -317,6 +333,46 @@
             document.getElementById('apply-filter').addEventListener('click', function() {
                 fetchBookings();
             });
+            
+            // Xử lý sự kiện reset bộ lọc
+            document.getElementById('reset-filter').addEventListener('click', function() {
+                document.getElementById('status-filter').value = 'all';
+                document.getElementById('time-filter').value = 'all';
+                document.getElementById('from-date-filter').value = '';
+                document.getElementById('to-date-filter').value = '';
+                fetchBookings();
+            });
+            
+            // Khởi tạo giá trị mặc định cho bộ lọc theo ngày
+            const from = document.getElementById('from-date-filter');
+            const to = document.getElementById('to-date-filter');
+            
+            // Thiết lập ngày tối thiểu và tối đa cho từ ngày
+            const today = new Date();
+            
+            // Bắt sự kiện thay đổi bộ lọc thời gian
+            document.getElementById('time-filter').addEventListener('change', function() {
+                const timeFilterValue = this.value;
+                
+                // Nếu thời gian được chọn không phải là 'all', vô hiệu hóa bộ lọc từ ngày đến ngày
+                if (timeFilterValue !== 'all') {
+                    from.disabled = true;
+                    to.disabled = true;
+                    from.value = '';
+                    to.value = '';
+                } else {
+                    from.disabled = false;
+                    to.disabled = false;
+                }
+            });
+            
+            // Kiểm tra đồng bộ giữa from-date và to-date
+            from.addEventListener('change', function() {
+                if (to.value && new Date(this.value) > new Date(to.value)) {
+                    to.value = this.value;
+                }
+                to.min = this.value;
+            });
         });
 
         // Kiểm tra trạng thái đăng nhập
@@ -388,9 +444,17 @@
             const emptyState = document.getElementById('empty-state');
             const bookingList = document.getElementById('booking-list');
             
+            // Kiểm tra xem các phần tử có tồn tại không
+            if (!loadingSpinner || !errorMessage || !emptyState || !bookingList) {
+                console.error('Không tìm thấy một hoặc nhiều phần tử DOM cần thiết');
+                return;
+            }
+            
             // Lấy thông tin bộ lọc
             const statusFilter = document.getElementById('status-filter').value;
             const timeFilter = document.getElementById('time-filter').value;
+            const fromDateFilter = document.getElementById('from-date-filter').value;
+            const toDateFilter = document.getElementById('to-date-filter').value;
             
             try {
                 // Hiển thị loading
@@ -407,6 +471,20 @@
                 
                 // Tạo URL với các tham số
                 let url = 'https://localhost:7290/api/Booking/current-user';
+                
+                // Thêm tham số truy vấn nếu có
+                let params = new URLSearchParams();
+                if (fromDateFilter) {
+                    params.append('fromDate', fromDateFilter);
+                }
+                if (toDateFilter) {
+                    params.append('toDate', toDateFilter);
+                }
+                
+                // Thêm tham số vào URL nếu có
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
                 
                 const response = await fetch(url, {
                     method: 'GET',
@@ -461,11 +539,11 @@
                     bookings = bookings.filter(booking => booking.status === statusFilter);
                 }
                 
-                // Lọc theo thời gian nếu cần
+                // Lọc theo thời gian
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Bắt đầu của ngày hôm nay
+                
                 if (timeFilter !== 'all') {
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    
                     if (timeFilter === 'upcoming') {
                         bookings = bookings.filter(booking => {
                             const bookingDate = new Date(booking.bookingDate);
@@ -475,6 +553,33 @@
                         bookings = bookings.filter(booking => {
                             const bookingDate = new Date(booking.bookingDate);
                             return bookingDate < today;
+                        });
+                    } else if (timeFilter === 'today') {
+                        bookings = bookings.filter(booking => {
+                            const bookingDate = new Date(booking.bookingDate);
+                            return bookingDate.getDate() === today.getDate() && 
+                                   bookingDate.getMonth() === today.getMonth() && 
+                                   bookingDate.getFullYear() === today.getFullYear();
+                        });
+                    } else if (timeFilter === 'thisWeek') {
+                        // Bắt đầu tuần (Thứ 2)
+                        const startOfWeek = new Date(today);
+                        startOfWeek.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
+                        // Kết thúc tuần (Chủ nhật)
+                        const endOfWeek = new Date(startOfWeek);
+                        endOfWeek.setDate(startOfWeek.getDate() + 6);
+                        
+                        bookings = bookings.filter(booking => {
+                            const bookingDate = new Date(booking.bookingDate);
+                            return bookingDate >= startOfWeek && bookingDate <= endOfWeek;
+                        });
+                    } else if (timeFilter === 'thisMonth') {
+                        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                        
+                        bookings = bookings.filter(booking => {
+                            const bookingDate = new Date(booking.bookingDate);
+                            return bookingDate >= startOfMonth && bookingDate <= endOfMonth;
                         });
                     }
                 }
@@ -505,12 +610,19 @@
                         localStorage.setItem('redirectAfterLogin', window.location.href);
                         window.location.href = 'index.html';
                     });
-                } else {
-                    errorMessage.querySelector('span').textContent = 'Không thể tải danh sách sân đã đặt. Vui lòng thử lại sau.';
+                } else if (errorMessage) {
+                    // Kiểm tra xem errorMessage có tồn tại không
+                    const errorSpan = errorMessage.querySelector('span');
+                    if (errorSpan) {
+                        errorSpan.textContent = 'Không thể tải danh sách sân đã đặt. Vui lòng thử lại sau.';
+                    }
                     errorMessage.style.display = 'block';
                 }
             } finally {
-                loadingSpinner.style.display = 'none';
+                // Kiểm tra xem loadingSpinner có tồn tại không
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = 'none';
+                }
             }
         }
 
@@ -550,6 +662,14 @@
         // Hàm hiển thị danh sách sân đã đặt
         function displayBookings(bookings) {
             const bookingList = document.getElementById('booking-list');
+            const emptyState = document.getElementById('empty-state');
+            
+            // Kiểm tra xem các phần tử có tồn tại không
+            if (!bookingList) {
+                console.error('Không tìm thấy phần tử booking-list');
+                return;
+            }
+            
             bookingList.innerHTML = '';
             
             // Thêm container cho các card
@@ -558,7 +678,9 @@
             bookingList.appendChild(container);
             
             if (bookings.length === 0) {
-                document.getElementById('empty-state').style.display = 'block';
+                if (emptyState) {
+                    emptyState.style.display = 'block';
+                }
                 return;
             }
             
@@ -640,6 +762,12 @@
                                     <i class="fas fa-times-circle me-1"></i> Hủy đặt sân
                                 </button>
                                 ` : ''}
+                                ${(booking.status === 'Pending' || booking.status === 'Confirmed') && 
+                                  (!booking.payment || booking.payment.paymentStatus !== 'Paid') && !isPastBooking ? `
+                                <button class="btn btn-success btn-pay" data-booking-id="${booking.bookingID}">
+                                    <i class="fas fa-credit-card me-1"></i> Thanh toán
+                                </button>
+                                ` : ''}
                             </div>
                         </div>
                     </div>
@@ -689,6 +817,7 @@
                 const bookingId = card.dataset.bookingId;
                 const detailsButton = card.querySelector('.btn-details');
                 const cancelButton = card.querySelector('.btn-cancel');
+                const payButton = card.querySelector('.btn-pay');
                 
                 if (detailsButton) {
                     detailsButton.addEventListener('click', function() {
@@ -699,6 +828,12 @@
                 if (cancelButton) {
                     cancelButton.addEventListener('click', function() {
                         cancelBooking(bookingId);
+                    });
+                }
+                
+                if (payButton) {
+                    payButton.addEventListener('click', function() {
+                        payBooking(bookingId);
                     });
                 }
             });
@@ -751,6 +886,84 @@
             } catch (error) {
                 console.error('Lỗi khi hủy đặt sân:', error);
                 showNotification(error.message || 'Đã xảy ra lỗi khi hủy đặt sân', 'danger');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Hàm thanh toán đặt sân
+        async function payBooking(bookingId) {
+            try {
+                showLoader();
+                const token = localStorage.getItem('accessToken');
+                
+                if (!token) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // Hiển thị modal chọn phương thức thanh toán
+                Swal.fire({
+                    title: 'Chọn phương thức thanh toán',
+                    html: `
+                        <div class="text-start">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="radio" name="payment-method" id="payment-vnpay" value="vnpay" checked>
+                                <label class="form-check-label" for="payment-vnpay">
+                                    <i class="fas fa-credit-card text-primary me-1"></i> Thanh toán qua VNPAY
+                                </label>
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Tiếp tục',
+                    cancelButtonText: 'Hủy',
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+                        return { paymentMethod };
+                    }
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const { paymentMethod } = result.value;
+                        
+                        if (paymentMethod === 'vnpay') {
+                            try {
+                                const response = await fetch(`https://localhost:7290/api/Vnpay/CreatePaymentUrl?bookingId=${bookingId}`, {
+                                    method: 'GET',
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`,
+                                        'Content-Type': 'application/json'
+                                    }
+                                });
+                                
+                                if (!response.ok) {
+                                    if (response.status === 401) {
+                                        window.location.href = 'index.html';
+                                        return;
+                                    }
+                                    
+                                    const errorData = await response.json();
+                                    throw new Error(errorData.message || 'Không thể tạo liên kết thanh toán');
+                                }
+                                
+                                const data = await response.json();
+                                
+                                if (data.success && data.data) {
+                                    // Chuyển hướng đến trang thanh toán VNPAY
+                                    window.location.href = data.data;
+                                } else {
+                                    throw new Error(data.message || 'Không thể tạo liên kết thanh toán');
+                                }
+                            } catch (error) {
+                                showNotification(error.message || 'Đã xảy ra lỗi khi tạo liên kết thanh toán', 'danger');
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Lỗi khi thanh toán:', error);
+                showNotification(error.message || 'Đã xảy ra lỗi khi thanh toán', 'danger');
             } finally {
                 hideLoader();
             }

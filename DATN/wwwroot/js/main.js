@@ -848,9 +848,9 @@ async function getUserInfoByEmail() {
         
         // Lưu thông tin người dùng vào localStorage
         localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('userID', userData.userID);
-        localStorage.setItem('userEmail', userData.email);
-        localStorage.setItem('passwordHash', userData.passwordHash);
+        localStorage.setItem('userID', userData.serID);
+        localStorage.setItem('userEmail', userData.Email);
+        localStorage.setItem('passwordHash', userData.PPasswordHash);
         // Cập nhật UI
         updateUIAfterLogin(userData);
         

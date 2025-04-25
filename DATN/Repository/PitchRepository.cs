@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DATN.Repositories
+namespace DATN.Repository
 {
     public class PitchRepository : IPitchRepository
     {

@@ -267,6 +267,22 @@
                                 </div>
                             </div>
                             
+                            <div class="payment-options mb-3">
+                                <h6 class="mb-2">Phương thức thanh toán:</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment-method" id="payment-onsite" value="onsite" checked>
+                                    <label class="form-check-label" for="payment-onsite">
+                                        <i class="fas fa-money-bill-wave text-success me-1"></i> Thanh toán tại sân
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment-method" id="payment-vnpay" value="vnpay">
+                                    <label class="form-check-label" for="payment-vnpay">
+                                        <i class="fas fa-credit-card text-primary me-1"></i> Thanh toán qua VNPAY
+                                    </label>
+                                </div>
+                            </div>
+                            
                             <button id="booking-submit" class="btn btn-success w-100" disabled>
                                 <i class="fas fa-calendar-check me-2"></i>Xác nhận đặt sân
                             </button>
@@ -1007,6 +1023,61 @@
                     throw new Error(result.message || 'Đặt sân không thành công');
                 }
                 
+                // Lấy ID đặt sân
+                const bookingId = result.data.bookingID;
+                
+                // Kiểm tra phương thức thanh toán
+                const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+                
+                if (paymentMethod === 'vnpay') {
+                    // Chuyển hướng đến trang thanh toán VNPAY
+                    try {
+                        const vnpayResponse = await fetch(`https://localhost:7290/api/Vnpay/CreatePaymentUrl?bookingId=${bookingId}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+                        
+                        if (!vnpayResponse.ok) {
+                            // Đã đặt sân nhưng không thể tạo URL thanh toán
+                            throw new Error('Không thể tạo đường dẫn thanh toán. Vui lòng vào mục Sân đã đặt để thanh toán sau.');
+                        }
+                        
+                        const vnpayResult = await vnpayResponse.json();
+                        
+                        if (vnpayResult.success && vnpayResult.data) {
+                            // Chuyển hướng đến trang thanh toán VNPAY
+                            window.location.href = vnpayResult.data;
+                            return;
+                        } else {
+                            throw new Error(vnpayResult.message || 'Không thể tạo đường dẫn thanh toán');
+                        }
+                    } catch (vnpayError) {
+                        // Đã đặt sân nhưng có lỗi khi tạo URL thanh toán, vẫn hiển thị thông báo đặt sân thành công
+                        console.error('Lỗi khi tạo URL thanh toán:', vnpayError);
+                        
+                        Swal.fire({
+                            title: 'Đặt sân thành công!',
+                            text: 'Tuy nhiên, có lỗi khi chuyển hướng đến trang thanh toán. ' + vnpayError.message,
+                            icon: 'info',
+                            showCancelButton: true,
+                            confirmButtonText: 'Xem sân đã đặt',
+                            cancelButtonText: 'Đặt sân khác'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = 'my-bookings.html';
+                            } else {
+                                window.location.reload();
+                            }
+                        });
+                        
+                        return;
+                    }
+                }
+                
+                // Phương thức thanh toán tại sân hoặc không có lỗi khi tạo URL thanh toán
                 // Cập nhật thông tin đặt sân
                 localStorage.setItem('lastBooking', JSON.stringify({
                     id: result.data.bookingID,

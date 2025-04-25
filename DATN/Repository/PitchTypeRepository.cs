@@ -2,7 +2,7 @@
 using DATN.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace DATN.Repositories
+namespace DATN.Repository
 {
     public class PitchTypeRepository : IPitchTypeRepository
     {

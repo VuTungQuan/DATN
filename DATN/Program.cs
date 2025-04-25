@@ -1,7 +1,7 @@
 ﻿// Program.cs
 using Microsoft.EntityFrameworkCore;
 using DATN.Data;
-using DATN.Repositories;
+using DATN.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -10,6 +10,7 @@ using DATN.Services;
 using DATN.Helpers;
 using AutoMapper;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace DATN
 {
@@ -20,9 +21,14 @@ namespace DATN
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
             builder.Services.AddDbContext<OderPitchDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -33,22 +39,17 @@ namespace DATN
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPitchTypeRepository, PitchTypeRepository>();
-            builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<AuthService>();
+            builder.Services.AddScoped<IBookingService, BookingService>();
+            builder.Services.AddScoped<IVnpayService, VnpayService>();
 
-            builder.Services.AddCors(options => options.AddPolicy("MyPolicy", builder =>
-                    builder.AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                )
-            );
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowLocalhost", policy =>
+                options.AddPolicy("AllowAll", policy =>
                 {
-                    policy.WithOrigins("http://127.0.0.1:5500")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
                 });
             });
 
@@ -123,8 +124,7 @@ namespace DATN
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseCors("MyPolicy");
-            app.UseCors("AllowLocalhost");
+            app.UseCors("AllowAll");
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
