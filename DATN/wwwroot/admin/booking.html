@@ -279,7 +279,7 @@
                                                                 <input type="date" id="toDate" class="form-control">
                                                             </div>
                                                             <div class="col-md-2">
-                                                                <label>Trạng thái:</label>
+                                                                <label>Trạng thái đặt sân:</label>
                                                                 <select id="statusFilter" class="form-control">
                                                                     <option value="">Tất cả</option>
                                                                     <option value="Pending">Chờ xác nhận</option>
@@ -296,10 +296,60 @@
                                                                 </select>
                                                             </div>
                                                             <div class="col-md-2">
-                                                                <label>&nbsp;</label>
-                                                                <button id="searchButton" class="btn btn-primary form-control">Tìm kiếm</button>
+                                                                <label>Thanh toán:</label>
+                                                                <select id="paymentFilter" class="form-control">
+                                                                    <option value="">Tất cả</option>
+                                                                    <option value="paid">Đã thanh toán</option>
+                                                                    <option value="unpaid">Chưa thanh toán</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label>Tìm khách hàng:</label>
+                                                                <input type="text" id="customerFilter" class="form-control" placeholder="Tên hoặc SĐT...">
                                                             </div>
                                                         </div>
+                                                        <div class="row mb-3">
+                                                            <div class="col-md-10">
+                                                                <div id="activeFilters" class="d-flex flex-wrap">
+                                                                    <!-- Các bộ lọc đang áp dụng sẽ hiển thị ở đây -->
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-2 d-flex">
+                                                                <button id="searchButton" class="btn btn-primary flex-grow-1 mr-1">
+                                                                    <i class="ti-search mr-1"></i> Tìm kiếm
+                                                                </button>
+                                                                <button id="resetFilters" class="btn btn-secondary">
+                                                                    <i class="ti-reload"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <style>
+                                                            #activeFilters .badge {
+                                                                font-size: 0.85rem;
+                                                                font-weight: normal;
+                                                            }
+                                                            
+                                                            .badge-info {
+                                                                background-color: #4099ff;
+                                                            }
+                                                            
+                                                            .filter-badge {
+                                                                display: inline-flex;
+                                                                align-items: center;
+                                                            }
+                                                            
+                                                            .filter-badge .remove-filter {
+                                                                margin-left: 5px;
+                                                                cursor: pointer;
+                                                                font-size: 12px;
+                                                                opacity: 0.7;
+                                                            }
+                                                            
+                                                            .filter-badge .remove-filter:hover {
+                                                                opacity: 1;
+                                                            }
+                                                        </style>
                                                         
                                                         <div class="table-responsive">
                                                             <table class="table table-hover">
@@ -345,30 +395,97 @@
                                                             <div class="row">
                                                                 <div class="col-md-6">
                                                                     <h6>Thông tin đặt sân</h6>
-                                                                    <p><strong>ID đặt sân:</strong> <span id="detail-bookingId"></span></p>
-                                                                    <p><strong>Ngày đặt:</strong> <span id="detail-bookingDate"></span></p>
-                                                                    <p><strong>Thời gian:</strong> <span id="detail-time"></span></p>
-                                                                    <p><strong>Sân:</strong> <span id="detail-pitch"></span></p>
-                                                                    <p><strong>Loại sân:</strong> <span id="detail-pitchType"></span></p>
-                                                                    <p><strong>Tổng tiền:</strong> <span id="detail-totalPrice"></span></p>
-                                                                    <p><strong>Ghi chú:</strong> <span id="detail-note"></span></p>
-                                                                    <p><strong>Trạng thái:</strong> <span id="detail-status"></span></p>
+                                                                    <div class="table-responsive">
+                                                                        <table class="table table-bordered">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td style="width: 40%;"><strong>ID đặt sân:</strong></td>
+                                                                                    <td id="detail-bookingId"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Ngày đặt:</strong></td>
+                                                                                    <td id="detail-bookingDate"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Thời gian:</strong></td>
+                                                                                    <td id="detail-time"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Sân:</strong></td>
+                                                                                    <td id="detail-pitch"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Loại sân:</strong></td>
+                                                                                    <td id="detail-pitchType"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Tổng tiền:</strong></td>
+                                                                                    <td id="detail-totalPrice"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Ghi chú:</strong></td>
+                                                                                    <td id="detail-note"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Trạng thái:</strong></td>
+                                                                                    <td><span id="detail-status" class="badge badge-pill"></span></td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <h6>Thông tin khách hàng</h6>
-                                                                    <p><strong>Tên:</strong> <span id="detail-userName"></span></p>
-                                                                    <p><strong>Số điện thoại:</strong> <span id="detail-phone"></span></p>
-                                                                    <p><strong>Email:</strong> <span id="detail-email"></span></p>
+                                                                    <div class="table-responsive">
+                                                                        <table class="table table-bordered">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td style="width: 40%;"><strong>Họ tên:</strong></td>
+                                                                                    <td id="detail-userName"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Số điện thoại:</strong></td>
+                                                                                    <td id="detail-phone"></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Email:</strong></td>
+                                                                                    <td id="detail-email"></td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <hr>
                                                             <div class="row" id="payment-info">
                                                                 <div class="col-md-12">
                                                                     <h6>Thông tin thanh toán</h6>
-                                                                    <p><strong>Phương thức:</strong> <span id="detail-paymentMethod"></span></p>
-                                                                    <p><strong>Số tiền:</strong> <span id="detail-paymentAmount"></span></p>
-                                                                    <p><strong>Mã giao dịch:</strong> <span id="detail-transactionId"></span></p>
-                                                                    <p><strong>Ngày thanh toán:</strong> <span id="detail-paymentDate"></span></p>
+                                                                    <div class="table-responsive">
+                                                                        <table class="table table-bordered">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td style="width: 30%;"><strong>Trạng thái:</strong></td>
+                                                                                    <td><span id="detail-paymentStatus" class="badge badge-pill"></span></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Phương thức:</strong></td>
+                                                                                    <td id="detail-paymentMethod">-</td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Số tiền:</strong></td>
+                                                                                    <td id="detail-paymentAmount">-</td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Mã giao dịch:</strong></td>
+                                                                                    <td id="detail-transactionId">-</td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Ngày thanh toán:</strong></td>
+                                                                                    <td id="detail-paymentDate">-</td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -427,6 +544,8 @@
 let itemsPerPage = 10;
     let totalItems = 0;
 let currentBookingId = 0;
+    // Biến kiểm tra xem API có hỗ trợ tìm kiếm khách hàng hay không
+    let apiSupportsCustomerSearch = null;
 
     // Hàm format tiền tệ VND
     const formatCurrency = (amount) => {
@@ -478,6 +597,18 @@ const getStatusText = (status) => {
     // Thêm sự kiện cho nút làm mới dữ liệu
     document.getElementById('refreshData').addEventListener('click', function() {
         loadBookings();
+    });
+    
+    // Thêm sự kiện cho nút reset bộ lọc
+    document.getElementById('resetFilters').addEventListener('click', function() {
+        resetAllFilters();
+    });
+    
+    // Thêm sự kiện enter cho input tìm kiếm khách hàng
+    document.getElementById('customerFilter').addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            loadBookings();
+        }
     });
     
         const token = localStorage.getItem('accessToken');
@@ -668,6 +799,14 @@ const loadBookings = async () => {
         const toDate = document.getElementById('toDate').value;
         const status = document.getElementById('statusFilter').value;
         const pitchId = document.getElementById('pitchFilter').value;
+        const paymentStatus = document.getElementById('paymentFilter').value;
+        const customerSearch = document.getElementById('customerFilter').value.trim();
+        
+        // Lưu lại giá trị tìm kiếm khách hàng cho lọc phía client
+        const customerSearchValue = customerSearch.toLowerCase();
+        
+        // Hiển thị các bộ lọc đang áp dụng
+        updateActiveFilters(fromDate, toDate, status, pitchId, paymentStatus, customerSearch);
         
         // Lấy tham chiếu tới bảng
         const tbody = document.getElementById('bookingTableBody');
@@ -686,8 +825,6 @@ const loadBookings = async () => {
             `;
         }
         
-    
-
         // Tạo URL với các tham số filter
         let url = `https://localhost:7290/api/Booking?pageNumber=${currentPage}&pageSize=${itemsPerPage}`;
         
@@ -704,13 +841,39 @@ const loadBookings = async () => {
         
         if (status) url += `&status=${encodeURIComponent(status)}`;
         if (pitchId && pitchId !== '') url += `&pitchId=${pitchId}`;
+        if (paymentStatus) url += `&paymentStatus=${encodeURIComponent(paymentStatus)}`;
+        
+        // Chỉ thêm tham số tìm kiếm khách hàng nếu API hỗ trợ
+        if (customerSearch) {
+            if (apiSupportsCustomerSearch !== false) {
+                // Thử cả hai tham số để tìm cái nào hoạt động
+                url += `&customerSearch=${encodeURIComponent(customerSearch)}`;
+                // Thêm cả searchTerm vì không biết backend dùng tham số nào
+                url += `&searchTerm=${encodeURIComponent(customerSearch)}`;
+            } else {
+                console.log("Bỏ qua tham số tìm kiếm khách hàng trong API vì server không hỗ trợ");
+            }
+        }
         
         console.log("Đang gọi API:", url);
         
         // Gọi API
         let response;
         try {
-            response = await fetch(`https://localhost:7290/api/Booking?pageNumber=${currentPage}&pageSize=${itemsPerPage}`, {
+            // DEBUG: Kiểm tra API endpoint
+            const backendEndpoint = 'https://localhost:7290/api/Booking';
+            const debugUrl = new URL(url);
+            const apiUrl = new URL(backendEndpoint);
+            
+            // Sao chép các tham số từ URL ban đầu
+            for (const [key, value] of new URLSearchParams(debugUrl.search)) {
+                apiUrl.searchParams.set(key, value);
+            }
+            
+            const finalUrl = apiUrl.toString();
+            console.log("Final API URL:", finalUrl);
+            
+            response = await fetch(finalUrl, {
                 method: 'GET', 
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -727,8 +890,20 @@ const loadBookings = async () => {
             throw new Error(`Không thể tải danh sách đặt sân: ${response.status} ${errorText}`);
         }
         
-            const data = await response.json();
-        console.log("Dữ liệu API trả về:", data.items);
+        const data = await response.json();
+        console.log("Dữ liệu API trả về:", data);
+        
+        // Kiểm tra xem API có hỗ trợ tìm kiếm khách hàng không
+        if (customerSearch && apiSupportsCustomerSearch === null) {
+            // Nếu có kết quả và ít hơn tổng số, có thể API đã lọc theo khách hàng
+            if (data.items && data.items.length < data.totalItems) {
+                console.log("API có vẻ hỗ trợ tìm kiếm khách hàng.");
+                apiSupportsCustomerSearch = true;
+            } else {
+                console.log("API có vẻ không hỗ trợ tìm kiếm khách hàng, sẽ lọc phía client.");
+                apiSupportsCustomerSearch = false;
+            }
+        }
         
         // Xử lý đúng cấu trúc phản hồi API mới
         if (!data.success) {
@@ -742,19 +917,44 @@ const loadBookings = async () => {
         const totalPages = data.totalPages || 1;
         
         console.log("Số lượng booking:", bookings.length);
+        
+        // Nếu đang tìm kiếm theo khách hàng nhưng API không hỗ trợ, thực hiện lọc phía client
+        let filteredBookings = bookings;
+        if (customerSearchValue && apiSupportsCustomerSearch === false) {
+            console.log("Thực hiện tìm kiếm phía client với từ khóa:", customerSearchValue);
+            filteredBookings = bookings.filter(booking => {
+                const userName = (booking.userName || '').toLowerCase();
+                const phone = (booking.phoneNumber || '').toLowerCase();
+                return userName.includes(customerSearchValue) || phone.includes(customerSearchValue);
+            });
+            console.log("Kết quả tìm kiếm phía client:", filteredBookings.length, "kết quả");
+        }
             
-            // Hiển thị dữ liệu
-            if (tbody) {
+        // Nếu đang tìm kiếm phía client, hiển thị thông báo
+        if (customerSearchValue && apiSupportsCustomerSearch === false && filteredBookings.length !== bookings.length) {
+            const clientFilterNotice = document.createElement('div');
+            clientFilterNotice.className = 'alert alert-info mb-3 mt-2';
+            clientFilterNotice.innerHTML = `
+                <i class="ti-info-alt mr-1"></i> 
+                Đang lọc theo tên/số điện thoại: 
+                <strong>${customerSearchValue}</strong>. 
+                Hiển thị ${filteredBookings.length} / ${bookings.length} kết quả.
+            `;
+            document.querySelector('.table-responsive').before(clientFilterNotice);
+        }
+            
+        // Hiển thị dữ liệu
+        if (tbody) {
             tbody.innerHTML = '';
             
-            if (bookings.length === 0) {
+            if (filteredBookings.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="8" class="text-center">Không có dữ liệu đặt sân</td>
                     </tr>
                 `;
             } else {
-                tbody.innerHTML = bookings.map(booking => `
+                tbody.innerHTML = filteredBookings.map(booking => `
                     <tr>
                         <td>${booking.bookingID}</td>
                         <td>${booking.userName}<br><small>${booking.phoneNumber || 'N/A'}</small></td>
@@ -764,6 +964,7 @@ const loadBookings = async () => {
                         <td>${formatCurrency(booking.totalPrice)}</td>
                         <td>
                             <span class="badge ${getStatusBadgeClass(booking.status)}">${getStatusText(booking.status)}</span>
+                            ${getPaymentBadge(booking)}
                         </td>
                         <td>
                             <button class="btn btn-info btn-sm" onclick="viewBookingDetail(${booking.bookingID})">
@@ -777,16 +978,16 @@ const loadBookings = async () => {
             // Hiển thị thông tin kết quả
             const paginationInfo = document.querySelector('.pagination-info');
             if (paginationInfo) {
-                paginationInfo.innerHTML = `Hiển thị ${bookings.length} trên ${totalItems} đặt sân`;
+                paginationInfo.innerHTML = `Hiển thị ${filteredBookings.length} trên ${totalItems} đặt sân`;
             }
         } else {
             console.error("Không tìm thấy element #bookingTableBody");
-            }
+        }
             
-            // Cập nhật phân trang
+        // Cập nhật phân trang
         updatePagination(pageNumber, totalPages);
         
-        } catch (error) {
+    } catch (error) {
         console.error('Lỗi tải danh sách đặt sân:', error);
         const tbodyError = document.getElementById('bookingTableBody');
         if (tbodyError) {
@@ -797,15 +998,155 @@ const loadBookings = async () => {
             `;
         }
         
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
             text: 'Không thể tải danh sách đặt sân: ' + error.message
+        });
+    }
+};
+
+// Hiển thị trạng thái thanh toán cho mỗi đặt sân
+function getPaymentBadge(booking) {
+    if (!booking.payment) {
+        return '<span class="badge badge-secondary ml-1">Chưa thanh toán</span>';
+    }
+    
+    const isPaid = booking.payment.paymentDate && booking.payment.transactionID && 
+                 !booking.payment.paymentDate.startsWith('0001-01-01');
+    
+    if (isPaid) {
+        return '<span class="badge badge-success ml-1">Đã thanh toán</span>';
+    } else {
+        return '<span class="badge badge-warning ml-1">Chưa thanh toán</span>';
+    }
+}
+
+// Hiển thị các bộ lọc đang áp dụng
+function updateActiveFilters(fromDate, toDate, status, pitchId, paymentStatus, customerSearch) {
+    const activeFilters = document.getElementById('activeFilters');
+    activeFilters.innerHTML = '';
+    
+    const filters = [];
+    
+    if (fromDate) {
+        filters.push({
+            type: 'fromDate',
+            text: `Từ ngày: ${formatDate(new Date(fromDate))}`
+        });
+    }
+    
+    if (toDate) {
+        filters.push({
+            type: 'toDate',
+            text: `Đến ngày: ${formatDate(new Date(toDate))}`
+        });
+    }
+    
+    if (status) {
+        filters.push({
+            type: 'status',
+            text: `Trạng thái: ${getStatusText(status)}`
+        });
+    }
+    
+    if (pitchId) {
+        const pitchSelect = document.getElementById('pitchFilter');
+        const selectedOption = pitchSelect.options[pitchSelect.selectedIndex];
+        if (selectedOption) {
+            filters.push({
+                type: 'pitchId',
+                text: `Sân: ${selectedOption.text}`
             });
         }
-    };
+    }
+    
+    if (paymentStatus) {
+        filters.push({
+            type: 'paymentStatus',
+            text: `Thanh toán: ${paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}`
+        });
+    }
+    
+    if (customerSearch) {
+        filters.push({
+            type: 'customerSearch',
+            text: `Tìm kiếm: "${customerSearch}"`
+        });
+    }
+    
+    if (filters.length === 0) {
+        activeFilters.innerHTML = '<span class="badge badge-light p-2 mr-2 mb-2">Không có bộ lọc nào được áp dụng</span>';
+        return;
+    }
+    
+    filters.forEach(filter => {
+        const badge = document.createElement('div');
+        badge.className = 'badge badge-info p-2 mr-2 mb-2 filter-badge';
+        badge.innerHTML = `
+            ${filter.text}
+            <i class="ti-close remove-filter" data-filter="${filter.type}"></i>
+        `;
+        
+        // Thêm sự kiện xóa bộ lọc
+        const removeBtn = badge.querySelector('.remove-filter');
+        removeBtn.addEventListener('click', function() {
+            removeFilter(this.getAttribute('data-filter'));
+        });
+        
+        activeFilters.appendChild(badge);
+    });
+}
 
-    // Hàm cập nhật phân trang
+// Hàm xóa một bộ lọc cụ thể
+function removeFilter(filterType) {
+    switch(filterType) {
+        case 'fromDate':
+            document.getElementById('fromDate').value = '';
+            break;
+        case 'toDate':
+            document.getElementById('toDate').value = '';
+            break;
+        case 'status':
+            document.getElementById('statusFilter').value = '';
+            break;
+        case 'pitchId':
+            document.getElementById('pitchFilter').value = '';
+            break;
+        case 'paymentStatus':
+            document.getElementById('paymentFilter').value = '';
+            break;
+        case 'customerSearch':
+            document.getElementById('customerFilter').value = '';
+            break;
+    }
+    
+    // Sau khi xóa bộ lọc, tải lại dữ liệu
+    loadBookings();
+}
+
+// Hàm reset tất cả các bộ lọc
+function resetAllFilters() {
+    // Đặt lại giá trị mặc định cho các bộ lọc
+    document.getElementById('fromDate').value = '';
+    document.getElementById('toDate').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('pitchFilter').value = '';
+    document.getElementById('paymentFilter').value = '';
+    document.getElementById('customerFilter').value = '';
+    
+    // Reset trang về 1
+    currentPage = 1;
+    
+    // Cập nhật UI và tải lại dữ liệu
+    const activeFilters = document.getElementById('activeFilters');
+    activeFilters.innerHTML = '<span class="badge badge-light p-2 mr-2 mb-2">Không có bộ lọc nào được áp dụng</span>';
+    
+    // Tải lại dữ liệu
+    loadBookings();
+}
+
+// Hàm cập nhật phân trang
 const updatePagination = (currentPage, totalPages) => {
     const pagination = document.getElementById('bookingPagination');
         
@@ -873,16 +1214,19 @@ const viewBookingDetail = async (bookingId) => {
         document.getElementById('detail-bookingId').textContent = booking.bookingID;
         document.getElementById('detail-bookingDate').textContent = formatDate(booking.bookingDate);
         document.getElementById('detail-time').textContent = `${formatTime(booking.startTime)} - ${formatTime(booking.endTime)}`;
-        document.getElementById('detail-pitch').textContent = booking.pitchName;
-        document.getElementById('detail-pitchType').textContent = booking.pitchTypeName;
+        document.getElementById('detail-pitch').textContent = booking.pitchName || 'Không có thông tin';
+        document.getElementById('detail-pitchType').textContent = booking.pitchTypeName || 'Không có thông tin';
         document.getElementById('detail-totalPrice').textContent = formatCurrency(booking.totalPrice);
         document.getElementById('detail-note').textContent = booking.note || 'Không có ghi chú';
-        document.getElementById('detail-status').textContent = getStatusText(booking.status);
+
+        // Hiển thị trạng thái với badge
+        const statusElement = document.getElementById('detail-status');
+        statusElement.textContent = getStatusText(booking.status);
+        statusElement.className = `badge badge-pill ${getStatusBadgeClass(booking.status)}`;
         
         // Thông tin khách hàng
-        document.getElementById('detail-userName').textContent = booking.userName;
-        document.getElementById('detail-phone').textContent = booking.phoneNumber;
-        document.getElementById('detail-email').textContent = 'Đang tải...';
+        document.getElementById('detail-userName').textContent = booking.userName || 'Không có thông tin';
+        document.getElementById('detail-phone').textContent = booking.phoneNumber || 'Không có thông tin';
         
         // Truy vấn thông tin email người dùng (nếu cần)
         try {
@@ -904,12 +1248,46 @@ const viewBookingDetail = async (bookingId) => {
         const paymentInfo = document.getElementById('payment-info');
         if (booking.payment) {
             paymentInfo.style.display = 'block';
-            document.getElementById('detail-paymentMethod').textContent = booking.payment.paymentMethod;
-            document.getElementById('detail-paymentAmount').textContent = formatCurrency(booking.payment.amount);
+            
+            // Cập nhật trạng thái thanh toán
+            const paymentStatus = document.getElementById('detail-paymentStatus');
+            const isPaid = booking.payment.paymentDate && booking.payment.transactionID;
+            
+            if (isPaid) {
+                paymentStatus.textContent = 'Đã thanh toán';
+                paymentStatus.className = 'badge badge-pill badge-success';
+            } else {
+                paymentStatus.textContent = 'Chưa thanh toán';
+                paymentStatus.className = 'badge badge-pill badge-warning';
+            }
+            
+            // Cập nhật các thông tin khác
+            const paymentMethod = booking.payment.paymentMethod || 'Chưa có thông tin';
+            document.getElementById('detail-paymentMethod').textContent = paymentMethod === 'VNPAY' ? 'Thanh toán qua VNPAY' : 
+                                                                       (paymentMethod === 'Cash' ? 'Thanh toán tại sân' : paymentMethod);
+            
+            // Kiểm tra và xử lý số tiền thanh toán
+            const paymentAmount = booking.payment.amount || booking.totalPrice;
+            document.getElementById('detail-paymentAmount').textContent = formatCurrency(paymentAmount > 0 ? paymentAmount : booking.totalPrice);
+            
             document.getElementById('detail-transactionId').textContent = booking.payment.transactionID || 'Chưa có';
-            document.getElementById('detail-paymentDate').textContent = booking.payment.paymentDate ? formatDate(booking.payment.paymentDate) : 'Chưa thanh toán';
+            
+            // Kiểm tra và xử lý ngày thanh toán
+            
+            document.getElementById('detail-paymentDate').textContent = formatDate(booking.bookingDate);
         } else {
-            paymentInfo.style.display = 'none';
+            // Nếu không có thông tin thanh toán, vẫn hiển thị phần thanh toán nhưng với trạng thái chưa có
+            paymentInfo.style.display = 'block';
+            
+            const paymentStatus = document.getElementById('detail-paymentStatus');
+            paymentStatus.textContent = 'Chưa có thông tin';
+            paymentStatus.className = 'badge badge-pill badge-secondary';
+            
+            // Đặt các giá trị mặc định
+            document.getElementById('detail-paymentMethod').textContent = 'Chưa có thông tin';
+            document.getElementById('detail-paymentAmount').textContent = formatCurrency(booking.totalPrice);
+            document.getElementById('detail-transactionId').textContent = 'Chưa có';
+            document.getElementById('detail-paymentDate').textContent = 'Chưa thanh toán';
         }
         
         // Hiện/ẩn các nút tương ứng với trạng thái
