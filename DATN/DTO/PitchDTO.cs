@@ -14,6 +14,7 @@ namespace DATN.DTO
         public string Status { get; set; } = string.Empty;
         public bool IsCombined { get; set; }
         public string? ImageUrl { get; set; }
+        public string? Description { get; set; } // Thêm trường Description để lưu thông tin sân gộp
     }
 
     // DTO cho việc tạo sân mới

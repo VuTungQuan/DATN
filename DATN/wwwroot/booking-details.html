@@ -32,6 +32,14 @@
             text-decoration: line-through;
         }
         
+        /* CSS cho khung giờ bị xung đột với sân gộp */
+        .time-slot.conflict {
+            background-color: #fff3cd;
+            color: #856404;
+            cursor: not-allowed;
+            border-color: #ffeeba;
+        }
+        
         .breadcrumb-section {
             background-color: #f8f9fa;
             padding: 15px 0;
@@ -185,6 +193,13 @@
                     <div class="card shadow-sm mb-4">
                         <div class="card-body">
                             <h5 class="card-title">Chọn ngày và giờ đặt sân</h5>
+                            
+                            <!-- Thông báo về sân gộp nếu cần -->
+                            <div id="combined-pitch-notice" class="alert alert-warning d-none mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Lưu ý về sân gộp:</strong> Sân này có thể là sân gộp hoặc là một phần của sân gộp khác.
+                                Khi đặt sân này, các sân liên quan sẽ không thể đặt trong cùng khung giờ.
+                            </div>
                             
                             <!-- Date Selection -->
                             <div class="mb-4">
@@ -550,6 +565,61 @@
             // Tạo mô tả chi tiết bao gồm loại sân và thông tin liên hệ
             let descriptionText = pitchData.description || 'Sân bóng chất lượng cao';
             
+            // Kiểm tra nếu là sân gộp hoặc là một phần của sân gộp
+            if (pitchData.description && pitchData.description.startsWith('CombinedFrom:')) {
+                // Đây là sân gộp
+                const combinedPitchNotice = document.getElementById('combined-pitch-notice');
+                if (combinedPitchNotice) {
+                    combinedPitchNotice.classList.remove('d-none');
+                    combinedPitchNotice.innerHTML = `
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Đây là sân gộp!</strong> Sân này được tạo bằng cách gộp các sân nhỏ hơn.
+                        Khi đặt sân này, bạn sẽ không thể đặt các sân thành phần của nó trong cùng khung giờ.
+                    `;
+                }
+                
+                // Loại bỏ phần metadata khỏi description để hiển thị
+                const originalDesc = descriptionText.replace(/CombinedFrom:[0-9,]+/, '').trim();
+                if (originalDesc) {
+                    descriptionText = originalDesc;
+                } else {
+                    descriptionText = 'Sân bóng gộp chất lượng cao';
+                }
+            } else {
+                // Kiểm tra xem sân này có phải là một phần của sân gộp nào không
+                fetch(`https://localhost:7290/api/Pitch/check-combined-parent?pitchId=${pitchData.pitchID}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status !== 404) {
+                            console.warn('Không thể kiểm tra thông tin sân gộp:', response.statusText);
+                        }
+                        return null;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.isPartOfCombined) {
+                        // Đây là một phần của sân gộp
+                        const combinedPitchNotice = document.getElementById('combined-pitch-notice');
+                        if (combinedPitchNotice) {
+                            combinedPitchNotice.classList.remove('d-none');
+                            combinedPitchNotice.innerHTML = `
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Lưu ý!</strong> Sân này là một phần của sân gộp ${data.combinedPitchName || ''}. 
+                                Khi đặt sân này, bạn sẽ không thể đặt sân gộp trong cùng khung giờ.
+                            `;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi kiểm tra thông tin sân gộp:', error);
+                });
+            }
+            
             // Thêm thông tin loại sân
             if (pitchData.pitchTypeName) {
                 descriptionText += ` | Loại sân: ${pitchData.pitchTypeName}`;
@@ -738,8 +808,35 @@
                 
                 console.log('Khung giờ đã đặt:', bookedSlots);
                 
+                // Kiểm tra xem có xung đột với sân gộp/thành phần không
+                let conflictedSlots = [];
+                try {
+                    const conflictResponse = await fetch(`https://localhost:7290/api/Booking/get-pitch-conflicts?pitchId=${pitchId}&date=${formattedDate}`, {
+                        headers: {
+                            'Authorization': token ? `Bearer ${token}` : '',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (conflictResponse.ok) {
+                        const conflictData = await conflictResponse.json();
+                        
+                        if (conflictData.success && Array.isArray(conflictData.data)) {
+                            conflictedSlots = conflictData.data;
+                        } else if (Array.isArray(conflictData)) {
+                            conflictedSlots = conflictData;
+                        }
+                        
+                        console.log('Xung đột khung giờ:', conflictedSlots);
+                    } else if (conflictResponse.status !== 404) {
+                        console.warn('Không thể kiểm tra xung đột sân:', await conflictResponse.text());
+                    }
+                } catch (conflictError) {
+                    console.warn('Lỗi khi kiểm tra xung đột sân:', conflictError);
+                }
+                
                 // Cập nhật trạng thái các ô trong bảng khung giờ
-                updateTimeSlotStatus(bookedSlots);
+                updateTimeSlotStatus(bookedSlots, conflictedSlots);
                 
             } catch (error) {
                 console.error('Lỗi khi tải khung giờ:', error);
@@ -754,7 +851,7 @@
         }
 
         // Cập nhật trạng thái các ô trong bảng khung giờ
-        function updateTimeSlotStatus(bookedSlots) {
+        function updateTimeSlotStatus(bookedSlots, conflictedSlots = []) {
             const timeSlots = document.querySelectorAll('.time-slot');
             
             // Reset trạng thái của tất cả các ô
@@ -774,10 +871,32 @@
                         bookedSlot.startTime === startTime && bookedSlot.endTime === endTime
                     );
                     
+                    // Kiểm tra xem khung giờ có xung đột với sân gộp/thành phần không
+                    const hasConflict = conflictedSlots.some(conflictSlot => 
+                        conflictSlot.startTime === startTime && conflictSlot.endTime === endTime
+                    );
+                    
                     if (isBooked) {
                         slot.classList.add('booked');
                         slot.setAttribute('title', 'Đã có người đặt');
                         // Loại bỏ sự kiện click cho khung giờ đã đặt
+                        slot.style.pointerEvents = 'none';
+                    } else if (hasConflict) {
+                        // Nếu có xung đột với sân gộp/thành phần
+                        slot.classList.add('conflict');
+                        
+                        // Tìm thông tin xung đột cụ thể
+                        const conflict = conflictedSlots.find(cs => 
+                            cs.startTime === startTime && cs.endTime === endTime
+                        );
+                        
+                        if (conflict && conflict.reason) {
+                            slot.setAttribute('title', conflict.reason);
+                        } else {
+                            slot.setAttribute('title', 'Không thể đặt do xung đột với sân gộp hoặc sân thành phần');
+                        }
+                        
+                        // Loại bỏ sự kiện click cho khung giờ xung đột
                         slot.style.pointerEvents = 'none';
                     } else {
                         // Thêm sự kiện click cho khung giờ trống
@@ -825,8 +944,34 @@
                     }
                 });
             } else {
-                // Nếu không có dữ liệu khung giờ đã đặt, cho phép chọn tất cả
+                // Nếu không có dữ liệu khung giờ đã đặt, kiểm tra xung đột
                 timeSlots.forEach(slot => {
+                    const startTime = slot.getAttribute('data-start');
+                    const endTime = slot.getAttribute('data-end');
+                    
+                    // Kiểm tra xem khung giờ có xung đột với sân gộp/thành phần không
+                    const hasConflict = conflictedSlots.some(conflictSlot => 
+                        conflictSlot.startTime === startTime && conflictSlot.endTime === endTime
+                    );
+                    
+                    if (hasConflict) {
+                        // Nếu có xung đột với sân gộp/thành phần
+                        slot.classList.add('conflict');
+                        
+                        // Tìm thông tin xung đột cụ thể
+                        const conflict = conflictedSlots.find(cs => 
+                            cs.startTime === startTime && cs.endTime === endTime
+                        );
+                        
+                        if (conflict && conflict.reason) {
+                            slot.setAttribute('title', conflict.reason);
+                        } else {
+                            slot.setAttribute('title', 'Không thể đặt do xung đột với sân gộp hoặc sân thành phần');
+                        }
+                        
+                        // Loại bỏ sự kiện click cho khung giờ xung đột
+                        slot.style.pointerEvents = 'none';
+                    } else {
                     // Xóa listener cũ nếu có
                     const newSlot = slot.cloneNode(true);
                     slot.parentNode.replaceChild(newSlot, slot);
@@ -865,6 +1010,7 @@
                         // Cập nhật thông tin
                         updateSummary();
                     });
+                    }
                 });
             }
             
@@ -982,6 +1128,49 @@
                 
                 if (!availabilityResult.data) {
                     throw new Error('Sân đã được đặt trong khung giờ này. Vui lòng chọn khung giờ khác.');
+                }
+                
+                // Kiểm tra xem sân có phải là một phần của sân gộp nào không
+                // hoặc nếu đây là sân gộp, kiểm tra xem các sân thành phần đã có người đặt chưa
+                const conflictCheckResponse = await fetch(`https://localhost:7290/api/Booking/check-pitch-conflicts?pitchId=${pitchData.pitchID}&date=${formatDateForAPI(bookingDate)}&startTime=${selectedTimeSlot.startTime}&endTime=${selectedTimeSlot.endTime}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!conflictCheckResponse.ok) {
+                    if (conflictCheckResponse.status === 404) {
+                        // API chưa có endpoint này, tiếp tục đặt sân bình thường
+                        console.warn('API kiểm tra xung đột sân gộp chưa được triển khai');
+                    } else {
+                        throw new Error('Không thể kiểm tra thông tin sân gộp');
+                    }
+                } else {
+                    const conflictResult = await conflictCheckResponse.json();
+                    
+                    if (conflictResult.hasConflict) {
+                        // Có xung đột với sân gộp hoặc sân thành phần
+                        throw new Error(conflictResult.message || 'Không thể đặt sân do xung đột với sân gộp hoặc sân thành phần');
+                    }
+                    
+                    // Nếu API trả về thông tin cảnh báo, hiển thị cho người dùng
+                    if (conflictResult.warning) {
+                        const warningConfirm = await Swal.fire({
+                            title: 'Cảnh báo',
+                            text: conflictResult.warning,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Vẫn đặt sân',
+                            cancelButtonText: 'Hủy'
+                        });
+                        
+                        if (!warningConfirm.isConfirmed) {
+                            // Người dùng chọn hủy
+                            Swal.close();
+                            return;
+                        }
+                    }
                 }
                 
                 // Chuẩn bị dữ liệu theo cấu trúc của API

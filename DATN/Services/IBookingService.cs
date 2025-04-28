@@ -31,5 +31,9 @@ namespace DATN.Services
         
         // Lấy danh sách khung giờ đã đặt
         Task<List<BookedTimeSlotDTO>> GetBookedTimeSlotsAsync(int pitchId, DateTime date);
+        
+        // Kiểm tra sân gộp
+        Task<PitchDTO> GetPitchByIdAsync(int pitchId);
+        Task<List<PitchDTO>> GetCombinedPitchesContainingAsync(int pitchId);
     }
 } 

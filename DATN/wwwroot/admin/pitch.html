@@ -268,6 +268,9 @@
                                                         <button id="addPitchBtn" class="btn btn-success" data-toggle="modal" data-target="#addPitchModal">
                                                             Thêm Sân Bóng
                                                         </button>
+                                                        <button id="combinePitchBtn" class="btn btn-primary" data-toggle="modal" data-target="#combinePitchModal">
+                                                            Gộp Sân
+                                                        </button>
                                                 </div>
                                                     <div class="card-block">
                                                         <div class="table-responsive">
@@ -409,6 +412,77 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
                                                             <button type="button" class="btn btn-success" id="submitEditPitch">Lưu</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Modal Gộp Sân Bóng -->
+                                            <div class="modal fade" id="combinePitchModal" tabindex="-1" role="dialog">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Gộp Sân Bóng</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form id="combinePitchForm">
+                                                                <div class="form-group">
+                                                                    <label for="newPitchID">ID Sân Gộp</label>
+                                                                    <input type="text" class="form-control" id="newPitchID" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="pitchTypeSelect">Loại Sân</label>
+                                                                    <select class="form-control" id="pitchTypeSelect" required disabled>
+                                                                        <!-- Options sẽ được thêm bằng JavaScript -->
+                                                                    </select>
+                                                                    <small class="form-text text-muted">Loại sân sẽ được tự động xác định dựa trên các sân được chọn</small>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label>Chọn các sân để gộp</label>
+                                                                    <select multiple class="form-control" id="availablePitches" size="5" required>
+                                                                        <!-- Danh sách sân có thể gộp sẽ được thêm bằng JavaScript -->
+                                                                    </select>
+                                                                    <small class="form-text text-muted">Giữ Ctrl để chọn nhiều sân</small>
+                                                                </div>
+                                                                <div class="alert alert-info">
+                                                                    <p><strong>Lưu ý về gộp sân:</strong></p>
+                                                                    <ul>
+                                                                        <li>Gộp 2 sân 5 sẽ tạo ra 1 sân 7</li>
+                                                                        <li>Gộp 2 sân 7 sẽ tạo ra 1 sân 11</li>
+                                                                        <li>Khi 1 trong các sân thành phần được đặt, sân gộp sẽ không thể đặt</li>
+                                                                        <li>Các sân thành phần còn lại vẫn có thể đặt bình thường</li>
+                                                                        <li><strong>Hệ thống sẽ tự động chọn loại sân phù hợp</strong> khi bạn chọn các sân để gộp</li>
+                                                                    </ul>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="combinedPitchName">Tên Sân Gộp</label>
+                                                                    <input type="text" class="form-control" id="combinedPitchName" readonly>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="combinedPitchPrice">Giá Sân Gộp</label>
+                                                                    <input type="number" class="form-control" id="combinedPitchPrice" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="combinedPitchStatus">Trạng Thái</label>
+                                                                    <select class="form-control" id="combinedPitchStatus" required>
+                                                                        <option>Hoạt động</option>
+                                                                        <option>Bảo trì</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="combinedImageFile">Hình Ảnh</label>
+                                                                    <input type="file" class="form-control" id="combinedImageFile" accept="image/pitch/*" required>
+                                                                    <img id="combinedImagePreview" src="" alt="" style="max-width: 200px; margin-top: 10px; display: none;">
+                                                                </div>
+                                                                <input type="hidden" id="combinedFromPitches" name="combinedFromPitches">
+                                                            </form>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                                            <button type="button" class="btn btn-success" id="submitCombinePitch">Tạo Sân Gộp</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -978,6 +1052,424 @@ var nav = $('.fixed-button');
             });
         }
     };
+
+    // Biến lưu trữ danh sách các sân có thể gộp
+    let availablePitchesForCombine = [];
+
+    // Xử lý preview ảnh cho sân gộp
+    document.getElementById('combinedImageFile').addEventListener('change', function(e) {
+        const preview = document.getElementById('combinedImagePreview');
+        const file = e.target.files[0];
+        if (file) {
+            preview.style.display = 'block';
+            preview.src = URL.createObjectURL(file);
+        }
+    });
+
+    // Khi mở modal gộp sân
+    document.getElementById('combinePitchBtn').addEventListener('click', async () => {
+        try {
+            // Tải danh sách loại sân vào select box
+            const pitchTypeSelect = document.getElementById('pitchTypeSelect');
+            pitchTypeSelect.innerHTML = pitchTypes.map(type => 
+                `<option value="${type.pitchTypeID}">${type.name}</option>`
+            ).join('');
+
+            // Xóa các giá trị cũ
+            document.getElementById('newPitchID').value = '';
+            document.getElementById('combinedPitchName').value = '';
+            document.getElementById('combinedPitchPrice').value = '';
+            document.getElementById('combinedImagePreview').style.display = 'none';
+            
+            // Khi chọn loại sân, hiển thị danh sách các sân có thể gộp
+            await updateAvailablePitchesForCombine();
+        } catch (error) {
+            console.error('Lỗi:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Không thể tải dữ liệu cho modal gộp sân'
+            });
+        }
+    });
+
+    // Cập nhật danh sách sân có thể gộp khi thay đổi loại sân
+    document.getElementById('pitchTypeSelect').addEventListener('change', async () => {
+        await updateAvailablePitchesForCombine();
+    });
+
+    // Hàm cập nhật danh sách sân có thể gộp dựa trên loại sân được chọn
+    const updateAvailablePitchesForCombine = async () => {
+        try {
+            const pitchTypeSelect = document.getElementById('pitchTypeSelect');
+            const selectedPitchTypeID = pitchTypeSelect.value;
+            
+            // Lấy tất cả sân bóng
+            const response = await fetch('https://localhost:7290/api/Pitch', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                }
+            });
+            
+            if (!response.ok) throw new Error('Không thể tải danh sách sân bóng');
+            
+            const data = await response.json();
+            
+            // Đảm bảo data là một mảng
+            const pitches = Array.isArray(data) ? data : (data.items || []);
+            
+            // Lọc sân bóng theo loại sân và isCombined=true
+            availablePitchesForCombine = pitches.filter(pitch => 
+                pitch.pitchTypeID.toString() === selectedPitchTypeID && 
+                (pitch.isCombined === true || pitch.isCombined === "true")
+            );
+            
+            // Cập nhật select box
+            const availablePitchesSelect = document.getElementById('availablePitches');
+            
+            if (availablePitchesForCombine.length === 0) {
+                availablePitchesSelect.innerHTML = '<option disabled>Không có sân nào có thể gộp</option>';
+            } else {
+                availablePitchesSelect.innerHTML = availablePitchesForCombine.map(pitch => 
+                    `<option value="${pitch.pitchID}">${pitch.name}</option>`
+                ).join('');
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Không thể cập nhật danh sách sân có thể gộp'
+            });
+        }
+    };
+
+    // Cập nhật tên sân gộp khi chọn các sân
+    document.getElementById('availablePitches').addEventListener('change', async () => {
+        const select = document.getElementById('availablePitches');
+        const selectedOptions = Array.from(select.selectedOptions);
+        
+        // Tạo tên sân gộp từ tên các sân được chọn
+        if (selectedOptions.length > 0) {
+            const combinedName = selectedOptions.map(option => option.text).join(' + ');
+            document.getElementById('combinedPitchName').value = combinedName;
+            
+            // Lưu danh sách ID các sân được gộp
+            const selectedPitchIDs = selectedOptions.map(option => option.value);
+            const combinedFromPitches = selectedPitchIDs.join(',');
+            document.getElementById('combinedFromPitches').value = combinedFromPitches;
+            
+            // Tính tổng giá của các sân được chọn
+            let totalPrice = 0;
+            selectedOptions.forEach(option => {
+                const selectedPitch = availablePitchesForCombine.find(pitch => pitch.pitchID.toString() === option.value);
+                if (selectedPitch) {
+                    totalPrice += selectedPitch.price;
+                }
+            });
+            
+            // Áp dụng giảm giá 10% cho sân gộp
+            const discountedPrice = totalPrice * 0.9;
+            document.getElementById('combinedPitchPrice').value = discountedPrice.toFixed(0);
+            
+            // Tự động xác định và cập nhật loại sân dựa trên các sân được chọn
+            if (selectedOptions.length >= 2) {
+                try {
+                    const targetPitchTypeID = await determineTargetPitchType(selectedPitchIDs);
+                    if (targetPitchTypeID) {
+                        document.getElementById('pitchTypeSelect').value = targetPitchTypeID;
+                        
+                        // Hiển thị thông báo về việc tự động chọn loại sân
+                        const pitchTypeSelect = document.getElementById('pitchTypeSelect');
+                        const selectedTypeName = pitchTypeSelect.options[pitchTypeSelect.selectedIndex].text;
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Đã xác định loại sân',
+                            text: `Hệ thống đã tự động chọn loại sân ${selectedTypeName} dựa trên các sân được chọn.`,
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi xác định loại sân:', error);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Lưu ý',
+                        text: error.message
+                    });
+                }
+            }
+        } else {
+            document.getElementById('combinedPitchName').value = '';
+            document.getElementById('combinedPitchPrice').value = '';
+            document.getElementById('combinedFromPitches').value = '';
+        }
+    });
+
+    // Xử lý tạo sân gộp
+    document.getElementById('submitCombinePitch').addEventListener('click', async () => {
+        try {
+            const availablePitchesSelect = document.getElementById('availablePitches');
+            const selectedPitches = Array.from(availablePitchesSelect.selectedOptions);
+            
+            if (selectedPitches.length < 2) {
+                throw new Error('Vui lòng chọn ít nhất 2 sân để gộp');
+            }
+            
+            const newPitchID = document.getElementById('newPitchID').value;
+            if (!newPitchID || newPitchID.trim() === '') {
+                throw new Error('ID sân gộp không được để trống');
+            }
+            
+            const combinedName = document.getElementById('combinedPitchName').value;
+            const price = parseFloat(document.getElementById('combinedPitchPrice').value);
+            
+            if (isNaN(price) || price <= 0) {
+                throw new Error('Giá không hợp lệ');
+            }
+            
+            const status = document.getElementById('combinedPitchStatus').value;
+            const imageInput = document.getElementById('combinedImageFile');
+            const imageFile = imageInput.files[0];
+            
+            if (!imageFile) {
+                throw new Error('Vui lòng chọn hình ảnh cho sân gộp');
+            }
+            
+            // Lấy danh sách ID các sân được gộp
+            const combinedFromPitches = document.getElementById('combinedFromPitches').value;
+            if (!combinedFromPitches) {
+                throw new Error('Không có thông tin về các sân thành phần');
+            }
+            
+            // Xác định loại sân dựa trên các sân được chọn
+            const selectedPitchIDs = combinedFromPitches.split(',');
+            const targetPitchTypeID = await determineTargetPitchType(selectedPitchIDs);
+            
+            if (!targetPitchTypeID) {
+                throw new Error('Không thể xác định loại sân phù hợp');
+            }
+            
+            // Lấy thông tin tên loại sân
+            const pitchTypeResponse = await fetch(`https://localhost:7290/api/PitchType/${targetPitchTypeID}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                }
+            });
+            if (!pitchTypeResponse.ok) throw new Error('Không thể lấy thông tin loại sân');
+            const pitchType = await pitchTypeResponse.json();
+            
+            // Tạo formData để gửi dữ liệu
+            const formData = new FormData();
+            formData.append('pitchID', newPitchID);
+            formData.append('name', combinedName);
+            formData.append('pitchTypeID', targetPitchTypeID);
+            formData.append('price', price);
+            formData.append('status', status);
+            formData.append('isCombined', false); // Sân gộp không thể gộp tiếp
+            formData.append('imageUrl', imageFile);
+            formData.append('bookings', null);
+            formData.append('PitchType.PitchTypeID', targetPitchTypeID);
+            formData.append('PitchType.Name', pitchType.name);
+            
+            // Thêm metadata về các sân thành phần
+            formData.append('description', `CombinedFrom:${combinedFromPitches}`);
+            
+            // Tạo sân gộp mới
+            const response = await fetch('https://localhost:7290/api/Pitch', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                },
+                body: formData
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(errorData || 'Không thể tạo sân gộp');
+            }
+            
+            await Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: `Đã tạo sân gộp mới (${pitchType.name})`
+            });
+            
+            $('#combinePitchModal').modal('hide');
+            document.getElementById('combinePitchForm').reset();
+            document.getElementById('combinedImagePreview').style.display = 'none';
+            loadPitches();
+        } catch (error) {
+            console.error('Lỗi:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: error.message
+            });
+        }
+    });
+
+    // Hàm kiểm tra xem sân có thể đặt được không dựa vào các sân thành phần
+    const checkPitchAvailability = async (pitchID) => {
+        try {
+            // Lấy thông tin sân bóng
+            const response = await fetch(`https://localhost:7290/api/Pitch/${pitchID}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                }
+            });
+            
+            if (!response.ok) throw new Error('Không thể lấy thông tin sân bóng');
+            
+            const pitch = await response.json();
+            
+            // Nếu sân không phải là sân gộp, không cần kiểm tra thêm
+            if (!pitch.description || !pitch.description.startsWith('CombinedFrom:')) {
+                return pitch.status === 'Hoạt động';
+            }
+            
+            // Lấy danh sách ID các sân thành phần
+            const combinedFromStr = pitch.description.replace('CombinedFrom:', '');
+            const componentPitchIDs = combinedFromStr.split(',');
+            
+            // Kiểm tra trạng thái của từng sân thành phần
+            for (const componentPitchID of componentPitchIDs) {
+                const componentResponse = await fetch(`https://localhost:7290/api/Pitch/${componentPitchID}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                });
+                
+                if (!componentResponse.ok) continue; // Bỏ qua nếu không lấy được thông tin
+                
+                const componentPitch = await componentResponse.json();
+                
+                // Kiểm tra xem có đơn đặt sân nào đang hoạt động cho sân thành phần không
+                const bookingResponse = await fetch(`https://localhost:7290/api/Booking/pitch/${componentPitchID}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                });
+                
+                if (bookingResponse.ok) {
+                    const bookings = await bookingResponse.json();
+                    
+                    // Nếu có đơn đặt sân đang hoạt động, sân gộp không thể đặt
+                    const activeBookings = Array.isArray(bookings) ? 
+                        bookings.filter(b => b.status === 'Đã xác nhận' || b.status === 'Đang xử lý') : 
+                        [];
+                    
+                    if (activeBookings.length > 0) {
+                        return false;
+                    }
+                }
+            }
+            
+            // Nếu không có sân thành phần nào đang được đặt, sân gộp có thể đặt
+            return pitch.status === 'Hoạt động';
+            
+        } catch (error) {
+            console.error('Lỗi khi kiểm tra sân bóng:', error);
+            return false;
+        }
+    };
+
+    // Hàm kiểm tra xem khi đặt một sân có ảnh hưởng tới sân gộp nào không
+    const checkCombinedPitchConflict = async (pitchID) => {
+        try {
+            // Lấy tất cả sân bóng từ hệ thống
+            const response = await fetch('https://localhost:7290/api/Pitch', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                }
+            });
+            
+            if (!response.ok) throw new Error('Không thể lấy danh sách sân bóng');
+            
+            const data = await response.json();
+            const pitches = Array.isArray(data) ? data : (data.items || []);
+            
+            // Lọc ra các sân gộp có chứa pitchID đang được đặt
+            const affectedCombinedPitches = pitches.filter(pitch => {
+                if (!pitch.description || !pitch.description.startsWith('CombinedFrom:')) {
+                    return false;
+                }
+                
+                const combinedFromStr = pitch.description.replace('CombinedFrom:', '');
+                const componentPitchIDs = combinedFromStr.split(',');
+                
+                return componentPitchIDs.includes(pitchID.toString());
+            });
+            
+            return affectedCombinedPitches;
+        } catch (error) {
+            console.error('Lỗi khi kiểm tra sân gộp bị ảnh hưởng:', error);
+            return [];
+        }
+    };
+
+    // Hàm xác định loại sân đích dựa trên loại sân thành phần
+    const determineTargetPitchType = async (selectedPitches) => {
+        if (!selectedPitches || selectedPitches.length < 2) {
+            return null;
+        }
+        
+        try {
+            // Lấy thông tin chi tiết về các sân được chọn
+            const pitchPromises = selectedPitches.map(pitchID => 
+                fetch(`https://localhost:7290/api/Pitch/${pitchID}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                }).then(response => {
+                    if (!response.ok) throw new Error(`Không thể lấy thông tin sân ${pitchID}`);
+                    return response.json();
+                })
+            );
+            
+            const pitchesData = await Promise.all(pitchPromises);
+            
+            // Kiểm tra xem các sân có cùng loại không
+            const firstPitchType = pitchesData[0].pitchTypeID;
+            const allSameType = pitchesData.every(pitch => pitch.pitchTypeID === firstPitchType);
+            
+            if (!allSameType) {
+                throw new Error('Chỉ có thể gộp các sân cùng loại với nhau');
+            }
+            
+            // Lấy tên loại sân
+            const pitchTypeResponse = await fetch(`https://localhost:7290/api/PitchType/${firstPitchType}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                }
+            });
+            
+            if (!pitchTypeResponse.ok) {
+                throw new Error('Không thể lấy thông tin loại sân');
+            }
+            
+            const pitchType = await pitchTypeResponse.json();
+            const pitchTypeName = pitchType.name;
+            
+            // Xác định loại sân đích
+            if (pitchTypeName.includes('5')) {
+                // Nếu là sân 5, tìm loại sân 7
+                const targetType = pitchTypes.find(type => type.name.includes('7'));
+                return targetType ? targetType.pitchTypeID : null;
+            } else if (pitchTypeName.includes('7')) {
+                // Nếu là sân 7, tìm loại sân 11
+                const targetType = pitchTypes.find(type => type.name.includes('11'));
+                return targetType ? targetType.pitchTypeID : null;
+            } else {
+                // Các loại sân khác giữ nguyên
+                return firstPitchType;
+            }
+        } catch (error) {
+            console.error('Lỗi khi xác định loại sân đích:', error);
+            throw error;
+        }
+    };
+
 </script>
 
 </body>

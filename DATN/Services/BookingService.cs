@@ -450,7 +450,63 @@ namespace DATN.Services
                                (b.StartTime >= startTime && b.EndTime <= endTime)))
                     .AnyAsync();
 
-                return ResponseDTO<bool>.SuccessResult(!isBooked);
+                if (isBooked)
+                {
+                    return ResponseDTO<bool>.SuccessResult(false);
+                }
+
+                // Kiểm tra xem sân có phải là thành phần của sân gộp nào không
+                var combinedPitches = await GetCombinedPitchesContainingAsync(pitchId);
+                if (combinedPitches.Any())
+                {
+                    // Nếu là thành phần của sân gộp, kiểm tra xem sân gộp đã được đặt chưa
+                    foreach (var combinedPitch in combinedPitches)
+                    {
+                        var isCombinedPitchBooked = await _context.Bookings
+                            .Where(b => b.PitchID == combinedPitch.PitchID &&
+                                       b.BookingDate.Date == date.Date &&
+                                       b.Status != "Cancelled" &&
+                                      ((b.StartTime <= startTime && b.EndTime > startTime) ||
+                                       (b.StartTime < endTime && b.EndTime >= endTime) ||
+                                       (b.StartTime >= startTime && b.EndTime <= endTime)))
+                            .AnyAsync();
+
+                        if (isCombinedPitchBooked)
+                        {
+                            return ResponseDTO<bool>.SuccessResult(false);
+                        }
+                    }
+                }
+
+                // Kiểm tra xem sân có phải là sân gộp không
+                if (!string.IsNullOrEmpty(pitch.Description) && pitch.Description.StartsWith("CombinedFrom:"))
+                {
+                    // Nếu là sân gộp, kiểm tra xem các sân thành phần đã được đặt chưa
+                    var componentPitchIds = pitch.Description
+                        .Replace("CombinedFrom:", "")
+                        .Split(',')
+                        .Select(id => int.Parse(id))
+                        .ToList();
+
+                    foreach (var componentPitchId in componentPitchIds)
+                    {
+                        var isComponentPitchBooked = await _context.Bookings
+                            .Where(b => b.PitchID == componentPitchId &&
+                                       b.BookingDate.Date == date.Date &&
+                                       b.Status != "Cancelled" &&
+                                      ((b.StartTime <= startTime && b.EndTime > startTime) ||
+                                       (b.StartTime < endTime && b.EndTime >= endTime) ||
+                                       (b.StartTime >= startTime && b.EndTime <= endTime)))
+                            .AnyAsync();
+
+                        if (isComponentPitchBooked)
+                        {
+                            return ResponseDTO<bool>.SuccessResult(false);
+                        }
+                    }
+                }
+
+                return ResponseDTO<bool>.SuccessResult(true);
             }
             catch (Exception ex)
             {
@@ -477,19 +533,17 @@ namespace DATN.Services
         }
 
         // Thống kê đặt sân theo khoảng thời gian
-        public async Task<ResponseDTO<Dictionary<DateTime, int>>> GetBookingStatsByDateRangeAsync(
-            DateTime fromDate, DateTime toDate)
+        public async Task<ResponseDTO<Dictionary<DateTime, int>>> GetBookingStatsByDateRangeAsync(DateTime fromDate, DateTime toDate)
         {
             try
             {
-                var bookingCounts = await _context.Bookings
-                    .Where(b => b.BookingDate >= fromDate.Date && b.BookingDate <= toDate.Date)
+                var stats = await _context.Bookings
+                    .Where(b => b.BookingDate >= fromDate && b.BookingDate <= toDate)
                     .GroupBy(b => b.BookingDate.Date)
                     .Select(g => new { Date = g.Key, Count = g.Count() })
-                    .ToListAsync();
+                    .ToDictionaryAsync(g => g.Date, g => g.Count);
 
-                var result = bookingCounts.ToDictionary(item => item.Date, item => item.Count);
-                return ResponseDTO<Dictionary<DateTime, int>>.SuccessResult(result);
+                return ResponseDTO<Dictionary<DateTime, int>>.SuccessResult(stats);
             }
             catch (Exception ex)
             {
@@ -503,19 +557,85 @@ namespace DATN.Services
             try
             {
                 var bookings = await _context.Bookings
-                    .Where(b => b.PitchID == pitchId && 
-                           b.BookingDate.Date == date.Date && 
-                           b.Status != "Cancelled") // Chỉ lấy các đặt sân chưa bị hủy
+                    .Where(b => b.PitchID == pitchId &&
+                              b.BookingDate.Date == date.Date &&
+                              b.Status != "Cancelled")
                     .ToListAsync();
 
-                return _mapper.Map<List<BookedTimeSlotDTO>>(bookings);
+                var timeSlots = new List<BookedTimeSlotDTO>();
+                
+                foreach (var booking in bookings)
+                {
+                    timeSlots.Add(new BookedTimeSlotDTO
+                    {
+                        StartTime = booking.StartTime.ToString(@"hh\:mm\:ss"),
+                        EndTime = booking.EndTime.ToString(@"hh\:mm\:ss"),
+                        
+                    });
+                }
+
+                return timeSlots;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Lỗi khi lấy khung giờ đã đặt: {ex.Message}");
+                // Log lỗi
+                Console.Error.WriteLine($"Lỗi khi lấy khung giờ đã đặt: {ex.Message}");
                 return new List<BookedTimeSlotDTO>();
             }
+        }
 
+        // Lấy thông tin sân bóng theo ID
+        public async Task<PitchDTO> GetPitchByIdAsync(int pitchId)
+        {
+            try
+            {
+                var pitch = await _context.Pitches
+                    .Include(p => p.PitchType)
+                    .FirstOrDefaultAsync(p => p.PitchID == pitchId);
+
+                if (pitch == null)
+                {
+                    return null;
+                }
+
+                return _mapper.Map<PitchDTO>(pitch);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi
+                Console.Error.WriteLine($"Lỗi khi lấy thông tin sân bóng: {ex.Message}");
+                return null;
+            }
+        }
+
+        // Lấy danh sách sân gộp chứa sân thành phần
+        public async Task<List<PitchDTO>> GetCombinedPitchesContainingAsync(int pitchId)
+        {
+            try
+            {
+                var allPitches = await _context.Pitches
+                    .Include(p => p.PitchType)
+                    .ToListAsync();
+
+                var combinedPitches = allPitches
+                    .Where(p => !string.IsNullOrEmpty(p.Description) && 
+                               p.Description.StartsWith("CombinedFrom:") &&
+                               p.Description.Replace("CombinedFrom:", "")
+                                .Split(',')
+                                .Any(id => int.TryParse(id, out int compId) && compId == pitchId))
+                    .ToList();
+
+                return _mapper.Map<List<PitchDTO>>(combinedPitches);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi
+                Console.Error.WriteLine($"Lỗi khi tìm sân gộp: {ex.Message}");
+                return new List<PitchDTO>();
+            }
         }
     }
+
+   
+   
 } 

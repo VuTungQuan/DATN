@@ -272,5 +272,152 @@ namespace DATN.Controllers
                 return StatusCode(500, new { success = false, message = ex.Message });
             }
         }
+
+        // GET: api/Booking/check-pitch-conflicts
+        [HttpGet("check-pitch-conflicts")]
+        public async Task<ActionResult<ResponseDTO<bool>>> CheckPitchConflicts(
+            [FromQuery] int pitchId,
+            [FromQuery] DateTime date,
+            [FromQuery] string startTime,
+            [FromQuery] string endTime)
+        {
+            try
+            {
+                if (!TimeSpan.TryParse(startTime, out var start) || !TimeSpan.TryParse(endTime, out var end))
+                {
+                    return BadRequest(new { success = false, message = "Thời gian không hợp lệ" });
+                }
+
+                // Lấy thông tin sân
+                var pitch = await _bookingService.GetPitchByIdAsync(pitchId);
+                if (pitch == null)
+                {
+                    return NotFound(new { success = false, message = "Không tìm thấy thông tin sân" });
+                }
+
+                bool hasConflict = false;
+                string message = "";
+                string warning = "";
+
+                // Kiểm tra xem sân có phải là sân gộp không
+                if (!string.IsNullOrEmpty(pitch.Description) && pitch.Description.StartsWith("CombinedFrom:"))
+                {
+                    // Đây là sân gộp, kiểm tra xem các sân thành phần có khả dụng không
+                    var components = pitch.Description.Replace("CombinedFrom:", "").Split(',');
+                    
+                    foreach (var componentId in components)
+                    {
+                        if (int.TryParse(componentId, out int compId))
+                        {
+                            // Kiểm tra từng sân thành phần xem có được đặt không
+                            var isAvailable = await _bookingService.CheckPitchAvailabilityAsync(compId, date, start, end);
+                            if (isAvailable.Data) // Access the 'Data' property of the ResponseDTO<bool> to get the actual boolean value
+                            {
+                                continue;
+                            }
+
+
+                            hasConflict = true;
+                            message = $"Sân gộp không thể đặt vì sân thành phần {compId} đã được đặt trong khung giờ này.";
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    // Đây là sân thường, kiểm tra xem có phải là thành phần của sân gộp nào không
+                    var combinedPitches = await _bookingService.GetCombinedPitchesContainingAsync(pitchId);
+                    
+                    if (combinedPitches != null && combinedPitches.Any())
+                    {
+                        // Không phải xung đột nhưng cần cảnh báo
+                        warning = $"Lưu ý: Sân này là thành phần của {combinedPitches.Count()} sân gộp. " +
+                                  $"Khi đặt sân này, các sân gộp liên quan sẽ không thể đặt trong cùng khung giờ.";
+                    }
+                }
+
+                return Ok(new {
+                    success = true,
+                    hasConflict = hasConflict,
+                    message = message,
+                    warning = warning
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        // GET: api/Booking/get-pitch-conflicts
+        [HttpGet("get-pitch-conflicts")]
+        public async Task<ActionResult<ResponseDTO<List<BookedTimeSlotDTO>>>> GetPitchConflicts(
+            [FromQuery] int pitchId,
+            [FromQuery] DateTime date)
+        {
+            try
+            {
+                // Lấy thông tin sân
+                var pitch = await _bookingService.GetPitchByIdAsync(pitchId);
+                if (pitch == null)
+                {
+                    return NotFound(new { success = false, message = "Không tìm thấy thông tin sân" });
+                }
+
+                List<BookedTimeSlotDTO> conflictedSlots = new List<BookedTimeSlotDTO>();
+
+                // Kiểm tra xem sân có phải là sân gộp không
+                if (!string.IsNullOrEmpty(pitch.Description) && pitch.Description.StartsWith("CombinedFrom:"))
+                {
+                    // Đây là sân gộp, lấy các khung giờ đã đặt của các sân thành phần
+                    var components = pitch.Description.Replace("CombinedFrom:", "").Split(',');
+                    
+                    foreach (var componentId in components)
+                    {
+                        if (int.TryParse(componentId, out int compId))
+                        {
+                            // Lấy khung giờ đã đặt của sân thành phần
+                            var bookedSlots = await _bookingService.GetBookedTimeSlotsAsync(compId, date);
+                            if (bookedSlots != null && bookedSlots.Any())
+                            {
+                                foreach (var slot in bookedSlots)
+                                {
+                                    slot.Reason = $"Sân thành phần {compId} đã được đặt";
+                                    conflictedSlots.Add(slot);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // Đây là sân thường, kiểm tra xem có phải là thành phần của sân gộp nào không
+                    var combinedPitches = await _bookingService.GetCombinedPitchesContainingAsync(pitchId);
+                    
+                    if (combinedPitches != null && combinedPitches.Any())
+                    {
+                        foreach (var combinedPitch in combinedPitches)
+                        {
+                            // Lấy khung giờ đã đặt của sân gộp
+                            var bookedSlots = await _bookingService.GetBookedTimeSlotsAsync(combinedPitch.PitchID, date);
+                            if (bookedSlots != null && bookedSlots.Any())
+                            {
+                                foreach (var slot in bookedSlots)
+                                {
+                                    slot.Reason = $"Sân gộp {combinedPitch.Name} đã được đặt";
+                                    conflictedSlots.Add(slot);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return Ok(conflictedSlots);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
     }
 } 

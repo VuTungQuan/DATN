@@ -294,8 +294,22 @@
     <section id="booking" class="py-5 bg-light">
         <div class="container">
             <h2 class="text-center mb-5">Đề xuất sân bóng</h2>
+            <div class="row" id="recommendedPitches">
+                <!-- Loading spinner -->
+                <div id="recommendedLoadingSpinner" class="col-12 text-center">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Đang tải sân đề xuất...</p>
+                </div>
+            </div>
+            <!-- Thông báo lỗi -->
+            <div id="recommendedErrorMessage" class="alert alert-danger text-center" style="display: none;">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span>Không thể tải sân đề xuất. Vui lòng thử lại sau.</span>
+            </div>
         </div>
-    </section>s
+    </section>
     <!-- Thêm phần loại sân sau phần header -->
     <section class="pitch-types-section py-5">
         <div class="container">
@@ -358,6 +372,45 @@
 
     .pitch-type-card .btn-success:hover {
         transform: scale(1.05);
+    }
+    </style>
+
+    <!-- Thêm CSS cho phần đề xuất sân -->
+    <style>
+    .recommended-pitch-card {
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .recommended-pitch-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .recommended-pitch-image {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .recommended-pitch-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 10px 0;
+        color: #333;
+    }
+
+    .recommended-pitch-price {
+        color: #28a745;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .recommended-pitch-type {
+        color: #6c757d;
+        font-size: 0.9rem;
     }
     </style>
 
@@ -446,7 +499,94 @@
     });
     </script>
 
-    
+    <!-- Thêm script xử lý đề xuất sân -->
+    <script>
+    // Hàm lấy sân đề xuất
+    async function fetchRecommendedPitches() {
+        const loadingSpinner = document.getElementById('recommendedLoadingSpinner');
+        const errorMessage = document.getElementById('recommendedErrorMessage');
+        const container = document.getElementById('recommendedPitches');
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            loadingSpinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            let url = 'https://localhost:7290/api/Pitch/recommended';
+            if (token) {
+                url += '?isAuthenticated=true';
+            }
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : ''
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Sân đề xuất:', data);
+                displayRecommendedPitches(data);
+            } else {
+                throw new Error('Không thể tải sân đề xuất');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy sân đề xuất:', error);
+            errorMessage.querySelector('span').textContent = 'Không thể tải sân đề xuất. Vui lòng thử lại sau.';
+            errorMessage.style.display = 'block';
+            container.innerHTML = ''; // Xóa loading spinner
+        } finally {
+            loadingSpinner.style.display = 'none';
+        }
+    }
+
+    // Hàm hiển thị sân đề xuất
+    function displayRecommendedPitches(pitches) {
+        const container = document.getElementById('recommendedPitches');
+        
+        if (!pitches || pitches.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center">
+                    <p class="text-muted">Chưa có sân đề xuất.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = '';
+        pitches.forEach(pitch => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4';
+            col.innerHTML = `
+                <div class="card recommended-pitch-card">
+                    <img src="${pitch.imageUrl}" class="card-img-top recommended-pitch-image" 
+                        alt="${pitch.name}" 
+                        onerror="this.src='images/default-pitch.jpg'">
+                    <div class="card-body">
+                        <h5 class="recommended-pitch-title">${pitch.name}</h5>
+                        
+                        <p class="recommended-pitch-price mb-3">
+                            <i class="fas fa-tag me-2"></i>${pitch.price.toLocaleString('vi-VN')} VNĐ
+                        </p>
+                        <div class="d-grid">
+                            <a href="booking-details.html?pitch=${pitch.pitchID}" class="btn btn-success">
+                                <i class="fas fa-calendar-plus me-2"></i>Đặt sân ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(col);
+        });
+    }
+
+    // Load sân đề xuất khi trang được tải
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchRecommendedPitches();
+    });
+    </script>
 
     <!-- Contact Section -->
     <section id="contact" class="py-5 bg-light">

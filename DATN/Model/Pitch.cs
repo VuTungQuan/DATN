@@ -24,6 +24,8 @@ namespace DATN.Model
 
         public string? ImageUrl { get; set; }
 
+        // Thêm trường Description để lưu thông tin sân gộp
+        public string? Description { get; set; }
 
         // Mối quan hệ với PitchType
         [ForeignKey("PitchTypeID")]
