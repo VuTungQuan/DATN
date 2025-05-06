@@ -22,10 +22,12 @@ namespace DATN.Repository
         {
             return await _context.PitchTypes.FindAsync(id);
         }
-        public async Task<PitchType> GetPitchTypeByNameAsync(string name)
+        public async Task<IEnumerable<PitchType>> GetPitchTypeByNameAsync(string name)
         {
-            return await _context.PitchTypes.FirstOrDefaultAsync(u => u.Name == name);
+            return await _context.PitchTypes.Where(u => u.Name.Contains(name))
+                                 .ToListAsync();
         }
+        
         public async Task AddPitchTypeAsync(PitchType pitchType)
         {
             pitchType.PitchTypeID = 0;

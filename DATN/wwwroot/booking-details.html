@@ -284,16 +284,23 @@
                             
                             <div class="payment-options mb-3">
                                 <h6 class="mb-2">Phương thức thanh toán:</h6>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payment-method" id="payment-onsite" value="onsite" checked>
-                                    <label class="form-check-label" for="payment-onsite">
-                                        <i class="fas fa-money-bill-wave text-success me-1"></i> Thanh toán tại sân
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="payment-method" id="payment-cash" value="cash" checked>
+                                    <label class="form-check-label" for="payment-cash">
+                                        <i class="fas fa-money-bill-wave text-success me-2"></i>
+                                        <span class="fw-bold">Tiền mặt</span>
+                                        <div class="text-muted small ms-4">Thanh toán trực tiếp tại sân trước khi sử dụng</div>
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="payment-method" id="payment-vnpay" value="vnpay">
                                     <label class="form-check-label" for="payment-vnpay">
-                                        <i class="fas fa-credit-card text-primary me-1"></i> Thanh toán qua VNPAY
+                                        <i class="fas fa-credit-card text-primary me-2"></i>
+                                        <span class="fw-bold">VNPAY</span>
+                                        <div class="text-muted small ms-4">Thanh toán online qua VNPAY (ATM, Visa, MasterCard, JCB, QR Code)</div>
+                                        <div class="text-success small ms-4">
+                                            <i class="fas fa-shield-alt me-1"></i>Bảo mật & An toàn
+                                        </div>
                                     </label>
                                 </div>
                             </div>
@@ -1183,7 +1190,10 @@
                         totalPrice: selectedTimeSlot.price,
                         note: document.getElementById('booking-note').value || ''
                     },
-                    payment: null
+                    payment: {
+                        paymentMethod: document.querySelector('input[name="payment-method"]:checked').value === 'cash' ? 'Tiền mặt ' : 'VNPAY',
+                        amount: selectedTimeSlot.price
+                    }
                 };
                 
                 console.log('Dữ liệu gửi đi:', bookingData);
@@ -1265,6 +1275,32 @@
                         });
                         
                         return;
+                    }
+                } else if (paymentMethod === 'cash') {
+                    // Thanh toán tiền mặt - tạo payment mới qua API
+                    try {
+                        const paymentData = {
+                            bookingID: bookingId,
+                            amount: selectedTimeSlot.price,
+                            paymentMethod: 'Tiền mặt',
+                            transactionID: 'null'
+                            
+                        };
+                        
+                        const paymentResponse = await fetch('https://localhost:7290/api/Payments', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify(paymentData)
+                        });
+                        
+                        if (!paymentResponse.ok) {
+                            console.warn('Không thể tạo bản ghi thanh toán, nhưng đặt sân vẫn thành công');
+                        }
+                    } catch (paymentError) {
+                        console.error('Lỗi khi tạo bản ghi thanh toán:', paymentError);
                     }
                 }
                 

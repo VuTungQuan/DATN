@@ -8,6 +8,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
+        /* Đảm bảo font-size không bị thay đổi */
+        html {
+            font-size: 16px !important;
+        }
+        
+        body {
+            font-size: 1rem !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        }
+        
         .result-card {
             max-width: 600px;
             margin: 0 auto;
@@ -145,11 +155,18 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Lấy token từ URL nếu có
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                localStorage.setItem('accessToken', token);
+                console.log("Đã lưu token từ URL");
+            }
+            
             // Kiểm tra đăng nhập
             checkLoginStatus();
             
             // Xử lý kết quả thanh toán
-            const urlParams = new URLSearchParams(window.location.search);
             const status = urlParams.get('status');
             const bookingId = urlParams.get('bookingId');
             const message = urlParams.get('message');
@@ -161,36 +178,106 @@
         function checkLoginStatus() {
             const token = localStorage.getItem('accessToken');
             const user = JSON.parse(localStorage.getItem('user'));
+            const userId = localStorage.getItem('userID');
+            const userEmail = localStorage.getItem('userEmail');
             
-            // Lấy thông tin người dùng từ localStorage
-            if (user) {
-                // Đã đăng nhập, cập nhật thông tin người dùng
-                document.getElementById('user-name').textContent = user.fullName || 'Tài khoản';
-            } else if (token) {
-                // Có token nhưng không có thông tin user, thử lấy lại thông tin
-                fetch('https://localhost:7290/api/User/current', {
+            console.log("Token:", token ? "Có token" : "Không có token");
+            console.log("User data:", user ? "Có dữ liệu" : "Không có dữ liệu");
+            console.log("UserID:", userId);
+            console.log("UserEmail:", userEmail);
+            
+            if (!token) {
+                Swal.fire({
+                    title: 'Yêu cầu đăng nhập',
+                    text: 'Phiên đăng nhập đã hết hạn',
+                    icon: 'warning',
+                    confirmButtonText: 'Đăng nhập ngay',
+                }).then(() => {
+                    localStorage.setItem('redirectAfterLogin', window.location.href);
+                    window.location.href = 'index.html';
+                });
+                return false;
+            }
+            
+            // Không có thông tin người dùng nhưng có token
+            if (!user && token) {
+                let apiUrl = '';
+                
+                // Ưu tiên sử dụng userId nếu có
+                if (userId) {
+                    apiUrl = `https://localhost:7290/api/Users/${userId}`;
+                }
+                // Nếu không có userId nhưng có email
+                else if (userEmail) {
+                    apiUrl = `https://localhost:7290/api/Users/email/${encodeURIComponent(userEmail)}`;
+                }
+                // Nếu không có cả userId và email, không thể lấy thông tin người dùng
+                else {
+                    console.error('Không có thông tin người dùng để lấy dữ liệu');
+                    localStorage.removeItem('accessToken');
+                    Swal.fire({
+                        title: 'Lỗi xác thực',
+                        text: 'Vui lòng đăng nhập lại để tiếp tục',
+                        icon: 'error',
+                        confirmButtonText: 'Đăng nhập',
+                    }).then(() => {
+                        window.location.href = 'index.html';
+                    });
+                    return false;
+                }
+                
+                // Gọi API để lấy thông tin người dùng
+                fetch(apiUrl, {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${token}`
                     }
                 })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Phiên đăng nhập hết hạn');
+                        throw new Error('Lỗi xác thực');
                     }
                     return response.json();
                 })
                 .then(data => {
-                    if (data.success && data.data) {
-                        // Lưu thông tin người dùng vào localStorage
-                        localStorage.setItem('user', JSON.stringify(data.data));
-                        document.getElementById('user-name').textContent = data.data.fullName || 'Tài khoản';
+                    // API trả về dữ liệu trực tiếp, không có cấu trúc success/data
+                    const userData = data;
+                    
+                    // Lưu thông tin người dùng vào localStorage
+                    localStorage.setItem('user', JSON.stringify(userData));
+                    localStorage.setItem('userID', userData.userID);
+                    if (userData.email) {
+                        localStorage.setItem('userEmail', userData.email);
                     }
+                    
+                    // Cập nhật tên người dùng trên giao diện
+                    document.getElementById('user-name').textContent = userData.fullName || 'Tài khoản';
+                    return true;
                 })
                 .catch(error => {
-                    console.error('Lỗi xác thực:', error);
+                    console.error('Lỗi khi lấy thông tin người dùng:', error);
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('userID');
+                    localStorage.removeItem('userEmail');
+                    
+                    Swal.fire({
+                        title: 'Lỗi xác thực',
+                        text: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại',
+                        icon: 'error',
+                        confirmButtonText: 'Đăng nhập',
+                    }).then(() => {
+                        localStorage.setItem('redirectAfterLogin', window.location.href);
+                        window.location.href = 'index.html';
+                    });
+                    return false;
                 });
+            } else if (user) {
+                // Đã đăng nhập, cập nhật thông tin người dùng
+                document.getElementById('user-name').textContent = user.fullName || 'Tài khoản';
+                return true;
             }
+            
+            return !!token;
         }
 
         // Hiển thị kết quả thanh toán
@@ -304,6 +391,7 @@
             localStorage.removeItem('accessToken');
             localStorage.removeItem('user');
             localStorage.removeItem('userID');
+            localStorage.removeItem('userEmail');
             window.location.href = 'index.html';
         }
     </script>

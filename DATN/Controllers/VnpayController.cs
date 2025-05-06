@@ -8,6 +8,7 @@ using System;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using DATN.DTO;
+using System.Linq;
 
 namespace DATN.Controllers
 {
@@ -205,6 +206,22 @@ namespace DATN.Controllers
                         await _paymentRepository.UpdatePaymentAsync(payment);
                     }
 
+                    // Lấy token hiện tại từ request
+                    string token = string.Empty;
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        // Từ ClaimsPrincipal, lấy thông tin token hoặc sử dụng userID để tạo token mới
+                        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                        if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                        {
+                            // Nếu booking có thông tin userId khớp với người dùng đang đăng nhập
+                            if (booking.UserID == userId)
+                            {
+                                token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                            }
+                        }
+                    }
+
                     // Nếu thanh toán thành công, cập nhật trạng thái booking
                     if (result.IsSuccess)
                     {
@@ -212,12 +229,22 @@ namespace DATN.Controllers
                         await _bookingService.UpdateBookingAsync(bookingId, updateBookingDto);
 
                         // Chuyển hướng đến trang kết quả thanh toán thành công
-                        return Redirect($"/payment-result.html?status=success&bookingId={bookingId}");
+                        var redirectUrl = $"/payment-result.html?status=success&bookingId={bookingId}";
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            redirectUrl += $"&token={token}";
+                        }
+                        return Redirect(redirectUrl);
                     }
                     else
                     {
                         // Chuyển hướng đến trang kết quả thanh toán thất bại
-                        return Redirect($"/payment-result.html?status=failed&message={result.TransactionStatus.Description}");
+                        var redirectUrl = $"/payment-result.html?status=failed&message={result.TransactionStatus.Description}";
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            redirectUrl += $"&token={token}";
+                        }
+                        return Redirect(redirectUrl);
                     }
                 }
 

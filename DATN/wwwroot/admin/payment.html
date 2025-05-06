@@ -727,7 +727,7 @@ var nav = $('.fixed-button');
         // Nút Previous
         paginationHTML += `
             <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">Previous</a>
+                <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">Trước</a>
             </li>
         `;
         
@@ -743,7 +743,7 @@ var nav = $('.fixed-button');
         // Nút Next
         paginationHTML += `
             <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Next</a>
+                <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Sau </a>
             </li>
         `;
         

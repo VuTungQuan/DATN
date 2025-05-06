@@ -1,5 +1,7 @@
 using DATN.Model;
 using DATN.Repository;
+using DATN.DTO;
+using DATN.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace DATN.Controllers
 {
@@ -16,10 +20,18 @@ namespace DATN.Controllers
     public class PitchController : ControllerBase
     {
         private readonly IPitchRepository _pitchRepository;
+        private readonly IBookingService _bookingService;
+        private readonly JsonSerializerOptions _jsonOptions;
 
-        public PitchController(IPitchRepository pitchRepository)
+        public PitchController(IPitchRepository pitchRepository, IBookingService bookingService)
         {
             _pitchRepository = pitchRepository;
+            _bookingService = bookingService;
+            _jsonOptions = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
         }
 
         [HttpGet]
@@ -248,6 +260,119 @@ namespace DATN.Controllers
                     // Không phải là thành phần của sân gộp nào
                     return Ok(new { isPartOfCombined = false });
                 }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet("recommended")]
+        public async Task<ActionResult<IEnumerable<PitchDTO>>> GetRecommendedPitches([FromQuery] bool isAuthenticated = false)
+        {
+            try
+            {
+                var allPitches = await _pitchRepository.GetAllPitchesAsync();
+                var activePitches = allPitches.Where(p => p.Status == "Hoạt động").ToList();
+
+                if (!activePitches.Any())
+                {
+                    return Ok(new List<PitchDTO>());
+                }
+
+                // Nếu người dùng đã đăng nhập, lấy lịch sử đặt sân
+                if (isAuthenticated)
+                {
+                    var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out int userId))
+                    {
+                        // Lấy lịch sử đặt sân của người dùng
+                        var bookingResponse = await _bookingService.GetBookingsByUserIdAsync(userId);
+                        
+                        if (bookingResponse.Success && bookingResponse.Data != null && bookingResponse.Data.Any())
+                        {
+                            var userBookings = bookingResponse.Data;
+
+                            // Lấy thông tin chi tiết của các sân đã đặt
+                            var bookedPitches = await Task.WhenAll(
+                                userBookings.Select(b => _pitchRepository.GetPitchByIdAsync(b.PitchID))
+                            );
+
+                            var validBookedPitches = bookedPitches.Where(p => p != null).ToList();
+
+                            if (validBookedPitches.Any())
+                            {
+                                // Phân tích lịch sử đặt sân
+                                var pitchTypePreferences = validBookedPitches
+                                    .GroupBy(p => p.PitchTypeID)
+                                    .ToDictionary(g => g.Key, g => g.Count());
+
+                                var priceRange = new
+                                {
+                                    Min = validBookedPitches.Min(p => p.Price),
+                                    Max = validBookedPitches.Max(p => p.Price)
+                                };
+
+                                // Tính điểm cho từng sân
+                                var scoredPitches = activePitches.Select(pitch =>
+                                {
+                                    var score = 0;
+
+                                    // Tính điểm dựa trên loại sân
+                                    if (pitchTypePreferences.ContainsKey(pitch.PitchTypeID))
+                                    {
+                                        score += pitchTypePreferences[pitch.PitchTypeID] * 2;
+                                    }
+
+                                    // Tính điểm dựa trên giá sân
+                                    if (pitch.Price >= priceRange.Min && pitch.Price <= priceRange.Max)
+                                    {
+                                        score += 3;
+                                    }
+                                    else if (pitch.Price >= priceRange.Min * 0.8m && pitch.Price <= priceRange.Max * 1.2m)
+                                    {
+                                        score += 1;
+                                    }
+
+                                    return new { Pitch = pitch, Score = score };
+                                })
+                                .OrderByDescending(p => p.Score)
+                                .Take(3)
+                                .Select(p => new PitchDTO
+                                {
+                                    PitchID = p.Pitch.PitchID,
+                                    Name = p.Pitch.Name,
+                                    PitchTypeID = p.Pitch.PitchTypeID,
+                                    PitchTypeName = p.Pitch.PitchType?.Name ?? "",
+                                    Price = p.Pitch.Price,
+                                    Status = p.Pitch.Status,
+                                    ImageUrl = p.Pitch.ImageUrl,
+                                    Description = p.Pitch.Description
+                                });
+
+                                return Ok(scoredPitches);
+                            }
+                        }
+                    }
+                }
+
+                // Nếu chưa đăng nhập hoặc không có lịch sử đặt sân, trả về 3 sân có giá thấp nhất
+                var popularPitches = activePitches
+                    .OrderBy(p => p.Price)
+                    .Take(3)
+                    .Select(p => new PitchDTO
+                    {
+                        PitchID = p.PitchID,
+                        Name = p.Name,
+                        PitchTypeID = p.PitchTypeID,
+                        PitchTypeName = p.PitchType?.Name ?? "",
+                        Price = p.Price,
+                        Status = p.Status,
+                        ImageUrl = p.ImageUrl,
+                        Description = p.Description
+                    });
+
+                return Ok(popularPitches);
             }
             catch (Exception ex)
             {

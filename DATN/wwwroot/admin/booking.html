@@ -438,7 +438,7 @@
                                                                     <h6>Thông tin khách hàng</h6>
                                                                     <div class="table-responsive">
                                                                         <table class="table table-bordered">
-                                                                            <tbody>
+                                                                            <tbody id="detail-userInfo">
                                                                                 <tr>
                                                                                     <td style="width: 40%;"><strong>Họ tên:</strong></td>
                                                                                     <td id="detail-userName"></td>
@@ -451,6 +451,7 @@
                                                                                     <td><strong>Email:</strong></td>
                                                                                     <td id="detail-email"></td>
                                                                                 </tr>
+                                                                                <!-- Các thông tin khác sẽ được thêm tự động từ API -->
                                                                             </tbody>
                                                                         </table>
                                                                     </div>
@@ -465,7 +466,10 @@
                                                                             <tbody>
                                                                                 <tr>
                                                                                     <td style="width: 30%;"><strong>Trạng thái:</strong></td>
-                                                                                    <td><span id="detail-paymentStatus" class="badge badge-pill"></span></td>
+                                                                                    <td>
+                                                                                        <span id="detail-paymentStatus" class="badge badge-pill"></span>
+                                                                                        <span id="detail-paymentInfo" class="small ml-2 text-muted"></span>
+                                                                                    </td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td><strong>Phương thức:</strong></td>
@@ -587,6 +591,28 @@ const getStatusText = (status) => {
         case 'Completed': return 'Hoàn thành';
         case 'Cancelled': return 'Đã hủy';
         default: return status;
+    }
+};
+
+// Hàm lấy text hiển thị cho phương thức thanh toán
+const getPaymentMethodText = (method) => {
+    switch (method) {
+        case 'Cash': return 'Thanh toán tiền mặt tại sân';
+        case 'VNPAY': 
+        case 'VnPay': return 'Thanh toán qua VNPAY';
+        case 'Bank Transfer': return 'Chuyển khoản ngân hàng';
+        default: return method || 'Chưa có thông tin';
+    }
+};
+
+// Hàm lấy biểu tượng cho phương thức thanh toán
+const getPaymentMethodIcon = (method) => {
+    switch (method) {
+        case 'Cash': return '<i class="ti-money text-success mr-1"></i>';
+        case 'VNPAY': 
+        case 'VnPay': return '<i class="ti-credit-card text-primary mr-1"></i>';
+        case 'Bank Transfer': return '<i class="ti-exchange-vertical text-info mr-1"></i>';
+        default: return '<i class="ti-help-alt text-muted mr-1"></i>';
     }
 };
 
@@ -824,7 +850,7 @@ const loadBookings = async () => {
                 </tr>
             `;
         }
-        
+
         // Tạo URL với các tham số filter
         let url = `https://localhost:7290/api/Booking?pageNumber=${currentPage}&pageSize=${itemsPerPage}`;
         
@@ -890,7 +916,7 @@ const loadBookings = async () => {
             throw new Error(`Không thể tải danh sách đặt sân: ${response.status} ${errorText}`);
         }
         
-        const data = await response.json();
+            const data = await response.json();
         console.log("Dữ liệu API trả về:", data);
         
         // Kiểm tra xem API có hỗ trợ tìm kiếm khách hàng không
@@ -943,8 +969,8 @@ const loadBookings = async () => {
             document.querySelector('.table-responsive').before(clientFilterNotice);
         }
             
-        // Hiển thị dữ liệu
-        if (tbody) {
+            // Hiển thị dữ liệu
+            if (tbody) {
             tbody.innerHTML = '';
             
             if (filteredBookings.length === 0) {
@@ -964,7 +990,7 @@ const loadBookings = async () => {
                         <td>${formatCurrency(booking.totalPrice)}</td>
                         <td>
                             <span class="badge ${getStatusBadgeClass(booking.status)}">${getStatusText(booking.status)}</span>
-                            ${getPaymentBadge(booking)}
+                            
                         </td>
                         <td>
                             <button class="btn btn-info btn-sm" onclick="viewBookingDetail(${booking.bookingID})">
@@ -982,12 +1008,12 @@ const loadBookings = async () => {
             }
         } else {
             console.error("Không tìm thấy element #bookingTableBody");
-        }
+            }
             
-        // Cập nhật phân trang
+            // Cập nhật phân trang
         updatePagination(pageNumber, totalPages);
         
-    } catch (error) {
+        } catch (error) {
         console.error('Lỗi tải danh sách đặt sân:', error);
         const tbodyError = document.getElementById('bookingTableBody');
         if (tbodyError) {
@@ -998,13 +1024,13 @@ const loadBookings = async () => {
             `;
         }
         
-        Swal.fire({
-            icon: 'error',
-            title: 'Lỗi!',
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
             text: 'Không thể tải danh sách đặt sân: ' + error.message
-        });
-    }
-};
+            });
+        }
+    };
 
 // Hiển thị trạng thái thanh toán cho mỗi đặt sân
 function getPaymentBadge(booking) {
@@ -1155,7 +1181,7 @@ const updatePagination = (currentPage, totalPages) => {
         // Nút Previous
         paginationHTML += `
             <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">Previous</a>
+            <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">Trước </a>
             </li>
         `;
         
@@ -1171,14 +1197,14 @@ const updatePagination = (currentPage, totalPages) => {
         // Nút Next
         paginationHTML += `
             <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Next</a>
+            <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Sau</a>
             </li>
         `;
         
         pagination.innerHTML = paginationHTML;
-    };
+};
 
-    // Hàm chuyển trang
+// Hàm chuyển trang
 function changePage(page) {
     console.log("Chuyển đến trang:", page);
     const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -1188,151 +1214,206 @@ function changePage(page) {
 }
 
 // Hàm xem chi tiết đặt sân
-const viewBookingDetail = async (bookingId) => {
+function viewBookingDetail(bookingId) {
     try {
-        // Gọi API lấy chi tiết đặt sân
-        const response = await fetch(`https://localhost:7290/api/Booking/${bookingId}`, {
-                headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        // Hiển thị loading
+        Swal.fire({
+            title: 'Đang tải...',
+            text: 'Vui lòng đợi trong giây lát',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
             }
         });
         
-        if (!response.ok) throw new Error('Không thể lấy thông tin đặt sân');
-        
-        const result = await response.json();
-        console.log("Chi tiết đặt sân:", result);
-        
-        // Kiểm tra cấu trúc phản hồi
-        if (!result.success) {
-            throw new Error(result.message || 'Không thể lấy thông tin đặt sân');
-        }
-        
-        const booking = result.data;
-        currentBookingId = bookingId;
-        
-        // Cập nhật thông tin đặt sân vào modal
-        document.getElementById('detail-bookingId').textContent = booking.bookingID;
-        document.getElementById('detail-bookingDate').textContent = formatDate(booking.bookingDate);
-        document.getElementById('detail-time').textContent = `${formatTime(booking.startTime)} - ${formatTime(booking.endTime)}`;
-        document.getElementById('detail-pitch').textContent = booking.pitchName || 'Không có thông tin';
-        document.getElementById('detail-pitchType').textContent = booking.pitchTypeName || 'Không có thông tin';
-        document.getElementById('detail-totalPrice').textContent = formatCurrency(booking.totalPrice);
-        document.getElementById('detail-note').textContent = booking.note || 'Không có ghi chú';
+        // Gọi API lấy chi tiết đặt sân
+        fetch(`https://localhost:7290/api/Booking/${bookingId}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Không thể lấy thông tin đặt sân');
+            return response.json();
+        })
+        .then(async result => {
+            // Đóng thông báo loading
+            Swal.close();
+            
+            console.log("Chi tiết đặt sân:", result);
+            
+            // Kiểm tra cấu trúc phản hồi
+            if (!result.success && !result.bookingID) {
+                throw new Error(result.message || 'Không thể lấy thông tin đặt sân');
+            }
+            
+            const booking = result.data || result;
+            currentBookingId = bookingId;
+            
+            // Cập nhật thông tin đặt sân vào modal
+            document.getElementById('detail-bookingId').textContent = booking.bookingID;
+            document.getElementById('detail-bookingDate').textContent = formatDate(booking.bookingDate);
+            document.getElementById('detail-time').textContent = `${formatTime(booking.startTime)} - ${formatTime(booking.endTime)}`;
+            document.getElementById('detail-pitch').textContent = booking.pitchName || 'Không có thông tin';
+            document.getElementById('detail-pitchType').textContent = booking.pitchTypeName || 'Không có thông tin';
+            document.getElementById('detail-totalPrice').textContent = formatCurrency(booking.totalPrice);
+            document.getElementById('detail-note').textContent = booking.note || 'Không có ghi chú';
 
-        // Hiển thị trạng thái với badge
-        const statusElement = document.getElementById('detail-status');
-        statusElement.textContent = getStatusText(booking.status);
-        statusElement.className = `badge badge-pill ${getStatusBadgeClass(booking.status)}`;
-        
-        // Thông tin khách hàng
-        document.getElementById('detail-userName').textContent = booking.userName || 'Không có thông tin';
-        document.getElementById('detail-phone').textContent = booking.phoneNumber || 'Không có thông tin';
-        
-        // Truy vấn thông tin email người dùng (nếu cần)
-        try {
-            const userResponse = await fetch(`https://localhost:7290/api/Users/${booking.userID}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            // Hiển thị trạng thái với badge
+            const statusElement = document.getElementById('detail-status');
+            statusElement.textContent = getStatusText(booking.status);
+            statusElement.className = `badge badge-pill ${getStatusBadgeClass(booking.status)}`;
+            
+            // Thông tin khách hàng
+            document.getElementById('detail-userName').textContent = booking.userName || 'Không có thông tin';
+            document.getElementById('detail-phone').textContent = booking.phoneNumber || 'Không có thông tin';
+            document.getElementById('detail-email').textContent = booking.email || 'Không có thông tin';
+            console.log(booking.userID);
+            // Lấy thông tin chi tiết về người dùng từ API
+            if (booking.userID) {
+                try {
+                    const userResponse = await fetch(`https://localhost:7290/api/Users/${booking.userID}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        }
+                    });
+                    
+                    if (userResponse.ok) {
+                        const userData = await userResponse.json();
+                        console.log('Dữ liệu người dùng:', userData);
+                        
+                        // Cập nhật thông tin chi tiết người dùng trực tiếp từ kết quả API
+                        // API trả về userData trực tiếp, không có cấu trúc success/data
+                        if (userData) {
+                            document.getElementById('detail-userName').textContent = userData.fullName || booking.userName || 'Không có thông tin';
+                            document.getElementById('detail-phone').textContent = userData.phoneNumber || booking.phoneNumber || 'Không có thông tin';
+                            document.getElementById('detail-email').textContent = userData.email || booking.email || 'Không có thông tin';
+                            
+                            // Thêm trường thông tin người dùng khác nếu cần
+                            const userInfoContainer = document.querySelector('#detail-userInfo');
+                            if (userInfoContainer) {
+                                // Thêm địa chỉ nếu có
+                                if (userData.address) {
+                                    // Kiểm tra nếu chưa có dòng địa chỉ
+                                    const existingAddressRow = userInfoContainer.querySelector('#user-address-row');
+                                    if (!existingAddressRow) {
+                                        const addressRow = document.createElement('tr');
+                                        addressRow.id = 'user-address-row';
+                                        addressRow.innerHTML = `
+                                            <td style="width: 40%;"><strong>Địa chỉ:</strong></td>
+                                            <td>${userData.address}</td>
+                                        `;
+                                        userInfoContainer.appendChild(addressRow);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        console.warn('Không thể lấy thông tin chi tiết người dùng:', await userResponse.text());
+                    }
+                } catch (userError) {
+                    console.error('Lỗi khi lấy thông tin người dùng:', userError);
                 }
-            });
-            if (userResponse.ok) {
-                const userData = await userResponse.json();
-                document.getElementById('detail-email').textContent = userData.email || 'Không có thông tin';
             }
-        } catch (error) {
-            document.getElementById('detail-email').textContent = 'Không có thông tin';
-            console.error('Lỗi lấy thông tin người dùng:', error);
-        }
-        
-        // Thông tin thanh toán
-        const paymentInfo = document.getElementById('payment-info');
-        if (booking.payment) {
-            paymentInfo.style.display = 'block';
             
-            // Cập nhật trạng thái thanh toán
-            const paymentStatus = document.getElementById('detail-paymentStatus');
-            const isPaid = booking.payment.paymentDate && booking.payment.transactionID;
-            
-            if (isPaid) {
-                paymentStatus.textContent = 'Đã thanh toán';
-                paymentStatus.className = 'badge badge-pill badge-success';
+            // Thông tin thanh toán
+            const paymentInfo = document.getElementById('payment-info');
+            if (booking.payment) {
+                paymentInfo.style.display = 'block';
+                
+                // Cập nhật trạng thái thanh toán
+                const paymentStatus = document.getElementById('detail-paymentStatus');
+                const paymentInfoText = document.getElementById('detail-paymentInfo');
+                const isPaid = booking.payment.paymentDate && booking.payment.transactionID;
+                
+                if (isPaid) {
+                    paymentStatus.textContent = 'Đã thanh toán';
+                    paymentStatus.className = 'badge badge-pill badge-success';
+                    paymentInfoText.innerHTML = `<i class="ti-calendar mr-1"></i>${formatDate(booking.payment.paymentDate)}`;
+                } else {
+                    paymentStatus.textContent = 'Chưa thanh toán';
+                    paymentStatus.className = 'badge badge-pill badge-warning';
+                    paymentInfoText.innerHTML = '';
+                }
+                
+                // Cập nhật các thông tin khác
+                const paymentMethod = booking.payment.paymentMethod || 'Chưa có thông tin';
+                document.getElementById('detail-paymentMethod').innerHTML = 
+                    getPaymentMethodIcon(paymentMethod) + getPaymentMethodText(paymentMethod);
+                
+                // Kiểm tra và xử lý số tiền thanh toán
+                const paymentAmount = booking.payment.amount || booking.totalPrice;
+                document.getElementById('detail-paymentAmount').textContent = formatCurrency(paymentAmount > 0 ? paymentAmount : booking.totalPrice);
+                
+                document.getElementById('detail-transactionId').textContent = booking.payment.transactionID || 'Chưa có';
+                
+                // Kiểm tra và xử lý ngày thanh toán
+                document.getElementById('detail-paymentDate').textContent = isPaid ? formatDate(booking.payment.paymentDate) : 'Chưa thanh toán';
             } else {
-                paymentStatus.textContent = 'Chưa thanh toán';
-                paymentStatus.className = 'badge badge-pill badge-warning';
+                // Nếu không có thông tin thanh toán, vẫn hiển thị phần thanh toán nhưng với trạng thái chưa có
+                paymentInfo.style.display = 'block';
+                
+                const paymentStatus = document.getElementById('detail-paymentStatus');
+                const paymentInfoText = document.getElementById('detail-paymentInfo');
+                paymentStatus.textContent = 'Chưa có thông tin';
+                paymentStatus.className = 'badge badge-pill badge-secondary';
+                paymentInfoText.innerHTML = '';
+                
+                // Đặt các giá trị mặc định
+                document.getElementById('detail-paymentMethod').innerHTML = getPaymentMethodIcon() + 'Chưa có thông tin';
+                document.getElementById('detail-paymentAmount').textContent = formatCurrency(booking.totalPrice);
+                document.getElementById('detail-transactionId').textContent = 'Chưa có';
+                document.getElementById('detail-paymentDate').textContent = 'Chưa thanh toán';
             }
             
-            // Cập nhật các thông tin khác
-            const paymentMethod = booking.payment.paymentMethod || 'Chưa có thông tin';
-            document.getElementById('detail-paymentMethod').textContent = paymentMethod === 'VNPAY' ? 'Thanh toán qua VNPAY' : 
-                                                                       (paymentMethod === 'Cash' ? 'Thanh toán tại sân' : paymentMethod);
+            // Hiện/ẩn các nút tương ứng với trạng thái
+            const confirmButton = document.getElementById('confirmButton');
+            const completeButton = document.getElementById('completeButton');
+            const cancelButton = document.getElementById('cancelButton');
             
-            // Kiểm tra và xử lý số tiền thanh toán
-            const paymentAmount = booking.payment.amount || booking.totalPrice;
-            document.getElementById('detail-paymentAmount').textContent = formatCurrency(paymentAmount > 0 ? paymentAmount : booking.totalPrice);
+            switch (booking.status) {
+                case 'Pending':
+                    confirmButton.style.display = 'inline-block';
+                    completeButton.style.display = 'none';
+                    cancelButton.style.display = 'inline-block';
+                    break;
+                case 'Confirmed':
+                    confirmButton.style.display = 'none';
+                    completeButton.style.display = 'inline-block';
+                    cancelButton.style.display = 'inline-block';
+                    break;
+                case 'Completed':
+                case 'Cancelled':
+                    confirmButton.style.display = 'none';
+                    completeButton.style.display = 'none';
+                    cancelButton.style.display = 'none';
+                    break;
+                default:
+                    confirmButton.style.display = 'none';
+                    completeButton.style.display = 'none';
+                    cancelButton.style.display = 'none';
+            }
             
-            document.getElementById('detail-transactionId').textContent = booking.payment.transactionID || 'Chưa có';
-            
-            // Kiểm tra và xử lý ngày thanh toán
-            
-            document.getElementById('detail-paymentDate').textContent = formatDate(booking.bookingDate);
-        } else {
-            // Nếu không có thông tin thanh toán, vẫn hiển thị phần thanh toán nhưng với trạng thái chưa có
-            paymentInfo.style.display = 'block';
-            
-            const paymentStatus = document.getElementById('detail-paymentStatus');
-            paymentStatus.textContent = 'Chưa có thông tin';
-            paymentStatus.className = 'badge badge-pill badge-secondary';
-            
-            // Đặt các giá trị mặc định
-            document.getElementById('detail-paymentMethod').textContent = 'Chưa có thông tin';
-            document.getElementById('detail-paymentAmount').textContent = formatCurrency(booking.totalPrice);
-            document.getElementById('detail-transactionId').textContent = 'Chưa có';
-            document.getElementById('detail-paymentDate').textContent = 'Chưa thanh toán';
-        }
-        
-        // Hiện/ẩn các nút tương ứng với trạng thái
-        const confirmButton = document.getElementById('confirmButton');
-        const completeButton = document.getElementById('completeButton');
-        const cancelButton = document.getElementById('cancelButton');
-        
-        switch (booking.status) {
-            case 'Pending':
-                confirmButton.style.display = 'inline-block';
-                completeButton.style.display = 'none';
-                cancelButton.style.display = 'inline-block';
-                
-                break;s
-            case 'Confirmed':
-                confirmButton.style.display = 'none';
-                completeButton.style.display = 'inline-block';
-                cancelButton.style.display = 'inline-block';
-                
-                break;
-            case 'Completed':
-                
-            case 'Cancelled':
-                confirmButton.style.display = 'none';
-                completeButton.style.display = 'none';
-                cancelButton.style.display = 'none';
-                break;
-            default:
-                confirmButton.style.display = 'none';
-                completeButton.style.display = 'none';
-                cancelButton.style.display = 'none';
-        }
-        
-        // Hiển thị modal
-        $('#bookingDetailModal').modal('show');
-        
-        } catch (error) {
-        console.error('Lỗi xem chi tiết đặt sân:', error);
+            // Hiển thị modal
+            $('#bookingDetailModal').modal('show');
+        })
+        .catch(error => {
+            console.error('Lỗi xem chi tiết đặt sân:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Lỗi!',
+                text: error.message || 'Không thể lấy thông tin chi tiết đặt sân'
+            });
+        });
+    } catch (error) {
+        console.error('Lỗi xem chi tiết đặt sân:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
             text: error.message || 'Không thể lấy thông tin chi tiết đặt sân'
         });
     }
-};
+}
 
 // Xác nhận đặt sân
 document.getElementById('confirmButton').addEventListener('click', async () => {
@@ -1441,7 +1522,6 @@ document.getElementById('completeButton').addEventListener('click', async () => 
             const errorText = await response.text();
             console.error("Lỗi API:", response.status, errorText);
             throw new Error(`Lỗi: ${response.status} - ${errorText}`);
-            $('#bookingDetailModal').modal('hide');
         }
         
         const result = await response.json();
@@ -1474,15 +1554,15 @@ document.getElementById('completeButton').addEventListener('click', async () => 
 
 // Hủy đặt sân
 document.getElementById('cancelButton').addEventListener('click', async () => {
-        try {
+    try {
         // Hiển thị hộp thoại xác nhận
-            const result = await Swal.fire({
+        const result = await Swal.fire({
             title: 'Xác nhận hủy?',
             text: 'Bạn có chắc chắn muốn hủy đặt sân này?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
             confirmButtonText: 'Hủy đặt sân',
             cancelButtonText: 'Quay lại'
         });
@@ -1508,7 +1588,7 @@ document.getElementById('cancelButton').addEventListener('click', async () => {
         
         const response = await fetch(`https://localhost:7290/api/Booking/${currentBookingId}/cancel`, {
             method: 'PUT',
-                    headers: {
+            headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
@@ -1520,7 +1600,7 @@ document.getElementById('cancelButton').addEventListener('click', async () => {
             throw new Error('Bạn không có quyền thực hiện thao tác này. Vui lòng đăng nhập với tài khoản quản trị.');
         }
 
-                if (!response.ok) {
+        if (!response.ok) {
             const errorText = await response.text();
             console.error("Lỗi API:", response.status, errorText);
             throw new Error(`Lỗi: ${response.status} - ${errorText}`);
@@ -1554,7 +1634,5 @@ document.getElementById('cancelButton').addEventListener('click', async () => {
     }
 });
 </script>
-
 </body>
-
 </html>
